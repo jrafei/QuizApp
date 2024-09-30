@@ -3,7 +3,6 @@ package AI13.SpringBoot.models;
 import java.sql.Timestamp;
 
 public class User {
-
     private int id;
     private String firstname;
     private String lastname;
@@ -12,14 +11,25 @@ public class User {
     private String company;
     private String phone;
     private Timestamp creationDate;
-    private Boolean isActive;
+    private boolean isActive;
 
     // Constructeur par défaut
-    public User() {
+    public User() {}
+
+    // Constructeur avec tous les champs
+    public User(int id, String firstname, String lastname, String email, String password, String company, String phone, Timestamp creationDate, boolean isActive) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.company = company;
+        this.phone = phone;
+        this.creationDate = creationDate;
+        this.isActive = isActive;
     }
 
     // Getters et Setters
-
     public int getId() {
         return id;
     }
@@ -84,27 +94,11 @@ public class User {
         this.creationDate = creationDate;
     }
 
-    public Boolean getIsActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(Boolean isActive) {
+    public void setIsActive(boolean isActive) {
         this.isActive = isActive;
-    }
-
-    // Méthode toString pour afficher l'objet
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", company='" + company + '\'' +
-                ", phone='" + phone + '\'' +
-                ", creationDate=" + creationDate +
-                ", isActive=" + isActive +
-                '}';
     }
 }
