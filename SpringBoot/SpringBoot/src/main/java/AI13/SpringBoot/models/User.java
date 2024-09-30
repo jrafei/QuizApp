@@ -46,7 +46,15 @@ public class User {
     // Constructeurs, Getters et Setters
     public User() {}
 
+<<<<<<< HEAD
     public User(String firstname, String lastname, String email, String password, String company, String phone, Timestamp creationDate, boolean isActive, Role role, User manager) {
+=======
+    // Constructeur avec tous les champs
+    public User(String firstname, String lastname, String email, String password, String company, String phone, Timestamp creationDate, boolean isActive) {
+
+        this.id = counter.incrementAndGet();
+
+>>>>>>> 72877716071185bb047feffe5cb422558729b16f
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
