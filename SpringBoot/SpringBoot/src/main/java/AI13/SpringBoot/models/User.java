@@ -17,8 +17,10 @@ public class User {
     public User() {}
 
     // Constructeur avec tous les champs
-    public User(int id, String firstname, String lastname, String email, String password, String company, String phone, Timestamp creationDate, boolean isActive) {
-        this.id = id;
+    public User(String firstname, String lastname, String email, String password, String company, String phone, Timestamp creationDate, boolean isActive) {
+
+        this.id = counter.incrementAndGet();
+
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
