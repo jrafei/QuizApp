@@ -1,10 +1,10 @@
-package AI13.SpringBoot;
+package com.quizapp.quizApp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApplicationTests {
+class QuizAppApplicationTests {
 
 	@Test
 	void contextLoads() {
