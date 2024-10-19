@@ -1,64 +1,55 @@
 package com.quizapp.quizApp.controller;
 
-import com.quizapp.quizApp.model.User;
-import com.quizapp.quizApp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import com.quizapp.quizApp.model.beans.User;
+import com.quizapp.quizApp.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    // Récupération de tous les utilisateurs
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    // Récupération d'un utilisateur par ID
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
+    private final UserService userService; // On passe par l'interface pour utiliser les méthodes de UserServiceImpl
 
     // Ajout d'un utilisateur
-    @PostMapping
+    @PostMapping(value = "/create" )
     public User createUser(@RequestBody User user) {
-        user.setCreationDate(LocalDateTime.now());  // Définit la date de création lors de l'ajout d'un utilisateur
-        return userRepository.save(user);
+        return userService.createUser(user);
+    }
+
+    // Récupération de tous les utilisateurs
+    @GetMapping("/read")
+    public List<User> getUsers(){
+        return userService.getAllUsers();
     }
 
     // Modification d'un utilisateur
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        return userRepository.findById(id).map(user -> {
-            user.setFirstname(updatedUser.getFirstname());
-            user.setLastname(updatedUser.getLastname());
-            user.setEmail(updatedUser.getEmail());
-            user.setCompany(updatedUser.getCompany());
-            user.setPhone(updatedUser.getPhone());
-            user.setIsActive(updatedUser.getIsActive());
-            user.setRole(updatedUser.getRole());
-            user.setManager(updatedUser.getManager());
-            return ResponseEntity.ok(userRepository.save(user));
-        }).orElse(ResponseEntity.notFound().build());
+    @PatchMapping("/update/{id}")
+    public User update(@PathVariable long id,  @RequestBody Map<String, Object> updatePartialUser){
+        return userService.updatePartialUser(id, updatePartialUser);
     }
 
+
+    /*
+
     // Suppression d'un utilisateur
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        return userRepository.findById(id).map(user -> {
-            userRepository.delete(user);
+        return userService.findById(id).map(user -> {
+            userService.delete(user);
             return ResponseEntity.noContent().<Void>build();  // Correction ici
         }).orElse(ResponseEntity.notFound().build());
     }
+
+    */
+
+    @DeleteMapping("/delete/{id}")
+    public String delete(@PathVariable long id) {
+        return userService.deleteUser(id);
+    }
+
 }

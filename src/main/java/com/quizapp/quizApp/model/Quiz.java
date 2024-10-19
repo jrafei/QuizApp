@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 
 import java.security.Timestamp;
 
+
 public class Quiz {
     private static final long serialVersionUID = 1L;
     @Id
