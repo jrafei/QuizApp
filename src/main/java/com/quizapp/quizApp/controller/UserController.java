@@ -1,6 +1,7 @@
 package com.quizapp.quizApp.controller;
 
 import com.quizapp.quizApp.model.beans.User;
+import com.quizapp.quizApp.model.dto.UserDTO;
 import com.quizapp.quizApp.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,8 @@ public class UserController {
 
     // Ajout d'un utilisateur
     @PostMapping(value = "/create" )
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserDTO createUser(@RequestBody UserDTO userdto) {
+        return userService.createUser(userdto);
     }
 
     // Récupération de tous les utilisateurs

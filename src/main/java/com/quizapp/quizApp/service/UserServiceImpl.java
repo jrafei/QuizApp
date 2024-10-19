@@ -1,8 +1,11 @@
 package com.quizapp.quizApp.service;
 
 import com.quizapp.quizApp.model.beans.User;
+import com.quizapp.quizApp.model.dto.UserDTO;
 import com.quizapp.quizApp.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +18,18 @@ public class UserServiceImpl implements UserService{
     // conteneur Spring injecte automatiquement l'object userRepository à travers le constructeur 'AllArgsConstructor'
     private final UserRepository userRepository;
 
+    @Autowired
+    private ModelMapper modelMapper = new ModelMapper();
+
+
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public UserDTO createUser(UserDTO userDTO) {
+        User user = modelMapper.map(userDTO, User.class); // mapper ver la classe User
+        User savedUser = userRepository.save(user);
+        
+        return modelMapper.map(savedUser, UserDTO.class);  // mapper vers le dto
     }
+
 
 
     @Override
