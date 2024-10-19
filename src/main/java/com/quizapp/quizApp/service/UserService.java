@@ -12,8 +12,8 @@ public interface UserService {
     User createUser(User user);
     //User getUserByUsername(String username);
     List<User> getAllUsers();
-    User updateUser(long id ,User user);
-    String deleteUser(long id);
-    User updatePartialUser( long id, Map<String, Object> updatePartialUser);
+    User updateUser(int id ,User user);
+    String deleteUser(int id);
+    User updatePartialUser( int id, Map<String, Object> updatePartialUser);
 }
 

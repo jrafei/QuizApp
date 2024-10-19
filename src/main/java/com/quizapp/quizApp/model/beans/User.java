@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "USER")
@@ -19,7 +18,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "firstname", length = 60, nullable = false)
     private String firstname;
@@ -40,7 +39,7 @@ public class User {
     private String phone;
 
     @Column(name = "creation_date", nullable = false)
-    private LocalDateTime creationDate;
+    private Timestamp creationDate;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -62,7 +61,7 @@ public class User {
     // Méthode qui sera appelée avant la persistance pour initialiser creationDate
     @PrePersist
     protected void onCreate() {
-        this.creationDate = LocalDateTime.now();
+        this.creationDate = new Timestamp(System.currentTimeMillis());
     }
 
 }

@@ -1,4 +1,4 @@
-package com.quizapp.quizApp.model;
+package com.quizapp.quizApp.model.beans;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,10 +13,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Theme {
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(name = "label", nullable = false)
     private String label;
 }

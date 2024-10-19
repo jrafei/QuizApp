@@ -27,8 +27,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    // cette méthode nécessite de mettre tout les attributs de User dans requestBody pour mettre un jour un seul champs alorsque celui d'après on met juste les attributs qu'on a besoin à modifier
-    public User updateUser(long id, User user) {
+    // cette méthode nécessite de mettre tout les attributs de User dans requestBody pour mettre à jour un seul champs alorsque celui d'après on met juste les attributs qu'on a besoin à modifier
+    public User updateUser(int id, User user) {
         return userRepository.findById(id).map(u-> {
             u.setFirstname(user.getFirstname());
             u.setLastname(user.getLastname());
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService{
         }).orElseThrow(()-> new RuntimeException("User Not Found"));
     }
 
-    public User updatePartialUser(long id, Map<String, Object> updates) {
+    public User updatePartialUser(int id, Map<String, Object> updates) {
         // Récupérer l'utilisateur existant depuis la base de données
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()) {
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService{
                     existingUser.setRole(User.Role.valueOf((String) value));  // Conversion de chaîne en enum
                     break;
                 case "manager":
-                    Optional<User> manager = userRepository.findById((Long) value);
+                    Optional<User> manager = userRepository.findById((Integer) value);
                     if (manager.isPresent()) {
                         existingUser.setManager(manager.get());
                     } else {
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String deleteUser(long id) {
+    public String deleteUser(int id) {
         userRepository.deleteById(id);
         return "User successfully deleted ! ";
     }

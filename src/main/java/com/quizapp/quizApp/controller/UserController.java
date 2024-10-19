@@ -28,7 +28,7 @@ public class UserController {
 
     // Modification d'un utilisateur
     @PatchMapping("/update/{id}")
-    public User update(@PathVariable long id,  @RequestBody Map<String, Object> updatePartialUser){
+    public User update(@PathVariable int id,  @RequestBody Map<String, Object> updatePartialUser){
         return userService.updatePartialUser(id, updatePartialUser);
     }
 
@@ -48,7 +48,7 @@ public class UserController {
     */
 
     @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable long id) {
+    public String delete(@PathVariable int id) {
         return userService.deleteUser(id);
     }
 
