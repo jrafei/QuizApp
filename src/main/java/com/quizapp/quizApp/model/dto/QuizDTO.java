@@ -7,5 +7,5 @@ import lombok.Getter;
 public class QuizDTO {
     private String title;
     private boolean isActive;
-    private int themeId; // ID du thème qui sera envoyé dans la requêted
+    private int themeId; // ID du thème qui sera envoyé dans la requête
 }

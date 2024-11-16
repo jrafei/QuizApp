@@ -1,13 +1,20 @@
 package com.quizapp.quizApp.model.beans;
 
+import com.quizapp.quizApp.model.iterator.Container;
+import com.quizapp.quizApp.model.iterator.Iterator;
+import com.quizapp.quizApp.model.iterator.QuestionIterator;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+
+
 import java.sql.Timestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "QUIZ")
@@ -15,7 +22,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Quiz {
+
+public class Quiz implements Container {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +50,17 @@ public class Quiz {
     @JoinColumn(name = "id_theme")
     private Theme theme;
 
+    @ManyToOne
+    @JoinColumn(name = "id_creator") // clé etrangere
+    private User creator;
+
+
+    //mappedBy = "quiz" signifie que cette relation est déjà mappée par l'attribut quiz de la classe Question
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> questions;
+
+    @Override
+    public Iterator getIterator() {
+        return new QuestionIterator(questions);
+    }
 }
