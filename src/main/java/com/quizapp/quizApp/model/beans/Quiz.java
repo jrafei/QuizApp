@@ -4,12 +4,9 @@ import com.quizapp.quizApp.model.iterator.Container;
 import com.quizapp.quizApp.model.iterator.Iterator;
 import com.quizapp.quizApp.model.iterator.QuestionIterator;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-
+import java.util.Set;
 
 import java.sql.Timestamp;
 
@@ -39,13 +36,6 @@ public class Quiz implements Container {
     @Column(name = "creation_date", nullable = false)
     private Timestamp creationDate;
 
-    /* Méthode qui sera appelée avant la persistance pour initialiser creationDate
-    @PrePersist
-    protected void onCreate() {
-        this.creationDate = new Timestamp(System.currentTimeMillis());
-    }
-     */
-
     @ManyToOne
     @JoinColumn(name = "id_theme")
     private Theme theme;
@@ -53,6 +43,9 @@ public class Quiz implements Container {
     @ManyToOne
     @JoinColumn(name = "id_creator") // clé etrangere
     private User creator;
+
+    @ManyToMany(mappedBy = "quizzes")
+    private Set<User> users;
 
 
     //mappedBy = "quiz" signifie que cette relation est déjà mappée par l'attribut quiz de la classe Question
@@ -63,4 +56,12 @@ public class Quiz implements Container {
     public Iterator getIterator() {
         return new QuestionIterator(questions);
     }
+
+    /* Méthode qui sera appelée avant la persistance pour initialiser creationDate */
+    @PrePersist
+    protected void onCreate() {
+        this.creationDate = new Timestamp(System.currentTimeMillis());
+    }
+
+
 }

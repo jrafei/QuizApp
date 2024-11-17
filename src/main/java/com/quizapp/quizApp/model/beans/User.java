@@ -1,12 +1,11 @@
 package com.quizapp.quizApp.model.beans;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import java.util.List;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name = "USER")
@@ -51,6 +50,18 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "id_manager") // clé étrangère
     private User manager;
+
+    @OneToMany(mappedBy = "trainee", cascade=CascadeType.ALL, orphanRemoval = true)
+    private List<Record> records;
+
+
+    @ManyToMany
+    @JoinTable( // Une table intermédiaire sera automatiquement générée par JPA pour gérer cette relation
+    name = "user_quiz", // Nom de la table d'association
+    joinColumns = @JoinColumn(name = "user_id"), // Clé étrangère vers User
+    inverseJoinColumns = @JoinColumn(name = "quiz_id")) // Clé étrangère vers Quiz )
+    private Set<Quiz> quizzes;
+
 
 
     public enum Role {
