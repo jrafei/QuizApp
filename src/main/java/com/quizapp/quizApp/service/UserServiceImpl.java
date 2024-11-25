@@ -24,12 +24,41 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
+        // validation du mot de passe
+        validatePassword(userDTO.getPassword());
+
         User user = modelMapper.map(userDTO, User.class); // mapper vers la classe User
         User savedUser = userRepository.save(user);
         
         return modelMapper.map(savedUser, UserDTO.class);  // mapper vers le dto
     }
 
+    // Méthode de validation du mot de passe
+    private void validatePassword(String password) {
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Le mot de passe ne peut pas être vide.");
+        }
+
+        // Vérification de la longueur minimale de 12 caractères
+        if (password.length() < 12) {
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins 12 caractères.");
+        }
+
+        // Vérification qu'il contient au moins un chiffre
+        if (!password.matches(".*\\d.*")) {
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins un chiffre.");
+        }
+
+        // Vérification qu'il contient au moins une majuscule
+        if (!password.matches(".*[A-Z].*")) {
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins une majuscule.");
+        }
+
+        // Vérification qu'il contient au moins un caractère spécial ou signe de ponctuation
+        if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new IllegalArgumentException("Le mot de passe doit contenir au moins un caractère spécial ou signe de ponctuation.");
+        }
+    }
 
 
     @Override
