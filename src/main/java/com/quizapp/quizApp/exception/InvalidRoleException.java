@@ -1,4 +1,7 @@
 package com.quizapp.quizApp.exception;
 
-public class InvalidRoleException {
+public class InvalidRoleException extends RuntimeException {
+    public InvalidRoleException(String message) {
+        super(message);
+    }
 }

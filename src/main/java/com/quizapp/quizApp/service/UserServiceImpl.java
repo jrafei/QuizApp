@@ -1,5 +1,7 @@
 package com.quizapp.quizApp.service;
 
+import com.quizapp.quizApp.exception.DuplicateEmailException;
+import com.quizapp.quizApp.exception.InvalidRoleException;
 import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.dto.UserDTO;
 import com.quizapp.quizApp.repository.UserRepository;
@@ -21,11 +23,22 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private ModelMapper modelMapper = new ModelMapper();
 
-
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        // validation du mot de passe
+        // Validation du mot de passe
         validatePassword(userDTO.getPassword());
+
+        // Validation de l'unicité de l'email
+        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+            throw new DuplicateEmailException("L'email " + userDTO.getEmail() + " est déjà utilisé.");
+        }
+
+        // Validation du rôle
+        try {
+            User.Role.valueOf(userDTO.getRole().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRoleException("Le rôle " + userDTO.getRole() + " est invalide.");
+        }
 
         User user = modelMapper.map(userDTO, User.class); // mapper vers la classe User
         User savedUser = userRepository.save(user);
@@ -129,6 +142,14 @@ public class UserServiceImpl implements UserService{
 
         // Sauvegarder l'utilisateur mis à jour dans la base de données
         return userRepository.save(existingUser);
+    }
+
+    public String setActiveStatus(int id, boolean status) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
+        user.setIsActive(status);
+        userRepository.save(user);
+        return status ? "Utilisateur activé" : "Utilisateur désactivé";
     }
 
     @Override

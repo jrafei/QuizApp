@@ -17,5 +17,6 @@ public interface UserService {
     User updateUser(int id ,User user);
     String deleteUser(int id);
     User updatePartialUser( int id, Map<String, Object> updatePartialUser);
+    String setActiveStatus(int id, boolean status);
 }
 

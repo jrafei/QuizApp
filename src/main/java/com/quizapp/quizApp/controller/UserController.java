@@ -3,6 +3,7 @@ package com.quizapp.quizApp.controller;
 import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.dto.UserDTO;
 import com.quizapp.quizApp.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -17,7 +18,8 @@ public class UserController {
 
     // Ajout d'un utilisateur
     @PostMapping(value = "/create" )
-    public UserDTO createUser(@RequestBody UserDTO userdto) {
+    public UserDTO createUser(@Valid @RequestBody UserDTO userdto) {
+        System.out.println("Validation en cours pour : " + userdto);
         return userService.createUser(userdto);
     }
 
@@ -31,6 +33,18 @@ public class UserController {
     @PatchMapping("/update/{id}")
     public User update(@PathVariable int id,  @RequestBody Map<String, Object> updatePartialUser){
         return userService.updatePartialUser(id, updatePartialUser);
+    }
+
+    // Activer un user
+    @PatchMapping("/activate/{id}")
+    public String activateUser(@PathVariable int id) {
+        return userService.setActiveStatus(id, true);
+    }
+
+    // Désactiver un user
+    @PatchMapping("/deactivate/{id}")
+    public String deactivateUser(@PathVariable int id) {
+        return userService.setActiveStatus(id, false);
     }
 
 
