@@ -47,6 +47,11 @@ public class UserController {
         return userService.setActiveStatus(id, false);
     }
 
+    // Donner droits admin à un user
+    @PatchMapping("/promoteToAdmin/{id}")
+    public String promoteToAdmin(@PathVariable int id) {
+        return userService.promoteToAdmin(id);
+    }
 
     /*
 

@@ -152,6 +152,14 @@ public class UserServiceImpl implements UserService{
         return status ? "Utilisateur activé" : "Utilisateur désactivé";
     }
 
+    public String promoteToAdmin(int id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
+        user.setRole(User.Role.ADMIN);
+        userRepository.save(user);
+        return "Utilisateur promu administrateur";
+    }
+
     @Override
     public String deleteUser(int id) {
         userRepository.deleteById(id);
