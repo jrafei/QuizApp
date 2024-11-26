@@ -17,5 +17,7 @@ public class RecordAnswer {
     @JoinColumn(name = "record_id", nullable = false)
     private Record record;
 
-    private int answerId;
+    @ManyToOne
+    @JoinColumn(name = "answer_id", nullable = false)
+    private Answer answerId;
 }

@@ -34,16 +34,16 @@ public class Question implements Container{
     @Column(name= "position", nullable = false)
     private int position;
 
-    @ManyToOne
-    @JoinColumn(name = "quiz_id",nullable = false)
-    private Quiz quiz;
-
     @OneToOne
     @JoinColumn(name = "correct_answer_id", nullable = false)
     private Answer correctAnswer;
 
     @OneToMany(mappedBy="question",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> possibleAnswers;
+
+    @ManyToOne
+    @JoinColumn(name = "quiz_id", nullable = false)// Clé étrangère vers Quiz
+    private Quiz quiz;
 
 
     @Override

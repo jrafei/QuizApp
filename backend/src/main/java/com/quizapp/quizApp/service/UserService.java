@@ -6,6 +6,7 @@ import com.quizapp.quizApp.model.dto.UserDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 public interface UserService {
@@ -14,10 +15,9 @@ public interface UserService {
     //User getUserByUsername(String username);
 
     List<User> getAllUsers();
-    User updateUser(int id ,User user);
-    String deleteUser(int id);
-    User updatePartialUser( int id, Map<String, Object> updatePartialUser);
-    String setActiveStatus(int id, boolean status);
-    String promoteToAdmin(int id);
+    String deleteUser(Integer id);
+    User updatePartialUser( Integer id, Map<String, Object> updatePartialUser);
+    String setActiveStatus(Integer id, boolean status);
+    String promoteToAdmin(Integer id);
 }
 

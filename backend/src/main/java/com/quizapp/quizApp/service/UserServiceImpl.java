@@ -5,7 +5,9 @@ import com.quizapp.quizApp.exception.InvalidRoleException;
 import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.dto.UserDTO;
 import com.quizapp.quizApp.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.Manager;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -23,9 +26,27 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private ModelMapper modelMapper = new ModelMapper();
 
+    /*
+    @PostConstruct
+    public void configureModelMapper() {
+        modelMapper.typeMap(UserDTO.class, User.class).addMappings(mapper ->
+                mapper.skip(User::setManager)
+        );
+        modelMapper.addConverter(context -> {
+            UUID idManager = context.getSource();
+            if (idManager != null) {
+                return userRepository.findById(idManager)
+                        .orElseThrow(() -> new IllegalArgumentException("Manager non trouvé avec l'id : " + idManager));
+            }
+            return null;
+        }, UUID.class, User.class);
+    }
+    */
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         // Validation du mot de passe
+
+        System.out.println("debut createUser");
         validatePassword(userDTO.getPassword());
 
         // Validation de l'unicité de l'email
@@ -41,6 +62,20 @@ public class UserServiceImpl implements UserService{
         }
 
         User user = modelMapper.map(userDTO, User.class); // mapper vers la classe User
+        // Validation du manager
+        User manager = null;
+
+        if (userDTO.getManager_id() != null) {
+            // print id_manager non null
+            System.out.println("id manager non null");
+            manager = userRepository.findById(userDTO.getManager_id())
+                    .orElseThrow(() -> new IllegalArgumentException("Manager non trouvé avec l'id : " + userDTO.getManager_id()));
+        }
+        else {
+            System.out.println("id null");
+        }
+
+        user.setManager(manager);
         User savedUser = userRepository.save(user);
         
         return modelMapper.map(savedUser, UserDTO.class);  // mapper vers le dto
@@ -79,19 +114,9 @@ public class UserServiceImpl implements UserService{
         return userRepository.findAll();
     }
 
-    @Override
-    // cette méthode nécessite de mettre tout les attributs de User dans requestBody pour mettre à jour un seul champs alorsque celui d'après on met juste les attributs qu'on a besoin à modifier
-    public User updateUser(int id, User user) {
-        return userRepository.findById(id).map(u-> {
-            u.setFirstname(user.getFirstname());
-            u.setLastname(user.getLastname());
-            //u.setEmail(user.getEmail());
-            //u.setPassword(user.getPassword());
-            return userRepository.save(u);
-        }).orElseThrow(()-> new RuntimeException("User Not Found"));
-    }
 
-    public User updatePartialUser(int id, Map<String, Object> updates) {
+
+    public User updatePartialUser(Integer id, Map<String, Object> updates) {
         // Récupérer l'utilisateur existant depuis la base de données
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()) {
@@ -144,7 +169,7 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(existingUser);
     }
 
-    public String setActiveStatus(int id, boolean status) {
+    public String setActiveStatus(Integer id, boolean status) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
         user.setIsActive(status);
@@ -152,7 +177,7 @@ public class UserServiceImpl implements UserService{
         return status ? "Utilisateur activé" : "Utilisateur désactivé";
     }
 
-    public String promoteToAdmin(int id) {
+    public String promoteToAdmin(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
         user.setRole(User.Role.ADMIN);
@@ -161,11 +186,28 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String deleteUser(int id) {
+    public String deleteUser(Integer id) {
         userRepository.deleteById(id);
         return "User successfully deleted ! ";
     }
 
+
+    public UUID convertToUUID(String id) {
+        if (id.startsWith("0x")) {
+            // Supprimer le préfixe "0x" et formater correctement
+            id = id.substring(2);
+            String formatted = String.format(
+                    "%s-%s-%s-%s-%s",
+                    id.substring(0, 8),
+                    id.substring(8, 12),
+                    id.substring(12, 16),
+                    id.substring(16, 20),
+                    id.substring(20)
+            );
+            return UUID.fromString(formatted);
+        }
+        return UUID.fromString(id);
+    }
 }
 
 

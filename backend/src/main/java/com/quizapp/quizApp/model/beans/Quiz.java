@@ -37,18 +37,14 @@ public class Quiz implements Container {
     private Timestamp creationDate;
 
     @ManyToOne
-    @JoinColumn(name = "id_theme")
+    @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
 
     @ManyToOne
-    @JoinColumn(name = "id_creator") // clé etrangere
+    @JoinColumn(name = "creator_id", nullable = false) // clé etrangere
     private User creator;
 
-    @ManyToMany(mappedBy = "quizzes")
-    private Set<User> users;
 
-
-    //mappedBy = "quiz" signifie que cette relation est déjà mappée par l'attribut quiz de la classe Question
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
 

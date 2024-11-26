@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -31,25 +32,25 @@ public class UserController {
 
     // Modification d'un utilisateur
     @PatchMapping("/update/{id}")
-    public User update(@PathVariable int id,  @RequestBody Map<String, Object> updatePartialUser){
+    public User update(@PathVariable Integer id,  @RequestBody Map<String, Object> updatePartialUser){
         return userService.updatePartialUser(id, updatePartialUser);
     }
 
     // Activer un user
     @PatchMapping("/activate/{id}")
-    public String activateUser(@PathVariable int id) {
+    public String activateUser(@PathVariable Integer id) {
         return userService.setActiveStatus(id, true);
     }
 
     // Désactiver un user
     @PatchMapping("/deactivate/{id}")
-    public String deactivateUser(@PathVariable int id) {
+    public String deactivateUser(@PathVariable Integer id) {
         return userService.setActiveStatus(id, false);
     }
 
     // Donner droits admin à un user
     @PatchMapping("/promoteToAdmin/{id}")
-    public String promoteToAdmin(@PathVariable int id) {
+    public String promoteToAdmin(@PathVariable Integer id) {
         return userService.promoteToAdmin(id);
     }
 
@@ -68,7 +69,7 @@ public class UserController {
     */
 
     @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable int id) {
+    public String delete(@PathVariable Integer id) {
         return userService.deleteUser(id);
     }
 
