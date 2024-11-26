@@ -1,78 +1,67 @@
 package com.quizapp.quizApp.model.beans;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.List;
-
-import java.sql.Timestamp;
-import java.util.Set;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false, unique = true)
+    private UUID id;
 
-    /*
-    @Id
-@GeneratedValue(strategy = GenerationType.AUTO)
-@Column(length = 36, nullable = false, unique = true)
-private UUID id;
-     */
-
-    @Column(name = "firstname", length = 60, nullable = false)
+    @NotNull
+    @Size(min = 2, max = 50)
+    @Column(name = "first_name", nullable = false, length = 50)
     private String firstname;
 
-    @Column(name = "lastname",length = 60, nullable = false)
+    @NotNull
+    @Size(min = 2, max = 50)
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastname;
 
-    @Column(length = 90, unique = true, nullable = false)
+    @NotNull
+    @Email
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(length = 56, nullable = false)
+    @NotNull
+    @Size(min = 8)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(length = 90)
+    @Column(name = "company", length = 100) // nullable par défaut
     private String company;
 
-    @Column(length = 13)
+    @Column(name = "phone", length = 20) // nullable par défaut
     private String phone;
 
-    @Column(name = "creation_date", nullable = false)
-    private Timestamp creationDate;
+    @NotNull
+    @Column(name = "creation_date", updatable = false, nullable = false)
+    private LocalDateTime creationDate = LocalDateTime.now(); // Valeur par défaut
 
+    @NotNull
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private boolean isActive = false;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(length = 10, nullable = false)
+    @Column(name = "role", nullable = false, length = 10)
     private Role role;
 
-
-
-    @ManyToOne
-    @JoinColumn(name = "manager_id",nullable = true) // clé étrangère
-    private User manager;
-
-
     public enum Role {
-        ADMIN,
-        TRAINEE
+        ADMIN, TRAINEE
     }
-
-    // Méthode qui sera appelée avant la persistance pour initialiser creationDate
-    @PrePersist
-    protected void onCreate() {
-        this.creationDate = new Timestamp(System.currentTimeMillis());
-    }
-
 }

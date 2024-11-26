@@ -1,45 +1,43 @@
-    package com.quizapp.quizApp.model.dto;
+package com.quizapp.quizApp.model.dto;
 
-    import com.quizapp.quizApp.model.beans.User;
-    import jakarta.validation.constraints.Email;
-    import jakarta.validation.constraints.NotBlank;
-    import jakarta.validation.constraints.NotNull;
-    import jakarta.validation.constraints.Size;
-    import lombok.AllArgsConstructor;
-    import lombok.Getter;
-    import lombok.NoArgsConstructor;
-    import lombok.Setter;
+import com.quizapp.quizApp.model.beans.User.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    import java.util.UUID;
+import java.util.UUID;
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public class UserDTO {
-        @NotBlank(message = "Le prénom est obligatoire.")
-        private String firstname;
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserDTO {
 
-        @NotBlank(message = "Le nom est obligatoire.")
-        private String lastname;
+    private UUID id; // Inclure l'identifiant si nécessaire pour les opérations de modification
 
-        @Email(message = "L'email doit être valide.")
-        @NotBlank(message = "L'email est obligatoire.")
-        private String email;
+    @NotBlank(message = "Le prénom est obligatoire.")
+    private String firstname;
 
-        @NotBlank(message = "Le mot de passe est obligatoire.")
-        @Size(min = 12, message = "Le mot de passe doit contenir au moins 12 caractères.")
-        private String password;
+    @NotBlank(message = "Le nom est obligatoire.")
+    private String lastname;
 
-        @NotNull(message = "Le rôle est obligatoire.")
-        private String role;
+    @Email(message = "L'email doit être valide.")
+    @NotBlank(message = "L'email est obligatoire.")
+    private String email;
 
-        private String phone;
+    @NotBlank(message = "Le mot de passe est obligatoire.")
+    @Size(min = 12, message = "Le mot de passe doit contenir au moins 12 caractères.")
+    private String password;
 
-        private boolean isActive = true;
+    @NotNull(message = "Le rôle est obligatoire.")
+    private Role role; // Enumération Role pour correspondre au modèle
 
-        private String company;
+    private String phone; // Nullable, conforme au modèle
 
-        private Integer manager_id;
-
-    }
+    private String company; // Nullable, conforme au modèle
+}
