@@ -23,23 +23,23 @@ public class Record {
     private int score;
     private int duration;
 
-    @Column(name = "contextId", length = 36)
+    @Column(name = "context_id", length = 36)
     private String contextId;
 
     @ManyToOne
-    @JoinColumn(name="id_trainee",nullable = false)
+    @JoinColumn(name="trainee_id",nullable = false)
     private User trainee;
 
     @ManyToOne
-    @JoinColumn(name="id_quiz", nullable = false)
+    @JoinColumn(name="quiz_id", nullable = false)
     private Quiz quiz;
 
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers;
 
     @ManyToOne
-    @JoinColumn(name="id_ranking", nullable = false)
+    @JoinColumn(name="ranking_id", nullable = false)
     private Ranking rank;
 
 }

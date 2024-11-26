@@ -2,10 +2,13 @@ package com.quizapp.quizApp.model.beans;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.util.List;
 
 import java.sql.Timestamp;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "USER")
@@ -19,10 +22,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    /*
+    @Id
+@GeneratedValue(strategy = GenerationType.AUTO)
+@Column(length = 36, nullable = false, unique = true)
+private UUID id;
+     */
+
     @Column(name = "firstname", length = 60, nullable = false)
     private String firstname;
 
-    @Column(length = 60, nullable = false)
+    @Column(name = "lastname",length = 60, nullable = false)
     private String lastname;
 
     @Column(length = 90, unique = true, nullable = false)
@@ -47,21 +57,11 @@ public class User {
     @Column(length = 10, nullable = false)
     private Role role;
 
+
+
     @ManyToOne
-    @JoinColumn(name = "id_manager") // clé étrangère
+    @JoinColumn(name = "manager_id",nullable = true) // clé étrangère
     private User manager;
-
-    @OneToMany(mappedBy = "trainee", cascade=CascadeType.ALL, orphanRemoval = true)
-    private List<Record> records;
-
-
-    @ManyToMany
-    @JoinTable( // Une table intermédiaire sera automatiquement générée par JPA pour gérer cette relation
-    name = "user_quiz", // Nom de la table d'association
-    joinColumns = @JoinColumn(name = "user_id"), // Clé étrangère vers User
-    inverseJoinColumns = @JoinColumn(name = "quiz_id")) // Clé étrangère vers Quiz )
-    private Set<Quiz> quizzes;
-
 
 
     public enum Role {

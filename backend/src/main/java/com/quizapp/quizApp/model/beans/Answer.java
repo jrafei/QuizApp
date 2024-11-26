@@ -17,10 +17,13 @@ public class Answer {
     private String label;
     private boolean correct;
     private boolean isActive;
-    private int points;
 
     @ManyToOne
     @JoinColumn(name="question_id", nullable = false)
     private Question question;
+
+    @ManyToOne
+    @JoinColumn(name="record_id", nullable = false)
+    private Record record;
 
 }

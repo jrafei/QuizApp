@@ -31,7 +31,7 @@ public class QuizServiceImpl implements QuizService {
         quiz.setCreationDate(new Timestamp(System.currentTimeMillis()) ); // Initialiser la date
 
         // ajouter le quiz à la liste des quizzes de thème
-        theme.getQuizzes().add(quiz);
+        //theme.getQuizzes().add(quiz);
 
         // Sauvegarder le thème pour propager la mise à jour bidirectionnelle
         themeRepository.save(theme);
