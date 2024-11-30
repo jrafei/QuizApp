@@ -1,12 +1,14 @@
 package com.quizapp.quizApp.controller;
 
-import com.quizapp.quizApp.model.beans.Theme;
-import com.quizapp.quizApp.service.ThemeService;
-import com.quizapp.quizApp.util.UUIDUtil;
+import com.quizapp.quizApp.model.dto.creation.ThemeCreateDTO;
+import com.quizapp.quizApp.model.dto.response.ThemeResponseDTO;
+import com.quizapp.quizApp.model.dto.update.ThemeUpdateDTO;
+import com.quizapp.quizApp.service.interfac.ThemeService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,53 +19,47 @@ public class ThemeController {
 
     private final ThemeService themeService;
 
-    // Création d'un thème
-    @PostMapping("/create")
-    public Theme createTheme(@Valid @RequestBody Theme theme) {
-        return themeService.createTheme(theme);
+    @PostMapping
+    public ResponseEntity<ThemeResponseDTO> createTheme(@Valid @RequestBody ThemeCreateDTO themeCreateDTO) {
+        ThemeResponseDTO createdTheme = themeService.createTheme(themeCreateDTO);
+        return ResponseEntity.status(201).body(createdTheme); // 201 Created
     }
 
-    // Récupération de tous les thèmes
-    @GetMapping("/read")
-    public List<Theme> getAllThemes() {
-        return themeService.getAllThemes();
+    @GetMapping
+    public ResponseEntity<List<ThemeResponseDTO>> getAllThemes() {
+        List<ThemeResponseDTO> themes = themeService.getAllThemes();
+        return ResponseEntity.ok(themes); // 200 OK
     }
 
-    // Récupération d'un thème par son ID
     @GetMapping("/{id}")
-    public Theme getThemeById(@PathVariable String id) {
-        UUID uuid = UUIDUtil.convertHexToUUID(id);
-        return themeService.getAllThemes().stream()
-                .filter(theme -> theme.getId().equals(uuid))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Thème non trouvé avec l'id : " + id));
+    public ResponseEntity<ThemeResponseDTO> getThemeById(@PathVariable UUID id) {
+        ThemeResponseDTO theme = themeService.getThemeById(id);
+        return ResponseEntity.ok(theme); // 200 OK
     }
 
-    // Mise à jour d'un thème
-    @PatchMapping("/update/{id}")
-    public Theme updateTheme(@PathVariable String id, @RequestBody Theme theme) {
-        UUID uuid = UUIDUtil.convertHexToUUID(id);
-        return themeService.updateTheme(uuid, theme);
+    @PatchMapping("/{id}")
+    public ResponseEntity<ThemeResponseDTO> updateTheme(
+            @PathVariable UUID id,
+            @RequestBody ThemeUpdateDTO themeUpdateDTO) {
+        ThemeResponseDTO updatedTheme = themeService.updateTheme(id, themeUpdateDTO);
+        return ResponseEntity.ok(updatedTheme); // 200 OK
     }
 
-    // Activation d'un thème
-    @PatchMapping("/activate/{id}")
-    public Theme activateTheme(@PathVariable String id) {
-        UUID uuid = UUIDUtil.convertHexToUUID(id);
-        return themeService.setActiveStatus(uuid, true);
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<ThemeResponseDTO> activateTheme(@PathVariable UUID id) {
+        ThemeResponseDTO activatedTheme = themeService.setActiveStatus(id, true);
+        return ResponseEntity.ok(activatedTheme); // 200 OK
     }
 
-    // Désactivation d'un thème
-    @PatchMapping("/deactivate/{id}")
-    public Theme deactivateTheme(@PathVariable String id) {
-        UUID uuid = UUIDUtil.convertHexToUUID(id);
-        return themeService.setActiveStatus(uuid, false);
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<ThemeResponseDTO> deactivateTheme(@PathVariable UUID id) {
+        ThemeResponseDTO deactivatedTheme = themeService.setActiveStatus(id, false);
+        return ResponseEntity.ok(deactivatedTheme); // 200 OK
     }
 
-    // Suppression d'un thème
-    @DeleteMapping("/delete/{id}")
-    public String deleteTheme(@PathVariable String id) {
-        UUID uuid = UUIDUtil.convertHexToUUID(id);
-        return themeService.deleteTheme(uuid);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable UUID id) {
+        themeService.deleteTheme(id);
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }

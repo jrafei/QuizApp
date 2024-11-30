@@ -1,16 +1,17 @@
 package com.quizapp.quizApp.model.beans;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -19,7 +20,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", updatable = false, nullable = false, unique = true)
+    @Column(name = "id_user", updatable = false, nullable = false, unique = true)
     private UUID id;
 
     @NotNull
@@ -54,12 +55,16 @@ public class User {
 
     @NotNull
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = false;
+    private boolean isActive;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 10)
     private Role role;
+
+    @OneToMany(mappedBy = "creator")
+    @JsonManagedReference  // Sérialiser les quiz associés à ce créateur
+    private List<Quiz> quizzes; // Liste des quiz créés par cet utilisateur
 
     public enum Role {
         ADMIN, TRAINEE

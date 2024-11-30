@@ -1,63 +1,59 @@
 package com.quizapp.quizApp.model.beans;
 
-import com.quizapp.quizApp.model.iterator.Container;
-import com.quizapp.quizApp.model.iterator.Iterator;
-import com.quizapp.quizApp.model.iterator.QuestionIterator;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.Set;
-
-import java.sql.Timestamp;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "QUIZ")
-@Getter
-@Setter
-@AllArgsConstructor
+@Table(name = "quizzes")
+@Data
 @NoArgsConstructor
-
-public class Quiz implements Container {
+@AllArgsConstructor
+public class Quiz {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id_quiz", updatable = false, nullable = false, unique = true)
+    private UUID id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @NotBlank(message = "Le nom du quiz est obligatoire.")
+    @Size(max = 100, message = "Le nom du quiz ne doit pas dépasser 100 caractères.")
+    @Column(name = "name", nullable = false, length = 100)
+    private String name;
 
-    @Setter
+    @NotNull
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private boolean isActive = false; // Valeur par défaut
 
-    @Column(name = "creation_date", nullable = false)
-    private Timestamp creationDate;
+    @Column(name = "position", nullable = true)
+    private Integer position; // Ordre du quiz dans un thème
 
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "creator_id", nullable = false)
+    @JsonBackReference
+    private User creator; // Utilisateur qui a créé le quiz
+
+    //@ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne
     @JoinColumn(name = "theme_id", nullable = false)
-    private Theme theme;
-
-    @ManyToOne
-    @JoinColumn(name = "creator_id", nullable = false) // clé etrangere
-    private User creator;
-
+    @JsonBackReference
+    private Theme theme; // Relation avec le thème
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> questions;
+    private List<Question> questions; // Liste des questions associées
 
-    @Override
-    public Iterator getIterator() {
-        return new QuestionIterator(questions);
-    }
-
-    /* Méthode qui sera appelée avant la persistance pour initialiser creationDate */
-    @PrePersist
-    protected void onCreate() {
-        this.creationDate = new Timestamp(System.currentTimeMillis());
-    }
-
-
+    @CreationTimestamp
+    @Column(name = "creation_date", updatable = false, nullable = false)
+    private LocalDateTime creationDate = LocalDateTime.now(); // Date de création du quiz
 }

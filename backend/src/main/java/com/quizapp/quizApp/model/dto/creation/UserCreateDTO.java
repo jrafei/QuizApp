@@ -1,4 +1,4 @@
-package com.quizapp.quizApp.model.dto;
+package com.quizapp.quizApp.model.dto.creation;
 
 import com.quizapp.quizApp.model.beans.User.Role;
 import jakarta.validation.constraints.Email;
@@ -10,15 +10,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
-
-    private UUID id; // Inclure l'identifiant si nécessaire pour les opérations de modification
+public class UserCreateDTO {
 
     @NotBlank(message = "Le prénom est obligatoire.")
     private String firstname;
@@ -35,9 +31,9 @@ public class UserDTO {
     private String password;
 
     @NotNull(message = "Le rôle est obligatoire.")
-    private Role role; // Enumération Role pour correspondre au modèle
+    private Role role;
 
     private String phone; // Nullable, conforme au modèle
-
     private String company; // Nullable, conforme au modèle
 }
+

@@ -1,54 +1,72 @@
 package com.quizapp.quizApp.model.beans;
 
-
-
-import com.quizapp.quizApp.model.iterator.AnswerIterator;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 
-import java.util.Iterator;
 import java.util.List;
-import com.quizapp.quizApp.model.iterator.Container;
+import java.util.UUID;
 
 @Entity
-@Table(name = "QUESTION")
-@Getter
-@Setter
-@AllArgsConstructor
+@Table(name = "questions")
+@Data
 @NoArgsConstructor
-public class Question implements Container{
+public class Question {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id_question", updatable = false, nullable = false, unique = true)
+    private UUID id;
 
-    @Column(name = "label", length = 60, nullable = false)
+    @NotBlank(message = "Le libellé de la question est obligatoire.")
+    @Column(name = "label", nullable = false)
     private String label;
 
-    @Column(name= "isActive", nullable = false)
-    private boolean isActive;
+    @NotNull
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = false; // Valeur par défaut : inactif à la création
 
-    @Column(name= "position", nullable = false)
-    private int position;
+    @Column(name = "position")
+    private Integer position = null; // Par défaut, aucune position définie
 
-    @OneToOne
-    @JoinColumn(name = "correct_answer_id", nullable = false)
-    private Answer correctAnswer;
-
-    @OneToMany(mappedBy="question",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Answer> possibleAnswers;
-
+    //@ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne
-    @JoinColumn(name = "quiz_id", nullable = false)// Clé étrangère vers Quiz
-    private Quiz quiz;
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz; // Association au Quiz parent
 
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<Answer> answers; // Liste de réponses associées
 
-    @Override
-    public AnswerIterator getIterator(){
-        return new AnswerIterator(possibleAnswers);
+    /**
+     * Détermine si une question peut être activée.
+     * La position doit être définie et le quiz parent doit exister.
+     */
+    public boolean canBeActivated() {
+        return this.position != null && this.quiz != null;
     }
 
+    /**
+     * Active la question en validant les conditions requises.
+     */
+    public void activate() {
+        if (canBeActivated()) {
+            this.isActive = true;
+        } else {
+            throw new IllegalStateException("Impossible d'activer la question : position ou quiz manquant.");
+        }
+    }
+
+    /**
+     * Désactive la question et réinitialise la position.
+     */
+    public void deactivate() {
+        this.isActive = false;
+        this.position = null; // Réinitialise la position si désactivée
+    }
 }
