@@ -2,8 +2,10 @@ package com.quizapp.quizApp.config;
 
 import com.quizapp.quizApp.model.beans.Answer;
 import com.quizapp.quizApp.model.beans.Quiz;
+import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.dto.AnswerDTO;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
+import com.quizapp.quizApp.model.dto.response.UserResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,9 @@ public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
+
+        // Mapping User -> UserResponseDTO
+        modelMapper.typeMap(User.class, UserResponseDTO.class);
 
         // Mapping explicite entre QuizCreateDTO et Quiz
         modelMapper.addMappings(new PropertyMap<QuizCreateDTO, Quiz>() {

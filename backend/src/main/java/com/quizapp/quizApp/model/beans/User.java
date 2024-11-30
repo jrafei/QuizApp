@@ -55,7 +55,7 @@ public class User {
 
     @NotNull
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private Boolean isActive;
 
     @NotNull
     @Enumerated(EnumType.STRING)

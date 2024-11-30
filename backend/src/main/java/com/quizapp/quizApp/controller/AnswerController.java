@@ -1,7 +1,7 @@
 package com.quizapp.quizApp.controller;
 
 import com.quizapp.quizApp.model.dto.AnswerDTO;
-import com.quizapp.quizApp.service.AnswerService;
+import com.quizapp.quizApp.service.interfac.AnswerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +56,13 @@ public class AnswerController {
             @RequestBody AnswerDTO answerDTO) {
         return ResponseEntity.ok(answerService.updateAnswer(id, answerDTO));
     }
+
+    @PatchMapping("/{id}/set-correct")
+    public ResponseEntity<Void> setCorrectAnswer(@PathVariable UUID id) {
+        answerService.setCorrectAnswer(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAnswer(@PathVariable UUID id) {

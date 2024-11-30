@@ -33,7 +33,7 @@ public class Quiz {
 
     @NotNull
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = false; // Valeur par défaut
+    private Boolean isActive = false; // Valeur par défaut
 
     @Column(name = "position", nullable = true)
     private Integer position; // Ordre du quiz dans un thème

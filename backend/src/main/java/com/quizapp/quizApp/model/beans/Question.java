@@ -28,7 +28,7 @@ public class Question {
 
     @NotNull
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = false; // Valeur par défaut : inactif à la création
+    private Boolean isActive = false; // Valeur par défaut : inactif à la création
 
     @Column(name = "position")
     private Integer position = null; // Par défaut, aucune position définie

@@ -9,7 +9,7 @@ import java.util.UUID;
 public class QuestionDTO {
     private UUID id;
     private String label;
-    private boolean isActive;
+    private Boolean isActive;
     private Integer position; // Position dans le quiz si active
     private UUID quizId; // Référence au Quiz parent
     private List<AnswerDTO> answers; // Liste de réponses associées

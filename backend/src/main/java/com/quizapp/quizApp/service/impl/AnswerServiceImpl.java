@@ -4,7 +4,7 @@ import com.quizapp.quizApp.model.beans.Answer;
 import com.quizapp.quizApp.model.beans.Question;
 import com.quizapp.quizApp.model.dto.AnswerDTO;
 import com.quizapp.quizApp.repository.AnswerRepository;
-import com.quizapp.quizApp.service.AnswerService;
+import com.quizapp.quizApp.service.interfac.AnswerService;
 import com.quizapp.quizApp.repository.QuestionRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -102,10 +102,21 @@ public class AnswerServiceImpl implements AnswerService {
         System.out.println("Récupération associated question ok");
         System.out.println("Associated Question ID: " + (existingAnswer.getQuestion() != null ? existingAnswer.getQuestion().getId() : "null"));
 
+        System.out.println("Checking existence for label: " + answerDTO.getLabel() +
+                ", questionId: " + existingAnswer.getQuestion().getId() +
+                ", excluding id: " + id);
+
         // Vérifie si une autre réponse avec le même intitulé existe
         if (answerDTO.getLabel() != null &&
-                answerRepository.existsByLabelAndQuestionIdAndIdNot(answerDTO.getLabel(), answerDTO.getQuestionId(), id)) {
+                answerRepository.existsByLabelAndQuestionIdAndIdNot(answerDTO.getLabel(), existingAnswer.getQuestion().getId(), id)) {
             throw new IllegalArgumentException("Une réponse avec le même intitulé existe déjà pour cette question.");
+        }
+
+        // Vérifie s'il existe déjà une réponse correcte et active pour cette question
+        boolean hasActiveCorrectAnswer = answerRepository.existsByQuestionIdAndCorrectTrueAndIsActiveTrue(existingAnswer.getQuestion().getId());
+        if (answerDTO.getIsCorrect() != null && answerDTO.getIsActive() != null &&
+                answerDTO.getIsCorrect() && answerDTO.getIsActive() && hasActiveCorrectAnswer) {
+            throw new IllegalArgumentException("Une seule réponse correcte et active est autorisée par question.");
         }
 
         // Vérifier que la modification de la position est cohérente
@@ -139,6 +150,23 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    public void setCorrectAnswer(UUID id) {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
+
+        // Vérifie s'il existe déjà une réponse correcte et active pour cette question
+        boolean hasActiveCorrectAnswer = answerRepository.existsByQuestionIdAndCorrectTrueAndIsActiveTrue(answer.getQuestion().getId());
+        if (hasActiveCorrectAnswer) {
+            throw new IllegalArgumentException("Une seule réponse correcte et active est autorisée par question.");
+        }
+
+        answer.setCorrect(true);
+        answer.setIsActive(true); // Rendre la réponse active en même temps
+        answerRepository.save(answer);
+    }
+
+
+    @Override
     public void deleteAnswer(UUID id) {
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
@@ -151,6 +179,13 @@ public class AnswerServiceImpl implements AnswerService {
     public void activateAnswer(UUID id) {
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
+
+        // Vérifie s'il existe déjà une réponse correcte et active pour cette question
+        boolean hasActiveCorrectAnswer = answerRepository.existsByQuestionIdAndCorrectTrueAndIsActiveTrue(answer.getQuestion().getId());
+        if (answer.getCorrect() && hasActiveCorrectAnswer) {
+            throw new IllegalArgumentException("Une seule réponse correcte et active est autorisée par question.");
+        }
+
         if (answer.getPosition() == null) {
             List<Answer> activeAnswers = answerRepository.findAllByQuestionIdAndIsActiveTrueOrderByPosition(
                     answer.getQuestion().getId());
@@ -179,13 +214,22 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     private void validatePositionChange(UUID questionId, int newPosition) {
-        // Récupérer toutes les réponses actives pour cette question
+        // Récupérer toutes les réponses actives pour cette question, triées par position
         List<Answer> activeAnswers = answerRepository.findAllByQuestionIdAndIsActiveTrueOrderByPosition(questionId);
 
-        // Vérifie que la position demandée est valide (entre 1 et la taille actuelle + 1)
-        if (newPosition < 1 || newPosition > activeAnswers.size() + 1) {
-            throw new IllegalArgumentException("La position demandée est incohérente avec l'ordre actuel.");
+        // Vérifie que la position demandée est comprise dans la plage valide
+        if (newPosition < 1 || newPosition > activeAnswers.size()) {
+            throw new IllegalArgumentException("La position demandée est incohérente avec l'ordre actuel des réponses actives.");
+        }
+
+        // Vérifie que la nouvelle position ne casse pas la continuité logique
+        for (int i = 0; i < activeAnswers.size(); i++) {
+            int expectedPosition = i + 1; // Les positions doivent être séquentielles
+            if (activeAnswers.get(i).getPosition() != expectedPosition && expectedPosition != newPosition) {
+                throw new IllegalArgumentException("La modification de la position casse l'ordre séquentiel des réponses actives.");
+            }
         }
     }
+
 
 }

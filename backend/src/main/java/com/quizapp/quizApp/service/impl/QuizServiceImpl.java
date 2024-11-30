@@ -1,12 +1,12 @@
 package com.quizapp.quizApp.service.impl;
 
 import com.quizapp.quizApp.exception.QuizNotFoundException;
+import com.quizapp.quizApp.model.beans.Answer;
+import com.quizapp.quizApp.model.beans.Question;
 import com.quizapp.quizApp.model.beans.Quiz;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
-import com.quizapp.quizApp.repository.QuizRepository;
-import com.quizapp.quizApp.repository.UserRepository;
-import com.quizapp.quizApp.repository.ThemeRepository;
+import com.quizapp.quizApp.repository.*;
 import com.quizapp.quizApp.service.interfac.QuizService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,6 +25,8 @@ public class QuizServiceImpl implements QuizService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final ThemeRepository themeRepository;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
 
     private void reorganizePositions(UUID themeId) {
         // Récupérer les quiz actifs triés par position
@@ -67,7 +69,7 @@ public class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> new RuntimeException("Thème non trouvé avec l'ID : " + quizCreateDTO.getThemeId())));
 
         // Définir la position uniquement si le quiz est actif
-        quiz.setActive(false); // Par défaut, le quiz est inactif
+        quiz.setIsActive(false); // Par défaut, le quiz est inactif
         quiz.setPosition(null); // Position par défaut pour les quiz inactifs
 
         // Sauvegarder le quiz
@@ -92,81 +94,6 @@ public class QuizServiceImpl implements QuizService {
                 .map(quiz -> modelMapper.map(quiz, QuizResponseDTO.class))
                 .toList();
     }
-
-//    @Override
-//    public QuizResponseDTO updateQuiz(UUID id, QuizCreateDTO quizCreateDTO) {
-//        //debug
-//        System.out.println("QuizCreateDTO received: " + quizCreateDTO);
-//        // Vérification de la position
-//        if (quizCreateDTO.getPosition() != null) {
-//            System.out.println("New position: " + quizCreateDTO.getPosition());
-//        }
-//
-//        Quiz quiz = quizRepository.findById(id)
-//                .orElseThrow(() -> new QuizNotFoundException("Quiz non trouvé avec l'ID : " + id));
-//
-//        UUID themeId = quiz.getTheme().getId();
-//
-//        // Vérification de l'unicité du titre dans le thème
-//        if (quizCreateDTO.getName() != null && !quizCreateDTO.getName().isBlank()) {
-//            boolean nameExists = quizRepository.existsByNameAndThemeId(quizCreateDTO.getName(), themeId);
-//            if (!quiz.getName().equals(quizCreateDTO.getName()) && nameExists) {
-//                throw new IllegalArgumentException("Un quiz avec le nom '" + quizCreateDTO.getName() + "' existe déjà dans ce thème.");
-//            }
-//            quiz.setName(quizCreateDTO.getName());
-//        }
-//
-//        // Vérification de la position si elle est spécifiée
-//        if (quizCreateDTO.getPosition() != null) {
-//            int newPosition = quizCreateDTO.getPosition();
-//
-//            // Récupérer tous les quiz actifs du thème, triés par position
-//            List<Quiz> activeQuizzes = quizRepository.findByThemeIdAndIsActive(themeId, true)
-//                    .stream()
-//                    .sorted(Comparator.comparingInt(Quiz::getPosition))
-//                    .toList();
-//
-//            //debug
-//            System.out.println("Active quizzes sorted by position: " + activeQuizzes);
-//
-//            // Vérifier l'unicité de la nouvelle position
-//            boolean positionExists = activeQuizzes.stream()
-//                    .anyMatch(q -> q.getPosition() == newPosition && !q.getId().equals(quiz.getId()));
-//            if (positionExists) {
-//                throw new IllegalArgumentException("L'ordre " + newPosition + " est déjà utilisé par un autre quiz actif.");
-//            }
-//
-//            // Vérifier la cohérence des positions après mise à jour
-//            List<Integer> positions = activeQuizzes.stream()
-//                    .filter(q -> !q.getId().equals(quiz.getId())) // Exclure le quiz en cours de modification
-//                    .map(Quiz::getPosition)
-//                    .toList();
-//            positions.add(newPosition); // Ajouter la nouvelle position proposée
-//            positions.sort(Integer::compareTo);
-//
-//            for (int i = 0; i < positions.size(); i++) {
-//                if (positions.get(i) != i + 1) {
-//                    throw new IllegalArgumentException("Les positions des quiz actifs dans ce thème ne respectent pas une numérotation continue.");
-//                }
-//            }
-//
-//            // Attribuer la nouvelle position si toutes les vérifications passent
-//            quiz.setPosition(newPosition);
-//        }
-//
-//        // debug
-//        // Avant d'enregistrer le quiz mis à jour
-//        System.out.println("Saving quiz with updated position: " + quiz.getPosition());
-//
-//
-//        // Sauvegarder les modifications
-//        Quiz updatedQuiz = quizRepository.save(quiz);
-//
-//        // debug
-//        System.out.println("Saved quiz: " + updatedQuiz);
-//
-//        return modelMapper.map(updatedQuiz, QuizResponseDTO.class);
-//    }
 
     @Override
     public QuizResponseDTO updateQuiz(UUID id, QuizCreateDTO quizCreateDTO) {
@@ -209,6 +136,11 @@ public class QuizServiceImpl implements QuizService {
         UUID themeId = quiz.getTheme().getId();
 
         if (isActive) {
+            // Vérifier si toutes les questions actives du quiz sont valides
+            if (!areAllActiveQuestionsValid(id)) {
+                throw new IllegalArgumentException("Le quiz ne peut pas être activé car certaines questions actives ne sont pas valides.");
+            }
+
             // Si la position actuelle est en conflit ou n'existe pas, attribuer une nouvelle position
             if (quiz.getPosition() == null || quizRepository.findByThemeIdAndIsActive(themeId, true)
                     .stream()
@@ -218,7 +150,7 @@ public class QuizServiceImpl implements QuizService {
         } else {
             // Désactiver le quiz
             quiz.setPosition(null);
-            quiz.setActive(false);
+            quiz.setIsActive(false);
 
             // Sauvegarder le quiz avant de réorganiser les positions
             quizRepository.save(quiz);
@@ -227,10 +159,11 @@ public class QuizServiceImpl implements QuizService {
             reorganizePositions(themeId);
         }
 
-        quiz.setActive(isActive);
+        quiz.setIsActive(isActive);
         Quiz updatedQuiz = quizRepository.save(quiz);
         return modelMapper.map(updatedQuiz, QuizResponseDTO.class);
     }
+
 
     @Override
     public void deleteQuiz(UUID id) {
@@ -261,4 +194,27 @@ public class QuizServiceImpl implements QuizService {
                 .map(quiz -> modelMapper.map(quiz, QuizResponseDTO.class))
                 .toList();
     }
+
+    private boolean areAllActiveQuestionsValid(UUID quizId) {
+        List<Question> activeQuestions = questionRepository.findAllByQuizIdAndIsActiveTrue(quizId);
+
+        // Vérifier que chaque question active a au moins 2 réponses actives et une seule vraie
+        for (Question question : activeQuestions) {
+            List<Answer> activeAnswers = answerRepository.findAllByQuestionIdAndIsActiveTrue(question.getId());
+
+            // Vérifier qu'il y a au moins deux réponses actives
+            if (activeAnswers.size() < 2) {
+                return false;
+            }
+
+            // Vérifier qu'il y a une seule réponse vraie
+            long correctAnswerCount = activeAnswers.stream().filter(Answer::getCorrect).count();
+            if (correctAnswerCount != 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

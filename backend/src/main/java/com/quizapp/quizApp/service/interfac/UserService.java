@@ -13,7 +13,7 @@ public interface UserService {
 
     UserResponseDTO createUser(UserCreateDTO user);
 
-    List<User> getAllUsers();
+    List<UserResponseDTO> getAllUsers();
 
     String deleteUser(UUID id);
 

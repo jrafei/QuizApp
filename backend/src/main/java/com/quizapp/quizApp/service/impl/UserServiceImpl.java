@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -28,29 +29,58 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO userCreateDTO) {
-        userCreateDTO.setEmail(userCreateDTO.getEmail().toLowerCase());
-        passwordValidator.validate(userCreateDTO.getPassword());
-
-        if (userRepository.findByEmail(userCreateDTO.getEmail()).isPresent()) {
-            throw new DuplicateEmailException("L'email " + userCreateDTO.getEmail() + " est déjà utilisé.");
+        // Vérification explicite des champs obligatoires
+        if (userCreateDTO.getFirstname() == null || userCreateDTO.getFirstname().isBlank()) {
+            throw new IllegalArgumentException("Le prénom est obligatoire.");
         }
-
-        User.Role role = userCreateDTO.getRole();
-        if (role == null) {
+        if (userCreateDTO.getLastname() == null || userCreateDTO.getLastname().isBlank()) {
+            throw new IllegalArgumentException("Le nom est obligatoire.");
+        }
+        if (userCreateDTO.getEmail() == null || userCreateDTO.getEmail().isBlank()) {
+            throw new IllegalArgumentException("L'email est obligatoire.");
+        }
+        if (userCreateDTO.getPassword() == null || userCreateDTO.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Le mot de passe est obligatoire.");
+        }
+        if (userCreateDTO.getRole() == null) {
             throw new IllegalArgumentException("Le rôle est obligatoire.");
         }
 
-        User user = modelMapper.map(userCreateDTO, User.class);
-        user.setActive(false);
+        // Validation du mot de passe
+        passwordValidator.validate(userCreateDTO.getPassword());
+
+        // Vérifier si l'email est déjà utilisé
+        if (userRepository.findByEmail(userCreateDTO.getEmail().toLowerCase()).isPresent()) {
+            throw new DuplicateEmailException("L'email " + userCreateDTO.getEmail() + " est déjà utilisé.");
+        }
+
+        // Mapper le DTO vers l'entité User
+        User user = new User();
+        user.setFirstname(userCreateDTO.getFirstname());
+        user.setLastname(userCreateDTO.getLastname());
+        user.setEmail(userCreateDTO.getEmail().toLowerCase());
+        user.setPassword(userCreateDTO.getPassword());
+        user.setRole(userCreateDTO.getRole());
+        user.setIsActive(false); // Par défaut inactif
+        user.setCompany(userCreateDTO.getCompany()); // Optionnel
+        user.setPhone(userCreateDTO.getPhone()); // Optionnel
+
+        // Sauvegarder l'utilisateur
         User savedUser = userRepository.save(user);
 
+        // Retourner l'utilisateur créé en tant que DTO
         return modelMapper.map(savedUser, UserResponseDTO.class);
     }
 
+
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> modelMapper.map(user, UserResponseDTO.class))
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public Optional<User> getUserById(UUID id) {
@@ -65,36 +95,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO updatePartialUser(UUID id, UserUpdateDTO userUpdateDTO) {
+        // Récupérer l'utilisateur existant
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'id : " + id));
 
-        if (userUpdateDTO.getFirstname() != null) {
-            user.setFirstname(userUpdateDTO.getFirstname());
-        }
-        if (userUpdateDTO.getLastname() != null) {
-            user.setLastname(userUpdateDTO.getLastname());
-        }
-        if (userUpdateDTO.getEmail() != null) {
-            user.setEmail(userUpdateDTO.getEmail());
-        }
-        if (userUpdateDTO.getPassword() != null) {
-            passwordValidator.validate(userUpdateDTO.getPassword());
-            user.setPassword(userUpdateDTO.getPassword());
-        }
-        if (userUpdateDTO.getPhone() != null) {
-            user.setPhone(userUpdateDTO.getPhone());
-        }
-        if (userUpdateDTO.getCompany() != null) {
-            user.setCompany(userUpdateDTO.getCompany());
-        }
-        if (userUpdateDTO.getRole() != null) {
-            user.setRole(userUpdateDTO.getRole());
-        }
-        if (userUpdateDTO.getIsActive() != null) {
-            user.setActive(userUpdateDTO.getIsActive());
-        }
+        // Vérifier et mettre à jour uniquement les champs non nuls dans le DTO
+        Optional.ofNullable(userUpdateDTO.getFirstname()).ifPresent(user::setFirstname);
+        Optional.ofNullable(userUpdateDTO.getLastname()).ifPresent(user::setLastname);
+        Optional.ofNullable(userUpdateDTO.getEmail()).ifPresent(email -> {
+            // Valider que l'email est unique
+            if (userRepository.findByEmail(email).isPresent() && !user.getEmail().equals(email)) {
+                throw new DuplicateEmailException("L'email " + email + " est déjà utilisé.");
+            }
+            user.setEmail(email.toLowerCase());
+        });
+        Optional.ofNullable(userUpdateDTO.getPassword()).ifPresent(password -> {
+            passwordValidator.validate(password);
+            user.setPassword(password);
+        });
+        Optional.ofNullable(userUpdateDTO.getPhone()).ifPresent(user::setPhone);
+        Optional.ofNullable(userUpdateDTO.getCompany()).ifPresent(user::setCompany);
+        Optional.ofNullable(userUpdateDTO.getRole()).ifPresent(user::setRole);
+        Optional.ofNullable(userUpdateDTO.getIsActive()).ifPresent(user::setIsActive);
 
+        // Sauvegarder l'utilisateur mis à jour
         User updatedUser = userRepository.save(user);
+
+        // Retourner l'utilisateur mis à jour en DTO
         return modelMapper.map(updatedUser, UserResponseDTO.class);
     }
 
@@ -102,7 +129,7 @@ public class UserServiceImpl implements UserService {
     public String setActiveStatus(UUID id, boolean status) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
-        user.setActive(status);
+        user.setIsActive(status);
         userRepository.save(user);
         return status ? "Utilisateur activé" : "Utilisateur désactivé";
     }

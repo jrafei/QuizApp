@@ -32,7 +32,7 @@ public class ThemeServiceImpl implements ThemeService {
         }
 
         Theme theme = modelMapper.map(themeCreateDTO, Theme.class);
-        theme.setActive(true);
+        theme.setIsActive(true);
         Theme savedTheme = themeRepository.save(theme);
         return modelMapper.map(savedTheme, ThemeResponseDTO.class);
     }
@@ -68,12 +68,12 @@ public class ThemeServiceImpl implements ThemeService {
             System.out.println("Titre mis à jour : " + theme.getTitle());
         }
         if (themeUpdateDTO.getIsActive() != null) {
-            theme.setActive(themeUpdateDTO.getIsActive());
-            System.out.println("Statut actif mis à jour : " + theme.isActive());
+            theme.setIsActive(themeUpdateDTO.getIsActive());
+            System.out.println("Statut actif mis à jour : " + theme.getIsActive());
         }
 
         Theme updatedTheme = themeRepository.save(theme);
-        System.out.println("Thème sauvegardé : " + updatedTheme.isActive());
+        System.out.println("Thème sauvegardé : " + updatedTheme.getIsActive());
         return modelMapper.map(updatedTheme, ThemeResponseDTO.class);
     }
 
@@ -87,10 +87,10 @@ public class ThemeServiceImpl implements ThemeService {
     }
 
     @Override
-    public ThemeResponseDTO setActiveStatus(UUID id, boolean status) {
+    public ThemeResponseDTO setActiveStatus(UUID id, Boolean status) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new ThemeNotFoundException("Thème non trouvé avec l'id : " + id));
-        theme.setActive(status);
+        theme.setIsActive(status);
         Theme updatedTheme = themeRepository.save(theme);
         return modelMapper.map(updatedTheme, ThemeResponseDTO.class);
     }

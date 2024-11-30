@@ -13,5 +13,5 @@ import lombok.*;
 public class ThemeResponseDTO {
     private String id;
     private String title;
-    private boolean isActive;
+    private Boolean isActive;
 }

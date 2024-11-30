@@ -11,4 +11,8 @@ import java.util.UUID;
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
     List<Question> findAllByQuizIdAndIsActiveTrueOrderByPosition(UUID quizId);
     List<Question> findAllByQuizIdOrderByPosition(UUID quizId);
+    boolean existsByLabelAndQuizId(String label, UUID quizId);
+    boolean existsByLabelAndQuizIdAndIdNot(String label, UUID quizId, UUID id);
+
+    List<Question> findAllByQuizIdAndIsActiveTrue(UUID quizId);
 }

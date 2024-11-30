@@ -9,7 +9,7 @@ import java.util.UUID;
 public class QuizResponseDTO {
     private UUID id;
     private String name;
-    private boolean isActive;
+    private Boolean isActive;
     private Integer position;
     private LocalDateTime creationDate;
     private UUID creatorId;

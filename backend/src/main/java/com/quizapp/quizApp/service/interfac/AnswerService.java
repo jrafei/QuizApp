@@ -1,4 +1,4 @@
-package com.quizapp.quizApp.service;
+package com.quizapp.quizApp.service.interfac;
 
 import com.quizapp.quizApp.model.dto.AnswerDTO;
 
@@ -18,6 +18,8 @@ public interface AnswerService {
     AnswerDTO createAnswer(AnswerDTO answerDTO);
 
     AnswerDTO updateAnswer(UUID id, AnswerDTO answerDTO);
+
+    void setCorrectAnswer(UUID id);
 
     void deleteAnswer(UUID id);
 

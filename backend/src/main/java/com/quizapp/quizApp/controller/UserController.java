@@ -31,10 +31,11 @@ public class UserController {
 
     // Récupération de tous les utilisateurs
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users); // Retourne une liste avec un code 200 OK
+    public ResponseEntity<List<UserResponseDTO>> getUsers() {
+        List<UserResponseDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users); // Retourne une liste concise avec un code 200 OK
     }
+
 
     // Récupération d'un utilisateur par son ID
     @GetMapping("/{id}")

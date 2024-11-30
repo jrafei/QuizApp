@@ -23,4 +23,7 @@ public interface AnswerRepository extends JpaRepository<Answer, UUID> {
     boolean existsByLabelAndQuestionId(String label, UUID questionId);
     boolean existsByLabelAndQuestionIdAndIdNot(String label, UUID questionId, UUID id);
 
+    boolean existsByQuestionIdAndCorrectTrueAndIsActiveTrue(UUID id);
+
+    List<Answer> findAllByQuestionIdAndIsActiveTrue(UUID id);
 }

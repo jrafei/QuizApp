@@ -55,5 +55,5 @@ public interface ThemeService {
      * @param status Nouveau statut d'activation.
      * @return DTO du thème mis à jour.
      */
-    ThemeResponseDTO setActiveStatus(UUID id, boolean status);
+    ThemeResponseDTO setActiveStatus(UUID id, Boolean status);
 }
