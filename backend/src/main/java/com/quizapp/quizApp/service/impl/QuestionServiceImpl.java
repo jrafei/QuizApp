@@ -62,21 +62,51 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public QuestionDTO createQuestion(QuestionDTO questionDTO) {
+        System.out.println("Received QuestionDTO: {}" + questionDTO);
+
         // Vérifie si l'ID du quiz est valide
         if (!quizRepository.existsById(questionDTO.getQuizId())) {
             throw new IllegalArgumentException("L'ID du quiz spécifié est invalide ou introuvable.");
         }
+        System.out.println("Quiz ID is valid: {}" + questionDTO.getQuizId());
 
         // Vérifie si une question avec le même libellé existe déjà dans le quiz
         if (questionRepository.existsByLabelAndQuizId(questionDTO.getLabel(), questionDTO.getQuizId())) {
             throw new IllegalArgumentException("Une question avec le même libellé existe déjà dans ce quiz.");
         }
+        System.out.println("Question label is unique for the quiz.");
 
         Question question = modelMapper.map(questionDTO, Question.class);
+        System.out.println("Mapped Question entity: {}" +  question);
+
         question.setIsActive(false); // Par défaut
         question.setPosition(null); // Par défaut
 
+        // Ajouter les réponses si présentes
+        if (questionDTO.getAnswers() != null && !questionDTO.getAnswers().isEmpty()) {
+            List<Answer> answers = questionDTO.getAnswers().stream()
+                    .map(answerDTO -> {
+                        Answer answer = modelMapper.map(answerDTO, Answer.class);
+                        answer.setQuestion(question); // Associer la réponse à la question
+
+                        // Définir une valeur par défaut pour isActive
+                        if (answer.getIsActive() == null) {
+                            answer.setIsActive(false);
+                        }
+                        // Définir une valeur par défaut pour isCorrect
+                        if (answer.getCorrect() == null) {
+                            answer.setCorrect(false);
+                        }
+
+                        return answer;
+                    })
+                    .collect(Collectors.toList());
+            question.setAnswers(answers);
+        }
+        System.out.println("Final Question entity with answers: {}" + question);
+
         Question savedQuestion = questionRepository.save(question);
+        System.out.println("Saved Question entity: {}" + savedQuestion);
 
         return modelMapper.map(savedQuestion, QuestionDTO.class);
     }
