@@ -4,24 +4,82 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6a5d34e8-1d52-4d21-8cd9-f7f27892512d" name="Changes" comment="models/user" />
+    <list default="true" id="6a5d34e8-1d52-4d21-8cd9-f7f27892512d" name="Changes" comment="models/user">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/controller/QuizController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/controller/QuizController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/AnswerDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/AnswerDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/QuestionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/QuestionDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/creation/QuizCreateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/creation/QuizCreateDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/iterator/AnswerIterator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/iterator/Container.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/iterator/Iterator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/iterator/QuestionIterator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/repository/QuizRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/repository/QuizRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuizServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuizServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/interfac/QuizService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/interfac/QuizService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/interfac/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/interfac/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/QuizAppApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/config/AppConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/controller/QuizController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/controller/ThemeController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/controller/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/exception/DuplicateEmailException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/exception/GlobalExceptionHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/exception/InvalidRoleException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/Answer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/Question.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/Quiz.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/Ranking.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/Record.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/RecordAnswer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/Theme.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/User$Role.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/beans/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/dto/QuizDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/dto/UserDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/iterator/AnswerIterator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/iterator/Container.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/iterator/Iterator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/model/iterator/QuestionIterator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/repository/QuizRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/repository/ThemeRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/repository/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/service/QuizService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/service/QuizServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/service/ThemeService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/service/ThemeServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/service/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/quizapp/quizApp/service/UserServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/quizapp/quizApp/QuizAppApplicationTests.class" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
-        <option value="Exception" />
         <option value="JavaScript File" />
+        <option value="Exception" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -40,37 +98,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.Application.executor&quot;: &quot;Debug&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;17&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/33667/Documents/AI13/Projet/GIT/ai13-projet-questionnaire&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.Application.executor": "Debug",
+    "git-widget-placeholder": "imene",
+    "ignore.virus.scanning.warn.message": "true",
+    "jdk.selected.JAVA_MODULE": "17",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/33667/Documents/AI13/Projet/GIT/ai13-projet-questionnaire",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "project.propCompiler",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.quizapp.quizApp.exception" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\33667\Documents\AI13\Projet\GIT\ai13-projet-questionnaire" />
       <recent name="C:\Users\33667\Documents\AI13\Projet\GIT\ai13-projet-questionnaire\backend" />
     </key>
   </component>
@@ -124,6 +183,9 @@
       <workItem from="1732556870445" duration="3222000" />
       <workItem from="1732619876990" duration="2950000" />
       <workItem from="1732649281983" duration="1112000" />
+      <workItem from="1732810403897" duration="17247000" />
+      <workItem from="1732878328798" duration="22493000" />
+      <workItem from="1732965409420" duration="30003000" />
     </task>
     <servers />
   </component>
@@ -144,16 +206,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="models/user" />
     <option name="LAST_COMMIT_MESSAGE" value="models/user" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/UserServiceImpl.java</url>
-          <line>21</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

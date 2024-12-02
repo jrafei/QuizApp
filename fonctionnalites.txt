@@ -1,0 +1,81 @@
+Fonctionnalités :
+
+USER :
+    - récupérer tous les users : GET http://localhost:8080/users -------- OK
+    - récupérer un user en particulier : GET http://localhost:8080/users/{id} -------- OK
+    - ajouter un user : POST http://localhost:8080/users ------- OK
+        --> exception si adresse mail déjà utilisée : OK
+        --> exception si rôle non valide : OK
+        --> exception si manque des champs obligatoires : OK
+        --> exception si mot de passe pas assez robuste : OK
+    - modifier un user : PATCH http://localhost:8080/users/{id}
+        --> exception si adresse mail déjà utilisée : OK
+        --> exception si mdp pas assez robuste : OK
+    - activer un user : PATCH http://localhost:8080/users/{id}/activate ------ OK
+    - désactiver un user : PATCH http://localhost:8080/users/{id}/deactivate ------ OK
+    - modifier le rôle d'un user : PATCH PATCH http://localhost:8080/users/{id}/role -------
+    - supprimer un user : DELETE http://localhost:8080/users/{id} ------ OK
+
+THEME :
+    - lire tous les themes : GET http://localhost:8080/themes ------- OK
+    - lire un theme par id : GET http://localhost:8080/themes/{id} -------- OK
+    - créer un theme : POST http://localhost:8080/themes ------- OK
+        --> exception si theme existe déjà : OK
+    - modifier un theme : PATCH http://localhost:8080/themes/{id} ------- OK
+        --> exception si theme existe déjà : OK
+    - activer un theme : PATCH http://localhost:8080/themes/{id}/activate ----- OK
+    - désactiver un theme : PATCH http://localhost:8080/themes/{id}/deactivate ----- OK
+    - supprimer un theme : DELETE http://localhost:8080/themes/{id} ------ OK
+
+QUIZ :
+    - lire tous les quiz : GET http://localhost:8080/quizzes ------ OK
+    - lire tous les quiz d'un theme : GET http://localhost:8080/quizzes/theme/{themeId} ------ OK
+    - lire tous les quiz actifs : GET http://localhost:8080/quizzes/status?isActive=true ------- OK
+    - créer un quiz : POST http://localhost:8080/quizzes ------- OK
+        --> exception si quiz existe déjà pour ce thème : OK
+    - modifier un quiz : PATCH http://localhost:8080/quizzes ------
+    - activer un quiz : PATCH http://localhost:8080/quizzes/{id}/activate -------- OK
+        --> réorganisation correcte de l'ordre des quiz actifs : OK
+        --> toutes les questions sont valides : OK
+    - désactiver un quiz : PATCH http://localhost:8080/quizzes/{id}/deactivate ------- OK
+        --> réorganisation correcte de l'ordre des quiz actifs : OK
+    - supprimer un quiz : DELETE http://localhost:8080/quizzes ------- OK
+        --> réorganisation correcte de l'ordre des quiz actifs restants : OK
+
+QUESTION :
+    - lire toutes les questions : GET http://localhost:8080/questions -------- OK
+    - lire toutes les questions d'un quiz : GET http://localhost:8080/questions?quizId={quizId} ------ OK
+    - créer une question pour un quiz : POST http://localhost:8080/questions ------- OK
+        --> exception si question existe déjà dans le quiz : OK
+        --> vérifie que le quiz existe bien : OK
+    - modifier une question : PATCH http://localhost:8080/questions/{id} --------
+        --> exception si question existe déjà dans le quiz :
+        --> modification de l'ordre des questions cohérent :
+    - activer une question : PATCH http://localhost:8080/questions/{id}/activate ------ Ok
+        --> réorganisation de l'ordre des questions : OK
+        --> au moins deux réponses dont une vraie : OK
+    - désactiver une question : PATCH http://localhost:8080/questions/{id}/deactivate ------- OK
+        --> réorganisation de l'ordre des questions : OK
+    - supprimer une question : DELETE http://localhost:8080/questions/{id} -------- OK
+        --> réorganisation ordre : OK
+
+REPONSE : OK
+    - lire toutes les réponses : GET http://localhost:8080/answers -------- OK
+    - lire toutes les réponses d'une question : GET http://localhost:8080/answers?questionId={questionId} ------- OK
+    - créer une réponse pour une question : POST http://localhost:8080/answers ------- OK
+        --> exception si reponse existe déjà dans le quiz : OK
+    - modifier une réponse : PUT http://localhost:8080/answers/{id} -------- OK
+        --> exception si question existe déjà dans le quiz : OK
+        --> ne modifier que les champs renseignés : OK
+        --> exception s'il existe déjà une bonne réponse dans la question : OK
+        --> modification de l'ordre des réponses cohérent : OK
+    - activer une réponse : PATCH http://localhost:8080/questions/{id}/activate ------ OK
+        --> réorganisation de l'ordre des réponses : OK
+    - désactiver une réponse : PATCH http://localhost:8080/questions/{id}/deactivate ------- OK
+        --> réorganisation de l'ordre des réponses : OK
+    - indiquer la bonne réponse à une question : PATCH http://localhost:8080/answers/{id}/set-correct -------- OK
+        --> vérifier qu'une autre réponse n'est pas déjà marquée comme bonne : OK
+    - supprimer une réponse : DELETE http://localhost:8080/questions/{id} -------- OK
+        --> réorganisation ordre : OK
+
+PARCOURS : ----------- TODO
