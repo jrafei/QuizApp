@@ -1,57 +1,73 @@
+// src/pages/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
+// Simuler une API fictive
+const login = async (email, password) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (email === "test@exemple.com" && password === "StrongPassword123!") {
+                resolve({ status: 200 });
+            } else {
+                reject(new Error("Email ou mot de passe incorrect"));
+            }
+        }, 1000);
+    });
+};
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate(); // Remplace useHistory
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage(''); // Réinitialiser le message d'erreur
         try {
-            // Simuler une requête vers l'API pour valider l'utilisateur
-            const response = await axios.post('http://localhost:8080/login', {
-                email,
-                password,
-            });
+            // Appel à la fonction de simulation d'authentification
+            const response = await login(email, password);
+            if (response.status === 200) {
+                // Stocker l'email dans localStorage
+                localStorage.setItem('userEmail', email);
 
-            // Si la réponse est réussie, stocker l'email dans localStorage
-            localStorage.setItem('userEmail', email);
-
-            // Redirection vers le tableau de bord
-            navigate('/dashboard');
-        } catch (err) {
-            // Gérer les erreurs (simule une erreur si l'email/password ne sont pas corrects)
-            setError('Email ou mot de passe incorrect.');
+                // Rediriger vers le tableau de bord
+                navigate('/dashboard');
+            }
+        } catch (error) {
+            // Gestion des erreurs d'authentification
+            setErrorMessage('Échec de l’authentification. Vérifiez vos informations.');
         }
     };
 
     return (
-        <div>
+        <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px', textAlign: 'center' }}>
             <h2>Se connecter</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <form onSubmit={handleSubmit}>
-                <div>
+                <div style={{ marginBottom: '10px' }}>
                     <label>Email</label>
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        style={{ width: '100%', padding: '8px' }}
                     />
                 </div>
-                <div>
+                <div style={{ marginBottom: '10px' }}>
                     <label>Mot de passe</label>
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        style={{ width: '100%', padding: '8px' }}
                     />
                 </div>
-                <button type="submit">Se connecter</button>
+                <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
+                    Se connecter
+                </button>
             </form>
         </div>
     );
