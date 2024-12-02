@@ -13,9 +13,9 @@ import java.util.UUID;
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, UUID> {
     List<Quiz> findByCreatorId(UUID creatorId);
-    List<Quiz> findByIsActive(boolean isActive);
+    List<Quiz> findByIsActive(Boolean isActive);
     boolean existsByNameAndThemeId(String name, UUID theme_id);
     List<Quiz> findByThemeId(UUID themeId);
 
-    List<Quiz> findByThemeIdAndIsActive(@NotNull(message = "L'ID du thème est obligatoire.") UUID themeId, boolean b);
+    List<Quiz> findByThemeIdAndIsActive(@NotNull(message = "L'ID du thème est obligatoire.") UUID themeId, Boolean b);
 }

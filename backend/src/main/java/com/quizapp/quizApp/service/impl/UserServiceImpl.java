@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String setActiveStatus(UUID id, boolean status) {
+    public String setActiveStatus(UUID id, Boolean status) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
         user.setIsActive(status);

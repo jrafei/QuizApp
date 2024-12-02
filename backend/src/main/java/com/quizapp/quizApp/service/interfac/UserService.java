@@ -21,7 +21,7 @@ public interface UserService {
 
     UserResponseDTO updatePartialUser(UUID id, UserUpdateDTO userUpdateDTO);
 
-    String setActiveStatus(UUID id, boolean status);
+    String setActiveStatus(UUID id, Boolean status);
 
     String promoteToAdmin(UUID id);
     String demoteToTrainee(UUID id);

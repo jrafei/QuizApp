@@ -1,5 +1,7 @@
 package com.quizapp.quizApp.model.dto.creation;
 
+import com.quizapp.quizApp.model.dto.QuestionDTO;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.UUID;
+import java.util.List;
 
 @Data
 public class QuizCreateDTO {
@@ -22,4 +25,6 @@ public class QuizCreateDTO {
 
     @NotNull(message = "L'ID du thème est obligatoire.")
     private UUID themeId;
+
+    private List<QuestionDTO> questions; // Liste des questions associées
 }

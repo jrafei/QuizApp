@@ -8,8 +8,8 @@ import java.util.UUID;
 public class AnswerDTO {
     private UUID id;
     private String label;
-    private Boolean isCorrect;
-    private Boolean isActive;
-    private Integer position;
+    private Boolean isCorrect = false;
+    private Boolean isActive = false;
+    private Integer position = null;
     private UUID questionId; // Référence à la Question
 }

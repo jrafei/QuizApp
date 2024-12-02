@@ -11,8 +11,8 @@ public interface QuizService {
     List<QuizResponseDTO> getAllQuizzes();
     List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId);
     QuizResponseDTO updateQuiz(UUID id, QuizCreateDTO quizCreateDTO);
-    QuizResponseDTO setActiveStatus(UUID id, boolean isActive);
+    QuizResponseDTO setActiveStatus(UUID id, Boolean isActive);
     void deleteQuiz(UUID id);
-    List<QuizResponseDTO> getQuizzesByIsActive(boolean isActive);
+    List<QuizResponseDTO> getQuizzesByIsActive(Boolean isActive);
     List<QuizResponseDTO> getQuizzesByTheme(UUID themeId);
 }

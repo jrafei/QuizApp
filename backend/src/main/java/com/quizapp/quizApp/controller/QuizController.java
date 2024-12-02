@@ -30,7 +30,7 @@ public class QuizController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<List<QuizResponseDTO>> getQuizzesByIsActive(@RequestParam boolean isActive) {
+    public ResponseEntity<List<QuizResponseDTO>> getQuizzesByIsActive(@RequestParam Boolean isActive) {
         List<QuizResponseDTO> quizzes = quizService.getQuizzesByIsActive(isActive);
         return ResponseEntity.ok(quizzes); // 200 OK
     }
