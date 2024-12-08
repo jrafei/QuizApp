@@ -13,7 +13,7 @@ USER :
         --> exception si mdp pas assez robuste : OK
     - activer un user : PATCH http://localhost:8080/users/{id}/activate ------ OK
     - désactiver un user : PATCH http://localhost:8080/users/{id}/deactivate ------ OK
-    - modifier le rôle d'un user : PATCH PATCH http://localhost:8080/users/{id}/role -------
+    - modifier le rôle d'un user : PATCH PATCH http://localhost:8080/users/{id}/role?role=admin ------- OK
     - supprimer un user : DELETE http://localhost:8080/users/{id} ------ OK
 
 THEME :
@@ -33,6 +33,7 @@ QUIZ :
     - lire tous les quiz actifs : GET http://localhost:8080/quizzes/status?isActive=true ------- OK
     - créer un quiz : POST http://localhost:8080/quizzes ------- OK
         --> exception si quiz existe déjà pour ce thème : OK
+        --> créer un quiz avec toutes ses questions/réponses : OK
     - modifier un quiz : PATCH http://localhost:8080/quizzes ------
     - activer un quiz : PATCH http://localhost:8080/quizzes/{id}/activate -------- OK
         --> réorganisation correcte de l'ordre des quiz actifs : OK
@@ -79,3 +80,8 @@ REPONSE : OK
         --> réorganisation ordre : OK
 
 PARCOURS : ----------- TODO
+    - Ajout d'un Record  : POST http://localhost:8080/records ------------------> OK
+        -> pas nécessaire d'ajouter un attribut score dans la requete, l'api calcule son score en fonction de son liste des réponses
+        -> calcul de durée de passage TODO
+
+    - lire toutes les parcours : GET http://localhost:8080/answers --------------> OK

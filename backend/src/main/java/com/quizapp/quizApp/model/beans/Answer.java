@@ -42,6 +42,8 @@ public class Answer {
     @ToString.Exclude
     private Question question; // Association à une Question parent
 
+
+
     /**
      * Détermine si une réponse peut être activée.
      */
@@ -66,5 +68,9 @@ public class Answer {
     public void deactivate() {
         this.isActive = false;
         this.position = null; // Réinitialise la position si désactivée
+    }
+
+    public boolean isCorrect() {
+        return this.correct;
     }
 }

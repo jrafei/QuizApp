@@ -36,6 +36,7 @@ public class Question {
     //@ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne
     @JoinColumn(name = "quiz_id", nullable = false)
+    @JsonManagedReference
     private Quiz quiz; // Association au Quiz parent
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -68,5 +69,13 @@ public class Question {
     public void deactivate() {
         this.isActive = false;
         this.position = null; // Réinitialise la position si désactivée
+    }
+
+    /*
+    ajoute une réponse à la liste des réponses possible
+     */
+    public void addAnswer(Answer answer){
+        answer.setQuestion(this);
+        this.answers.add(answer);
     }
 }

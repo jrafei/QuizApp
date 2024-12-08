@@ -1,6 +1,7 @@
 package com.quizapp.quizApp.model.beans;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,6 +52,7 @@ public class Quiz {
     private Theme theme; // Relation avec le thème
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Question> questions; // Liste des questions associées
 
     @CreationTimestamp
