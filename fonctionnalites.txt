@@ -84,4 +84,5 @@ PARCOURS : ----------- TODO
         -> pas nécessaire d'ajouter un attribut score dans la requete, l'api calcule son score en fonction de son liste des réponses
         -> calcul de durée de passage TODO
 
-    - lire toutes les parcours : GET http://localhost:8080/answers --------------> OK
+    - lire toutes les parcours : GET http://localhost:8080/records/{id_user}/stats/quizs --------------> OK
+    - lire toutes les parcours : GET http://localhost:8080/records/{id_user}/stats/themes --------------> OK

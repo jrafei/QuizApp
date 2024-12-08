@@ -4,6 +4,8 @@ import com.quizapp.quizApp.model.beans.*;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
+import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
+import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
 import com.quizapp.quizApp.repository.AnswerRepository;
 import com.quizapp.quizApp.repository.QuizRepository;
 import com.quizapp.quizApp.repository.RecordRepository;
@@ -12,9 +14,8 @@ import com.quizapp.quizApp.service.interfac.RecordService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -108,6 +109,53 @@ public class RecordServiceImpl implements RecordService {
         )).toList();
     }
 
+    @Override
+    public List<UserQuizStatsDTO> getUserStatsByQuiz(UUID userId) {
+        // Vérification si l'utilisateur existe
+        User trainee = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
 
 
+        // Utilisation de la méthode générée automatiquement
+        List<Record> records = recordRepository.findByTraineeId(userId);
+
+
+        // Grouper par quiz et calculer les scores et durées
+        Map<String, List<Record>> recordsByQuiz = records.stream()
+                .collect(Collectors.groupingBy(record -> record.getQuiz().getName()));
+
+        // Transformer les résultats en DTO
+        return recordsByQuiz.entrySet().stream().map(entry -> {
+            String quizName = entry.getKey();
+            List<Record> quizRecords = entry.getValue();
+
+            int totalScore = quizRecords.stream().mapToInt(Record::getScore).sum();
+            int totalDuration = quizRecords.stream().mapToInt(Record::getDuration).sum();
+
+            return new UserQuizStatsDTO(quizName, totalScore, totalDuration, trainee.getEmail());
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserThemeStatsDTO> getUserStatsByTheme(UUID userId) {
+        // Récupérer tous les records pour cet utilisateur
+        List<Record> records = recordRepository.findByTraineeId(userId);
+
+        // Grouper par thème et calculer les scores et durées
+        Map<String, List<Record>> recordsByTheme = records.stream()
+                .collect(Collectors.groupingBy(record -> record.getQuiz().getTheme().getTitle()));
+
+        // Transformer les résultats en DTO
+        return recordsByTheme.entrySet().stream().map(entry -> {
+            String themeName = entry.getKey();
+            List<Record> themeRecords = entry.getValue();
+
+            int totalScore = themeRecords.stream().mapToInt(Record::getScore).sum();
+            int totalDuration = themeRecords.stream().mapToInt(Record::getDuration).sum();
+
+            return new UserThemeStatsDTO(themeName, totalScore, totalDuration);
+        }).collect(Collectors.toList());
+    }
 }
+
+

@@ -10,10 +10,12 @@ import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
+import lombok.*;
 
 @Entity
 @Table(name = "themes")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Theme {
@@ -34,4 +36,5 @@ public class Theme {
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Quiz> quizzes; // Liste des Quiz associés
+
 }
