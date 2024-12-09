@@ -59,10 +59,7 @@ public class QuizServiceImpl implements QuizService {
         // Debug
         System.out.println("Received QuizCreateDTO: " + quizCreateDTO);
 
-        // Vérifier si un quiz avec le même nom existe déjà dans le thème
-        if (quizRepository.existsByNameAndThemeId(quizCreateDTO.getName(), quizCreateDTO.getThemeId())) {
-            throw new IllegalArgumentException("Un quiz avec le nom '" + quizCreateDTO.getName() + "' existe déjà dans ce thème.");
-        }
+
 
         // Mapper le DTO vers une entité Quiz
         Quiz quiz = modelMapper.map(quizCreateDTO, Quiz.class);
