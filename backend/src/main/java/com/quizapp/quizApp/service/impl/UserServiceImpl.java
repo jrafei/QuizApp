@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordValidator passwordValidator;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO userCreateDTO) {
@@ -59,7 +61,9 @@ public class UserServiceImpl implements UserService {
         user.setFirstname(userCreateDTO.getFirstname());
         user.setLastname(userCreateDTO.getLastname());
         user.setEmail(userCreateDTO.getEmail().toLowerCase());
-        user.setPassword(userCreateDTO.getPassword());
+        // Hacher le mot de passe
+        String hashedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
+        user.setPassword(hashedPassword);
         user.setRole(userCreateDTO.getRole());
         user.setIsActive(false); // Par défaut inactif
         user.setCompany(userCreateDTO.getCompany()); // Optionnel
@@ -111,7 +115,8 @@ public class UserServiceImpl implements UserService {
         });
         Optional.ofNullable(userUpdateDTO.getPassword()).ifPresent(password -> {
             passwordValidator.validate(password);
-            user.setPassword(password);
+            String hashedPassword = passwordEncoder.encode(password); // Hacher le mot de passe avant mise à jour
+            user.setPassword(hashedPassword);
         });
         Optional.ofNullable(userUpdateDTO.getPhone()).ifPresent(user::setPhone);
         Optional.ofNullable(userUpdateDTO.getCompany()).ifPresent(user::setCompany);
