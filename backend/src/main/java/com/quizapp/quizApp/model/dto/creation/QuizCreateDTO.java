@@ -26,5 +26,5 @@ public class QuizCreateDTO {
     @NotNull(message = "L'ID du thème est obligatoire.")
     private UUID themeId;
 
-    private List<QuestionDTO> questions; // Liste des questions associées
+    private List<QuestionCreateDTO> questions; // Liste des questions associées
 }

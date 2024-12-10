@@ -1,5 +1,6 @@
 package com.quizapp.quizApp.model.dto.response;
 
+import com.quizapp.quizApp.model.dto.creation.QuestionCreateDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -14,4 +15,5 @@ public class QuizResponseDTO {
     private LocalDateTime creationDate;
     private UUID creatorId;
     private UUID themeId;
+
 }
