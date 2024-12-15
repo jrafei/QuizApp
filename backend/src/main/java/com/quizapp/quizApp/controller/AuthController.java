@@ -40,4 +40,11 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // Informer le client de supprimer le JWT localement
+        return ResponseEntity.ok("User logged out successfully");
+    }
+
 }

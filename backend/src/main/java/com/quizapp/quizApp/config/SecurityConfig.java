@@ -4,10 +4,12 @@ import com.quizapp.quizApp.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -34,12 +36,38 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+                .csrf(csrf -> csrf.disable()) // Désactiver CSRF pour une API REST
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users", "/auth/login").permitAll() // Allow public access to /users
-                        .anyRequest().authenticated() // Require authentication for other endpoints
+                        // Routes publiques
+                        .requestMatchers("/auth/**").permitAll() // Accessible sans authentification
+
+                        // *********** Routes protégées *************
+
+                        // USERS
+                        .requestMatchers(HttpMethod.PATCH, "/users/{id}").hasAnyRole("ADMIN", "TRAINEE") // Stagiaires peuvent modifier leur profil
+                        .requestMatchers("/users/**").hasRole("ADMIN") // Admin a un contrôle total sur tous les utilisateurs
+
+                        // THEMES
+                        .requestMatchers("/themes/**").hasRole("ADMIN")
+
+                        // QUIZZES
+                        .requestMatchers("/quizzes/**").hasRole("ADMIN")
+
+                        // QUESTIONS
+                        .requestMatchers("/questions/**").hasRole("ADMIN")
+
+                        // ANSWERS
+                        .requestMatchers("/answers/**").hasRole("ADMIN")
+
+                        // RECORDS
+                        .requestMatchers("/records/**").hasAnyRole("ADMIN","TRAINEE")
+
+                        // Toute autre requête nécessite une authentification
+                        .anyRequest().authenticated()
                 )
-                .httpBasic(httpBasic -> {}); // Configure HTTP Basic Authentication
+                .httpBasic(httpBasic -> {
+                }) // Authentification HTTP Basic (peut être remplacé par JWT)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Pas de sessions pour une API REST
 
         return http.build();
     }
