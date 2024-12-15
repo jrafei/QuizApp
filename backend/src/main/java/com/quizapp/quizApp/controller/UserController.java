@@ -4,10 +4,12 @@ import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.dto.creation.UserCreateDTO;
 import com.quizapp.quizApp.model.dto.response.UserResponseDTO;
 import com.quizapp.quizApp.model.dto.update.UserUpdateDTO;
+import com.quizapp.quizApp.service.impl.EmailService;
 import com.quizapp.quizApp.service.interfac.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,7 @@ public class UserController {
 
     private final UserService userService; // On passe par l'interface pour utiliser les méthodes de UserServiceImpl
     private final ModelMapper modelMapper;
+    private final EmailService emailService;
 
     // Ajout d'un utilisateur
     @PostMapping
@@ -57,6 +60,17 @@ public class UserController {
     public ResponseEntity<String> activateUser(@PathVariable UUID id) {
         String message = userService.setActiveStatus(id, true);
         return ResponseEntity.ok(message); // Retourne 200 OK avec un message
+    }
+
+    // Activer l'utilisateur via un lien
+    @GetMapping("/activate")
+    public ResponseEntity<String> activateUser(@RequestParam String token) {
+        boolean isActivated = userService.activateUserByToken(token);
+        if (isActivated) {
+            return ResponseEntity.ok("Votre compte a été activé avec succès !");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le token d'activation est invalide.");
+        }
     }
 
     // Désactiver un utilisateur

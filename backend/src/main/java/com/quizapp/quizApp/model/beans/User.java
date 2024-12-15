@@ -70,4 +70,6 @@ public class User {
         ADMIN, TRAINEE
     }
 
+    @Column(name = "activation_token", unique = true)
+    private String activationToken;
 }
