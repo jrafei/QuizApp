@@ -1,6 +1,7 @@
 package com.quizapp.quizApp.config;
 
 import com.quizapp.quizApp.service.impl.CustomUserDetailsService;
+import com.quizapp.quizApp.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,15 +13,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+        this.jwtUtil = new JwtUtil();
     }
 
     @Bean
@@ -65,9 +69,9 @@ public class SecurityConfig {
                         // Toute autre requête nécessite une authentification
                         .anyRequest().authenticated()
                 )
-                .httpBasic(httpBasic -> {
-                }) // Authentification HTTP Basic (peut être remplacé par JWT)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Pas de sessions pour une API REST
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
 
         return http.build();
     }
