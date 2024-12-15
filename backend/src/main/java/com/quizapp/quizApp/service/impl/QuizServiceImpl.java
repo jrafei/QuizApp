@@ -1,11 +1,9 @@
 package com.quizapp.quizApp.service.impl;
 
 import com.quizapp.quizApp.exception.QuizNotFoundException;
-import com.quizapp.quizApp.model.beans.Answer;
-import com.quizapp.quizApp.model.beans.Question;
-import com.quizapp.quizApp.model.beans.Quiz;
-import com.quizapp.quizApp.model.dto.AnswerDTO;
-import com.quizapp.quizApp.model.dto.QuestionDTO;
+import com.quizapp.quizApp.model.beans.*;
+import com.quizapp.quizApp.model.dto.creation.AnswerCreateDTO;
+import com.quizapp.quizApp.model.dto.creation.QuestionCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
 import com.quizapp.quizApp.repository.*;
@@ -56,22 +54,31 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public QuizResponseDTO createQuiz(QuizCreateDTO quizCreateDTO) {
+
+        // Charger le créateur et le thème
+        User creator = userRepository.findById(quizCreateDTO.getCreatorId())
+                .orElseThrow(() -> new IllegalArgumentException("Créateur introuvable."));
+        Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
+                .orElseThrow(() -> new IllegalArgumentException("Thème introuvable."));
+
         // Debug
         System.out.println("Received QuizCreateDTO: " + quizCreateDTO);
 
-
+        // // Configurer le TypeMap avec les règles de mapping spécifiques
+        modelMapper.typeMap(QuizCreateDTO.class, Quiz.class).addMappings(mapper -> {
+            mapper.skip(Quiz::setCreator); // Ignorer le mapping par défaut
+            mapper.skip(Quiz::setTheme);   // Ignorer le mapping par défaut
+        });
 
         // Mapper le DTO vers une entité Quiz
         Quiz quiz = modelMapper.map(quizCreateDTO, Quiz.class);
 
+        quiz.setCreator(creator);
+        quiz.setTheme(theme);
+
+
         // Debug
         System.out.println("Mapped Quiz entity: " + quiz);
-
-        // Récupérer le créateur et le thème
-        quiz.setCreator(userRepository.findById(quizCreateDTO.getCreatorId())
-                .orElseThrow(() -> new RuntimeException("Créateur non trouvé avec l'ID : " + quizCreateDTO.getCreatorId())));
-        quiz.setTheme(themeRepository.findById(quizCreateDTO.getThemeId())
-                .orElseThrow(() -> new RuntimeException("Thème non trouvé avec l'ID : " + quizCreateDTO.getThemeId())));
 
         // Quiz inactif à la création
         quiz.setIsActive(false); // Par défaut, le quiz est inactif
@@ -80,60 +87,18 @@ public class QuizServiceImpl implements QuizService {
         // Debug
         System.out.println("Quiz entity before saving: " + quiz);
 
-        // Sauvegarder le quiz pour générer son ID
-        Quiz savedQuiz = quizRepository.save(quiz);
-        System.out.println("saved quiz : " + savedQuiz);
-
-        // Vérifiez que savedQuiz a bien un ID
-        if (savedQuiz.getId() == null) {
-            throw new RuntimeException("Quiz ID is null after saving!");
-        }
 
         // Sauvegarder les questions associées si elles existent
         if (quizCreateDTO.getQuestions() != null && !quizCreateDTO.getQuestions().isEmpty()) {
-            for (QuestionDTO questionDTO : quizCreateDTO.getQuestions()) {
-                System.out.println("Processing QuestionDTO: " + questionDTO);
-
-                // Mapper le DTO vers une entité Question
-                Question question = modelMapper.map(questionDTO, Question.class);
-                question.setQuiz(savedQuiz); // Associer le Quiz sauvegardé à la Question
-                question.setIsActive(false);
-                question.setPosition(null);
-
-                // Debug
-                System.out.println("Mapped Question entity before saving: " + question);
-
-                // Sauvegarder la question pour générer son ID
-                Question savedQuestion = questionRepository.save(question);
-
-                // Log après la sauvegarde de la question
-                System.out.println("Saved Question entity: " + savedQuestion);
-
-                // Ajouter les réponses si elles sont fournies
-                if (questionDTO.getAnswers() != null && !questionDTO.getAnswers().isEmpty()) {
-                    for (AnswerDTO answerDTO : questionDTO.getAnswers()) {
-                        System.out.println("Processing AnswerDTO: " + answerDTO);
-
-                        // Mapper le DTO vers une entité Answer
-                        Answer answer = modelMapper.map(answerDTO, Answer.class);
-                        answer.setQuestion(savedQuestion); // Associer la Question sauvegardée à la Réponse
-                        answer.setIsActive(answer.getIsActive() != null ? answer.getIsActive() : false);
-
-                        // Debug
-                        System.out.println("Mapped Answer entity before saving: " + answer);
-
-                        // Sauvegarder la réponse
-                        Answer savedAnswer = answerRepository.save(answer);
-
-                        // Debug
-                        System.out.println("Saved Answer entity: " + savedAnswer);
-                    }
-                }
-            }
+            // Associer les relations imbriquées (questions et réponses)
+            quiz.getQuestions().forEach(question -> {
+                question.setQuiz(quiz);
+                question.getAnswers().forEach(answer -> answer.setQuestion(question));
+            });
         }
-
+        quizRepository.save(quiz);
         // Mapper l'entité sauvegardée vers un QuizResponseDTO
-        return modelMapper.map(savedQuiz, QuizResponseDTO.class);
+        return modelMapper.map(quiz, QuizResponseDTO.class);
     }
 
     @Override

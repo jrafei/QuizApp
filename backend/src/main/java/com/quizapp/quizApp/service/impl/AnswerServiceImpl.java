@@ -3,9 +3,11 @@ package com.quizapp.quizApp.service.impl;
 import com.quizapp.quizApp.model.beans.Answer;
 import com.quizapp.quizApp.model.beans.Question;
 import com.quizapp.quizApp.model.dto.AnswerDTO;
+import com.quizapp.quizApp.model.dto.response.AnswerResponseDTO;
 import com.quizapp.quizApp.repository.AnswerRepository;
 import com.quizapp.quizApp.service.interfac.AnswerService;
 import com.quizapp.quizApp.repository.QuestionRepository;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +16,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class AnswerServiceImpl implements AnswerService {
 
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ModelMapper modelMapper;
 
-    public AnswerServiceImpl(QuestionRepository questionRepository,
-                             AnswerRepository answerRepository,
-                             ModelMapper modelMapper) {
-        this.answerRepository = answerRepository;
-        this.modelMapper = modelMapper;
-        this.questionRepository = questionRepository;
-    }
 
     @Override
     public List<AnswerDTO> getAllAnswers() {
