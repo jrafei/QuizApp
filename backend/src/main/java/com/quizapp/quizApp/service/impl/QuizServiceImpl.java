@@ -88,7 +88,7 @@ public class QuizServiceImpl implements QuizService {
         System.out.println("Quiz entity before saving: " + quiz);
 
 
-        // Sauvegarder les questions associées si elles existent
+        /* Sauvegarder les questions associées si elles existent
         if (quizCreateDTO.getQuestions() != null && !quizCreateDTO.getQuestions().isEmpty()) {
             // Associer les relations imbriquées (questions et réponses)
             quiz.getQuestions().forEach(question -> {
@@ -96,6 +96,8 @@ public class QuizServiceImpl implements QuizService {
                 question.getAnswers().forEach(answer -> answer.setQuestion(question));
             });
         }
+        */
+
         quizRepository.save(quiz);
         // Mapper l'entité sauvegardée vers un QuizResponseDTO
         return modelMapper.map(quiz, QuizResponseDTO.class);
@@ -133,7 +135,9 @@ public class QuizServiceImpl implements QuizService {
         if (quizCreateDTO.getName() != null) {
             quiz.setName(quizCreateDTO.getName());
         }
+
         if (quizCreateDTO.getPosition() != null) {
+            //updatePosition(quiz,quizCreateDTO);
             quiz.setPosition(quizCreateDTO.getPosition());
         }
 
@@ -149,6 +153,22 @@ public class QuizServiceImpl implements QuizService {
         // Retourner le DTO de la réponse
         return modelMapper.map(updatedQuiz, QuizResponseDTO.class);
     }
+
+    /*
+    private void updatePosition(Quiz quiz, QuizCreateDTO quizCreateDTO) {
+        int newPosition = quizCreateDTO.getPosition();
+
+        Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
+                .orElseThrow(() -> new IllegalArgumentException("Thème associé au quiz est introuvable."));
+
+        int nbQuiz = theme.getQuizzes().size();
+        if (newPosition > nbQuiz){
+            throw new RuntimeException("Position invalide : supérieur au nombre de quizs ");
+        }
+
+    }
+    */
+
 
     @Override
     public QuizResponseDTO setActiveStatus(UUID id, Boolean isActive) {

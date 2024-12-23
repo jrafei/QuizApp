@@ -5,13 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6a5d34e8-1d52-4d21-8cd9-f7f27892512d" name="Changes" comment="correction ajout quiz">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/creation/AnswerCreateDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/creation/QuestionCreateDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/response/AnswerResponseDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/beans/Quiz.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/beans/Quiz.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/creation/QuizCreateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/creation/QuizCreateDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/response/QuizResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/response/QuizResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/AnswerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/AnswerServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuizServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuizServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -76,7 +72,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;Spring Boot.Application.executor&quot;: &quot;Debug&quot;,
     &quot;Spring Boot.QuizAppApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;update__classes&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;17&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
@@ -126,8 +122,8 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Spring Boot.QuizAppApplication" />
       <item itemvalue="Spring Boot.Application" />
+      <item itemvalue="Spring Boot.QuizAppApplication" />
     </list>
   </component>
   <component name="SharedIndexes">
@@ -165,7 +161,9 @@
       <workItem from="1733345712725" duration="453000" />
       <workItem from="1733575545601" duration="39109000" />
       <workItem from="1733685715888" duration="9245000" />
-      <workItem from="1733762033651" duration="16198000" />
+      <workItem from="1733762033651" duration="18018000" />
+      <workItem from="1733932382965" duration="6511000" />
+      <workItem from="1734363805726" duration="10693000" />
     </task>
     <task id="LOCAL-00001" summary="add Record, RecordAnswer">
       <option name="closed" value="true" />
@@ -191,7 +189,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733764979799</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="correction ajout quiz">
+      <option name="closed" value="true" />
+      <created>1733823496711</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1733823496711</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -215,5 +221,17 @@
     <MESSAGE value="add records by theme and by quizs" />
     <MESSAGE value="correction ajout quiz" />
     <option name="LAST_COMMIT_MESSAGE" value="correction ajout quiz" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/creation/AnswerCreateDTO.java</url>
+          <line>9</line>
+          <properties field="correct" class="com.quizapp.quizApp.model.dto.creation.AnswerCreateDTO" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

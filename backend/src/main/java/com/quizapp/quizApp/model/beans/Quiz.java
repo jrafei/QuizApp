@@ -58,4 +58,10 @@ public class Quiz {
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
     private LocalDateTime creationDate = LocalDateTime.now(); // Date de création du quiz
+
+
+    public void setPosition(){
+
+    }
+
 }
