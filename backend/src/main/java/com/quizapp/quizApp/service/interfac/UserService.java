@@ -27,4 +27,6 @@ public interface UserService {
     String demoteToTrainee(UUID id);
 
     Optional<User> getUserById(UUID id);
+
+    boolean activateUserByToken(String token);
 }

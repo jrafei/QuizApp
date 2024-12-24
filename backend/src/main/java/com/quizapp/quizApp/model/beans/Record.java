@@ -42,5 +42,4 @@ public class Record {
     @JsonManagedReference
     private List<RecordAnswer> recordAnswers; // Réponses choisies dans ce record
 
-
 }

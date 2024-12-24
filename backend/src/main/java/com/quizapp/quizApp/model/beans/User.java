@@ -69,4 +69,7 @@ public class User {
     public enum Role {
         ADMIN, TRAINEE
     }
+
+    @Column(name = "activation_token", unique = true)
+    private String activationToken;
 }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Random;
 
 @Service
 @AllArgsConstructor
@@ -28,26 +29,10 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final PasswordValidator passwordValidator;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO userCreateDTO) {
-        // Vérification explicite des champs obligatoires
-        if (userCreateDTO.getFirstname() == null || userCreateDTO.getFirstname().isBlank()) {
-            throw new IllegalArgumentException("Le prénom est obligatoire.");
-        }
-        if (userCreateDTO.getLastname() == null || userCreateDTO.getLastname().isBlank()) {
-            throw new IllegalArgumentException("Le nom est obligatoire.");
-        }
-        if (userCreateDTO.getEmail() == null || userCreateDTO.getEmail().isBlank()) {
-            throw new IllegalArgumentException("L'email est obligatoire.");
-        }
-        if (userCreateDTO.getPassword() == null || userCreateDTO.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Le mot de passe est obligatoire.");
-        }
-        if (userCreateDTO.getRole() == null) {
-            throw new IllegalArgumentException("Le rôle est obligatoire.");
-        }
-
         // Validation du mot de passe
         passwordValidator.validate(userCreateDTO.getPassword());
 
@@ -56,21 +41,23 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException("L'email " + userCreateDTO.getEmail() + " est déjà utilisé.");
         }
 
-        // Mapper le DTO vers l'entité User
-        User user = new User();
-        user.setFirstname(userCreateDTO.getFirstname());
-        user.setLastname(userCreateDTO.getLastname());
-        user.setEmail(userCreateDTO.getEmail().toLowerCase());
+        // Mapper le DTO vers l'entité User avec ModelMapper
+        User user = modelMapper.map(userCreateDTO, User.class);
+
         // Hacher le mot de passe
         String hashedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
-        user.setPassword(hashedPassword);
-        user.setRole(userCreateDTO.getRole());
+
         user.setIsActive(false); // Par défaut inactif
-        user.setCompany(userCreateDTO.getCompany()); // Optionnel
-        user.setPhone(userCreateDTO.getPhone()); // Optionnel
+
+        // Générer un token d'activation
+        String activationToken = generateActivationToken();
+        user.setActivationToken(activationToken);
 
         // Sauvegarder l'utilisateur
         User savedUser = userRepository.save(user);
+
+        // Envoyer un email de confirmation avec le lien d'activation
+        emailService.sendWelcomeEmail(user.getEmail(), user.getFirstname(), activationToken);
 
         // Retourner l'utilisateur créé en tant que DTO
         return modelMapper.map(savedUser, UserResponseDTO.class);
@@ -172,6 +159,40 @@ public class UserServiceImpl implements UserService {
         } catch (EmptyResultDataAccessException ex) {
             throw new UserNotFoundException("Utilisateur non trouvé avec l'id : " + id);
         }
+    }
+
+    @Override
+    public boolean activateUserByToken(String token) {
+        // Vérifier si le token d'activation est valide
+        User user = userRepository.findByActivationToken(token)
+                .orElseThrow(() -> new RuntimeException("Token d'activation invalide"));
+
+        // Activer l'utilisateur
+        user.setIsActive(true);
+        user.setActivationToken(null); // Supprimer le token après l'activation
+
+        String temporaryPassword = generateTemporaryPassword();
+        user.setPassword(temporaryPassword);
+        userRepository.save(user);
+
+        // Envoyer un email avec le mot de passe temporaire
+        emailService.sendCredentialsEmail(user.getEmail(), user.getFirstname(), user.getEmail(), temporaryPassword);
+
+        return true;
+    }
+
+    public String generateActivationToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    public String generateTemporaryPassword() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        Random rand = new Random();
+        StringBuilder password = new StringBuilder(12);
+        for (int i = 0; i < 12; i++) {
+            password.append(characters.charAt(rand.nextInt(characters.length())));
+        }
+        return password.toString();
     }
 
 }

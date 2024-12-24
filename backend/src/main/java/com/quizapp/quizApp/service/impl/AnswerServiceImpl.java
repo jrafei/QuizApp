@@ -54,6 +54,14 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public AnswerDTO createAnswer(AnswerDTO answerDTO) {
+        // Vérifie si une réponse correcte existe déjà pour la question
+        if (answerDTO.getIsCorrect() != null && answerDTO.getIsCorrect()) {
+            boolean hasActiveCorrectAnswer = answerRepository.existsByQuestionIdAndCorrectTrueAndIsActiveTrue(answerDTO.getQuestionId());
+            if (hasActiveCorrectAnswer) {
+                throw new IllegalArgumentException("Une seule réponse correcte et active est autorisée par question.");
+            }
+        }
+
         // Vérifie si une réponse avec le même intitulé existe déjà pour la même question
         if (answerRepository.existsByLabelAndQuestionId(answerDTO.getLabel(), answerDTO.getQuestionId())) {
             throw new IllegalArgumentException("Une réponse avec le même intitulé existe déjà pour cette question.");
