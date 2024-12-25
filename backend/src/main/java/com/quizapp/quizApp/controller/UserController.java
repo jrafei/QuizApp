@@ -96,46 +96,6 @@ public class UserController {
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");
-        try {
-            userService.forgotPassword(email);
-            return ResponseEntity.ok("If this email is associated with an account, you will receive a message.");
-        } catch (UserNotFoundException ex) {
-            // Always respond generically to avoid revealing account details
-            return ResponseEntity.ok("If this email is associated with an account, you will receive a message.");
-        }
-    }
-
-    @PostMapping("/reactivation-request")
-    public ResponseEntity<String> requestReactivation(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email is required.");
-        }
-
-        userService.requestAccountReactivation(email);
-        return ResponseEntity.ok("If this email is associated with an inactive account, you will receive a validation code.");
-    }
-
-    @PostMapping("/reactivate-account")
-    public ResponseEntity<String> reactivateAccount(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");
-        String validationCode = requestBody.get("validationCode");
-
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email is required.");
-        }
-
-        if (validationCode == null || validationCode.isBlank()) {
-            throw new IllegalArgumentException("Validation code is required.");
-        }
-
-        userService.validateAndReactivateAccount(email, validationCode);
-        return ResponseEntity.ok("Your account has been successfully reactivated.");
-    }
-
     // Suppression d'un utilisateur
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable UUID id) {
