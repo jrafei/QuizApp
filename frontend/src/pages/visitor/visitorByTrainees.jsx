@@ -1,11 +1,11 @@
 import React from "react";
-import HeaderVisitor from "../components/headerAndFooter/headerVisitor";
-import Footer from "../components/headerAndFooter/footer";
+import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
+import Footer from "../../components/headerAndFooter/footer";
 
-import TraineeTrainee from "../components/trainee/trainees_trainees"; 
-import TraineeTheme from "../components/trainee/trainees_themes"; 
-import TraineeQuiz from "../components/trainee/trainees_quiz"; 
-import TraineeResult from "../components/trainee/trainees_results"; 
+import TraineeTrainee from "../../components/visitor/traineesTrainees"; 
+import TraineeTheme from "../../components/visitor/traineesThemes"; 
+import TraineeQuiz from "../../components/visitor/traineesQuiz"; 
+import TraineeResult from "../../components/visitor/traineesResults"; 
 
 
 function VisitorByTrainees() {

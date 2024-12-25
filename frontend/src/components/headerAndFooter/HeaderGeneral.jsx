@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from '../../assets/logo.png';
 
-const HeaderTrainee = () => {
+const HeaderGeneral = () => {
     return (
         <header className="bg-black text-white flex justify-between items-center py-4 px-6">
             <div className="flex gap-4"> </div>   
@@ -12,4 +12,4 @@ const HeaderTrainee = () => {
     );
 }
 
-export default HeaderTrainee;
+export default HeaderGeneral;
