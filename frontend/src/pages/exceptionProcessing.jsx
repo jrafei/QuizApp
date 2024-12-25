@@ -14,7 +14,7 @@ function ErrorSpecified() {
                 </h1>
 
                 <div>
-                    <button className="bg-blue-700 text-white text-italic px-6 py-2 rounded-lg hover:bg-blue-500">
+                    <button className="bg-blue-700 text-white text-italic px-6 py-3 rounded-lg hover:bg-blue-500">
                         Retry
                     </button>
                 </div>

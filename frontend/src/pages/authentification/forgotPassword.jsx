@@ -1,6 +1,6 @@
 import React from "react";
-import HeaderVisitor from "../components/headerAndFooter/headerVisitor";
-import Footer from "../components/headerAndFooter/footer";
+import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
+import Footer from "../../components/headerAndFooter/footer";
 
 
 function ForgotPassword() {

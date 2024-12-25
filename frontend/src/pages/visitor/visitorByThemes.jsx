@@ -1,10 +1,10 @@
 import React from "react";
-import HeaderVisitor from "../components/headerAndFooter/headerVisitor";
-import Footer from "../components/headerAndFooter/footer";
+import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
+import Footer from "../../components/headerAndFooter/footer";
 
-import ThemeTheme from "../components/visitor/themes_themes"; 
-import ThemeQuiz from "../components/visitor/themes_quizzes"; 
-import ThemeRanking from "../components/visitor/themes_rankings"; 
+import ThemeTheme from "../../components/visitor/themesThemes"; 
+import ThemeQuiz from "../../components/visitor/themesQuizzes"; 
+import ThemeRanking from "../../components/visitor/themesRankings"; 
 
 
 function VisitorByTheme() {
@@ -27,8 +27,8 @@ function VisitorByTheme() {
                     <ThemeRanking />
                 </div>
             </div>
-            
         </main>
+        
         <div className="mt-auto flex justify-end w-full p-4">
             <button className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-500">
                 Sign in

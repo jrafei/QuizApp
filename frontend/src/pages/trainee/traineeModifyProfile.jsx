@@ -1,6 +1,6 @@
 import React from "react";
-import HeaderTrainee from "../components/headerAndFooter/headerTrainee";
-import Footer from "../components/headerAndFooter/footer";
+import HeaderTrainee from "../../components/headerAndFooter/headerTrainee";
+import Footer from "../../components/headerAndFooter/footer";
 
 
 function ModifyProfile() {
