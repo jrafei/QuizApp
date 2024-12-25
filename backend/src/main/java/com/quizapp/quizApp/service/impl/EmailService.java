@@ -97,4 +97,19 @@ public class EmailService {
         Mail mail = buildMail(toEmail, subject, messageText);
         sendEmail(mail);
     }
+
+    public void sendValidationCodeEmail(String toEmail, String firstName, String validationCode) {
+        String subject = "Account Reactivation Code - QuizApp";
+        String messageText = String.format(
+                "Hello %s,\n\n" +
+                        "We received a request to reactivate your account. Use the following validation code to reactivate your account:\n\n" +
+                        "Validation Code: %s\n\n" +
+                        "This code is valid for 15 minutes.\n\n" +
+                        "If you did not request this, please ignore this email.\n\n" +
+                        "Best regards,\nThe QuizApp Team",
+                firstName, validationCode
+        );
+        Mail mail = buildMail(toEmail, subject, messageText);
+        sendEmail(mail);
+    }
 }

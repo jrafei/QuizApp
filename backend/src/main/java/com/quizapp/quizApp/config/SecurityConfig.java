@@ -42,13 +42,21 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Désactiver CSRF pour une API REST
                 .authorizeHttpRequests(auth -> auth
-                        // Routes publiques
+
+                        // *********** Routes publiques *************
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/users/forgot-password",
+                                "/users/reactivation-request",
+                                "/users/reactivate-account"
+                        ).permitAll() // Routes accessibles sans authentification
+
                         .requestMatchers("/auth/**", "/users/activate").permitAll() // Accessible sans authentification
 
                         // *********** Routes protégées *************
 
                         // USERS
-                        .requestMatchers(HttpMethod.POST, "/users/forgot-password").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/users/{id}").hasAnyRole("ADMIN", "TRAINEE") // Stagiaires peuvent modifier leur profil
                         .requestMatchers("/users/**").hasRole("ADMIN") // Admin a un contrôle total sur tous les utilisateurs
 
@@ -72,7 +80,6 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
 
         return http.build();
     }

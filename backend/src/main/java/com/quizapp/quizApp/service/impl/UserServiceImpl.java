@@ -15,6 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordValidator passwordValidator;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private static final long CODE_EXPIRATION_MINUTES = 15;
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO userCreateDTO) {
@@ -240,6 +242,53 @@ public class UserServiceImpl implements UserService {
 
         // Send an email with the temporary password
         emailService.sendForgotPasswordEmail(user.getEmail(), user.getFirstname(), temporaryPassword);
+    }
+
+    @Override
+    public void requestAccountReactivation(String email) {
+        User user = userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+
+        if (user.getIsActive()) {
+            throw new IllegalStateException("User account is already active.");
+        }
+
+        // Générer un code de validation
+        String validationCode = generateValidationCode();
+        user.setValidationCode(validationCode);
+        user.setValidationCodeExpiration(LocalDateTime.now().plusMinutes(15)); // Expiration dans 15 minutes
+
+        userRepository.save(user);
+
+        // Envoyer l'e-mail avec le code de validation
+        emailService.sendValidationCodeEmail(user.getEmail(), user.getFirstname(), validationCode);
+    }
+
+
+    private String generateValidationCode() {
+        Random random = new Random();
+        return String.format("%06d", random.nextInt(1000000)); // Code à 6 chiffres
+    }
+
+    @Override
+    public void validateAndReactivateAccount(String email, String validationCode) {
+        User user = userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+
+        if (user.getValidationCode() == null || !user.getValidationCode().equals(validationCode)) {
+            throw new IllegalArgumentException("Invalid validation code.");
+        }
+
+        if (user.getValidationCodeExpiration() != null && user.getValidationCodeExpiration().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Validation code has expired.");
+        }
+
+        // Réactiver le compte
+        user.setIsActive(true);
+        user.setValidationCode(null);
+        user.setValidationCodeExpiration(null);
+
+        userRepository.save(user);
     }
 
 }

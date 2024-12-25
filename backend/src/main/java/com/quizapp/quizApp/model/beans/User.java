@@ -72,4 +72,11 @@ public class User {
 
     @Column(name = "activation_token", unique = true)
     private String activationToken;
+
+    @Column(name = "validation_code", length = 6)
+    private String validationCode;
+
+    @Column(name = "validation_code_expiration")
+    private LocalDateTime validationCodeExpiration;
+
 }

@@ -31,4 +31,8 @@ public interface UserService {
     boolean activateUserByToken(String token);
 
     void forgotPassword(String email);
+
+    void requestAccountReactivation(String email);
+
+    void validateAndReactivateAccount(String email, String validationCode);
 }
