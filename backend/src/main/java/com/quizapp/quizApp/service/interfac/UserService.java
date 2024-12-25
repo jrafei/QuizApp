@@ -29,4 +29,6 @@ public interface UserService {
     Optional<User> getUserById(UUID id);
 
     boolean activateUserByToken(String token);
+
+    void forgotPassword(String email);
 }

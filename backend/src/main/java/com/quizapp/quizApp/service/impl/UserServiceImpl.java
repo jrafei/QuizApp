@@ -224,5 +224,22 @@ public class UserServiceImpl implements UserService {
         return shuffled.toString();
     }
 
+    @Override
+    public void forgotPassword(String email) {
+        // Check if the user exists with this email
+        User user = userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new UserNotFoundException("If this email is associated with an account, you will receive a message."));
+
+        // Generate a temporary password (or reuse the current one)
+        String temporaryPassword = generateTemporaryPassword();
+
+        // Hash the temporary password before saving it
+        String hashedPassword = passwordEncoder.encode(temporaryPassword);
+        user.setPassword(hashedPassword);
+        userRepository.save(user);
+
+        // Send an email with the temporary password
+        emailService.sendForgotPasswordEmail(user.getEmail(), user.getFirstname(), temporaryPassword);
+    }
 
 }

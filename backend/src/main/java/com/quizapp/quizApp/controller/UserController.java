@@ -1,5 +1,6 @@
 package com.quizapp.quizApp.controller;
 
+import com.quizapp.quizApp.exception.UserNotFoundException;
 import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.dto.creation.UserCreateDTO;
 import com.quizapp.quizApp.model.dto.response.UserResponseDTO;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -92,6 +94,18 @@ public class UserController {
             throw new IllegalArgumentException("Rôle invalide : " + role);
         }
         return ResponseEntity.ok(message);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
+        String email = requestBody.get("email");
+        try {
+            userService.forgotPassword(email);
+            return ResponseEntity.ok("If this email is associated with an account, you will receive a message.");
+        } catch (UserNotFoundException ex) {
+            // Always respond generically to avoid revealing account details
+            return ResponseEntity.ok("If this email is associated with an account, you will receive a message.");
+        }
     }
 
     // Suppression d'un utilisateur

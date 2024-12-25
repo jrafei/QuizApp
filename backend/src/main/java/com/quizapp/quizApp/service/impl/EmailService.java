@@ -82,4 +82,19 @@ public class EmailService {
         Content content = new Content("text/plain", messageText);
         return new Mail(from, subject, to, content);
     }
+
+    public void sendForgotPasswordEmail(String toEmail, String firstName, String temporaryPassword) {
+        String subject = "Password Reset Request - QuizApp";
+        String messageText = String.format(
+                "Hello %s,\n\n" +
+                        "We received a request to reset your password. Here is your temporary password:\n\n" +
+                        "Temporary password: %s\n\n" +
+                        "Please log in using this password and change it immediately in your account settings.\n\n" +
+                        "If you did not request this password reset, please ignore this email.\n\n" +
+                        "Best regards,\nThe QuizApp Team",
+                firstName, temporaryPassword
+        );
+        Mail mail = buildMail(toEmail, subject, messageText);
+        sendEmail(mail);
+    }
 }
