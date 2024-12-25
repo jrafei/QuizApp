@@ -36,10 +36,17 @@ public class Record {
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
 
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RecordStatus status; // pour assigner un quiz à un utilisateur
 
     // Relation avec RecordAnswer (table intermédiaire)
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<RecordAnswer> recordAnswers; // Réponses choisies dans ce record
 
+    public enum RecordStatus {
+        PENDING,
+        COMPLETED
+    }
 }

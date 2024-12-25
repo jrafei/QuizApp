@@ -18,4 +18,8 @@ public interface RecordService {
     List<UserQuizStatsDTO> getUserStatsByQuiz(UUID userId);
 
     List<UserThemeStatsDTO> getUserStatsByTheme(UUID userId);
+
+    Record assignQuizToTrainee(UUID traineeId, UUID quizId);
+
+    List<RecordResponseDTO> getPendingQuizzesForTraineeByEmail(String email);
 }

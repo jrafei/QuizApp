@@ -1,5 +1,7 @@
 package com.quizapp.quizApp.service.impl;
 
+import com.quizapp.quizApp.exception.QuizNotFoundException;
+import com.quizapp.quizApp.exception.UserNotFoundException;
 import com.quizapp.quizApp.model.beans.*;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
@@ -12,6 +14,7 @@ import com.quizapp.quizApp.repository.RecordRepository;
 import com.quizapp.quizApp.repository.UserRepository;
 import com.quizapp.quizApp.service.interfac.RecordService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,7 +28,8 @@ public class RecordServiceImpl implements RecordService {
     private final UserRepository userRepository;
     private final QuizRepository quizRepository;
     private final AnswerRepository answerRepository;
-
+    private final EmailService emailService;
+    private final ModelMapper modelMapper;
 
     /**
      * Crée un record avec les informations fournies dans le DTO
@@ -155,6 +159,54 @@ public class RecordServiceImpl implements RecordService {
 
             return new UserThemeStatsDTO(themeName, totalScore, totalDuration);
         }).collect(Collectors.toList());
+    }
+
+    public Record assignQuizToTrainee(UUID traineeId, UUID quizId) {
+        // Vérifiez que le stagiaire existe
+        User trainee = userRepository.findById(traineeId)
+                .orElseThrow(() -> new UserNotFoundException("Trainee not found with ID: " + traineeId));
+
+        // Vérifiez que le rôle de l'utilisateur est TRAINEE
+        if (!trainee.getRole().equals(User.Role.TRAINEE)) {
+            throw new IllegalArgumentException("The user with ID " + traineeId + " is not a trainee.");
+        }
+
+        // Vérifiez que le quiz existe
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new QuizNotFoundException("Quiz not found with ID: " + quizId));
+
+        // Vérifiez que le quiz est actif
+        if (!quiz.getIsActive()) {
+            throw new IllegalArgumentException("Cannot assign an inactive quiz.");
+        }
+
+        // Créez un nouvel enregistrement Record
+        Record record = new Record();
+        record.setTrainee(trainee);
+        record.setQuiz(quiz);
+        record.setStatus(Record.RecordStatus.PENDING);
+
+        // Sauvegardez l'enregistrement
+        Record savedRecord = recordRepository.save(record);
+
+        // Envoyer un e-mail au stagiaire
+        emailService.sendQuizAssignmentEmail(trainee.getEmail(), trainee.getFirstname(), quiz.getName());
+
+        return savedRecord;
+    }
+
+    public List<RecordResponseDTO> getPendingQuizzesForTraineeByEmail(String email) {
+        // Rechercher le stagiaire par email
+        User trainee = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Trainee not found with email: " + email));
+
+        // Rechercher les records avec un statut PENDING
+        List<Record> records = recordRepository.findByTraineeIdAndStatus(trainee.getId(), Record.RecordStatus.PENDING);
+
+        // Mapper les Records vers des DTOs
+        return records.stream()
+                .map(record -> modelMapper.map(record, RecordResponseDTO.class))
+                .collect(Collectors.toList());
     }
 }
 

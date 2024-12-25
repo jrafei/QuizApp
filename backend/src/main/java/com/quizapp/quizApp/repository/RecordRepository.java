@@ -16,4 +16,6 @@ public interface RecordRepository extends JpaRepository<Record, UUID> {
 
     // Trouver tous les records d'un utilisateur
     List<Record> findByTraineeId(UUID traineeId);
+
+    List<Record> findByTraineeIdAndStatus(UUID traineeId, Record.RecordStatus recordStatus);
 }

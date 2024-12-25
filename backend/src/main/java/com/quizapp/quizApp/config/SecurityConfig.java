@@ -73,7 +73,9 @@ public class SecurityConfig {
                         .requestMatchers("/answers/**").hasRole("ADMIN")
 
                         // RECORDS
-                        .requestMatchers("/records/**").hasAnyRole("ADMIN","TRAINEE")
+                        //.requestMatchers("/records/**").hasAnyRole("ADMIN","TRAINEE")
+                        .requestMatchers(HttpMethod.POST, "/records/assign").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/records/pending").hasRole("TRAINEE")
 
                         // Toute autre requête nécessite une authentification
                         .anyRequest().authenticated()

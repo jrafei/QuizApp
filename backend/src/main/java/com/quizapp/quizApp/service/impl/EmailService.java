@@ -112,4 +112,16 @@ public class EmailService {
         Mail mail = buildMail(toEmail, subject, messageText);
         sendEmail(mail);
     }
+
+    public void sendQuizAssignmentEmail(String toEmail, String firstName, String quizTitle) {
+        String subject = "A New Quiz Has Been Assigned to You!";
+        String messageText = String.format(
+                "Hello %s,\n\n" +
+                        "A new quiz titled '%s' has been assigned to you. Please log in to your account to start the quiz.\n\n" +
+                        "Best regards,\nThe QuizApp Team",
+                firstName, quizTitle
+        );
+        Mail mail = buildMail(toEmail, subject, messageText);
+        sendEmail(mail);
+    }
 }
