@@ -4,6 +4,7 @@ import com.quizapp.quizApp.exception.QuizNotFoundException;
 import com.quizapp.quizApp.exception.UserNotFoundException;
 import com.quizapp.quizApp.model.beans.*;
 import com.quizapp.quizApp.model.beans.Record;
+import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
@@ -52,6 +53,7 @@ public class RecordServiceImpl implements RecordService {
         record.setQuiz(quiz);
 
         record.setDuration(request.getDuration());
+        record.setStatus(Record.RecordStatus.valueOf(request.getStatus()));
 
         // Gérer les réponses choisies via RecordAnswer
         List<RecordAnswer> recordAnswers = new ArrayList<>();
@@ -111,6 +113,20 @@ public class RecordServiceImpl implements RecordService {
                 record.getTrainee().getId(),
                 record.getQuiz().getId()
         )).toList();
+    }
+
+    public List<CompletedRecordDTO> getCompletedRecordsForUser(String email) {
+        // Rechercher le stagiaire par email
+        User trainee = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Trainee not found with email: " + email));
+
+        // Récupérer les records terminés
+        List<Record> completedRecords = recordRepository.findByTraineeIdAndStatus(trainee.getId(), Record.RecordStatus.COMPLETED);
+
+        // Mapper les records vers des DTOs
+        return completedRecords.stream()
+                .map(record -> modelMapper.map(record, CompletedRecordDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override

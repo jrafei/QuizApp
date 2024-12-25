@@ -5,6 +5,7 @@ import com.quizapp.quizApp.model.beans.Quiz;
 import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.AnswerDTO;
+import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 import com.quizapp.quizApp.model.dto.response.UserResponseDTO;
@@ -55,6 +56,14 @@ public class AppConfig {
                 map().setTraineeId(source.getTrainee().getId());
                 map().setQuizID(source.getQuiz().getId());
             }
+        });
+
+        // Mapping Record -> CompletedRecordDTO
+        modelMapper.typeMap(Record.class, CompletedRecordDTO.class).addMappings(mapper -> {
+            mapper.map(src -> src.getId(), CompletedRecordDTO::setRecordId);
+            mapper.map(src -> src.getQuiz().getName(), CompletedRecordDTO::setQuizName);
+            mapper.map(Record::getScore, CompletedRecordDTO::setScore);
+            mapper.map(Record::getDuration, CompletedRecordDTO::setDuration);
         });
 
         return modelMapper;

@@ -1,5 +1,6 @@
 package com.quizapp.quizApp.service.interfac;
 
+import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.UserCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
@@ -22,4 +23,6 @@ public interface RecordService {
     Record assignQuizToTrainee(UUID traineeId, UUID quizId);
 
     List<RecordResponseDTO> getPendingQuizzesForTraineeByEmail(String email);
+
+    List<CompletedRecordDTO> getCompletedRecordsForUser(String email);
 }

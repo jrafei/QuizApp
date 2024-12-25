@@ -7,6 +7,7 @@ import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,18 @@ public class RecordController {
             @PathVariable UUID userId) {
         List<UserQuizStatsDTO> stats = recordService.getUserStatsByQuiz(userId);
         return ResponseEntity.ok(stats);
+    }
+
+    // Endpoint pour récupérer les parcours complétés pour l'utilisateur connecté
+    @GetMapping("/completed")
+    public ResponseEntity<List<CompletedRecordDTO>> getCompletedRecords() {
+        // Récupérer l'utilisateur connecté
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Appeler le service pour récupérer les records complétés
+        List<CompletedRecordDTO> completedRecords = recordService.getCompletedRecordsForUser(email);
+
+        return ResponseEntity.ok(completedRecords);
     }
 
 

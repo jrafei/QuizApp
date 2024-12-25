@@ -22,7 +22,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = new JwtUtil();
     }
@@ -47,12 +47,12 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 HttpMethod.POST,
+                                "/auth/**",
                                 "/users/forgot-password",
                                 "/users/reactivation-request",
-                                "/users/reactivate-account"
-                        ).permitAll() // Routes accessibles sans authentification
-
-                        .requestMatchers("/auth/**", "/users/activate").permitAll() // Accessible sans authentification
+                                "/users/reactivate-account",
+                                "/users/activate"
+                        ).permitAll()
 
                         // *********** Routes protégées *************
 
@@ -76,6 +76,8 @@ public class SecurityConfig {
                         //.requestMatchers("/records/**").hasAnyRole("ADMIN","TRAINEE")
                         .requestMatchers(HttpMethod.POST, "/records/assign").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/records/pending").hasRole("TRAINEE")
+                        .requestMatchers(HttpMethod.GET, "/records/completed").hasRole("TRAINEE")
+
 
                         // Toute autre requête nécessite une authentification
                         .anyRequest().authenticated()
@@ -86,3 +88,60 @@ public class SecurityConfig {
         return http.build();
     }
 }
+
+/*
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    System.out.println("In Security.config");
+    http
+            .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for simplicity
+            .addFilterBefore(customCorsFilter, UsernamePasswordAuthenticationFilter.class) // Ajout du filtre CORS
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers("/auth/login").permitAll() // Allow access to /auth/login for everyone
+                    .requestMatchers("/users/all").permitAll() // Allow access to /auth/login for everyone
+                    .requestMatchers("/users/{userId}/stats").permitAll()
+                    .requestMatchers("/themes/{themeId}/quizzes").permitAll()
+                    .requestMatchers("/themes/all").permitAll()
+                    .requestMatchers("/quizzes/{quizId}/stats").permitAll()
+
+                    .requestMatchers("/quizzes").hasAnyRole("admin", "trainee")
+
+                    .requestMatchers("/quizzes/user/{userId}").hasRole("admin")
+                    .requestMatchers("/quizzes/active").hasRole("admin")
+                    .requestMatchers("/quizzes/{quizId}/status").hasRole("admin")
+                    .requestMatchers("/quizzes/{quizId}").hasRole("admin")
+                    .requestMatchers("/quizzes/user/{userId}/created").hasRole("admin")
+                    .requestMatchers("/quizzes/{quizId}/versions").hasRole("admin")
+                    .requestMatchers("/quizzes/{quizId}/latest").hasRole("admin")
+
+                    .requestMatchers("/users").hasRole("admin")
+                    .requestMatchers("/users/{id}").hasRole("admin")
+                    .requestMatchers("/users/{id}/status").hasRole("admin")
+
+                    .requestMatchers("/answers").hasRole("trainee")
+                    .requestMatchers("/answers/{id}").hasRole("admin")
+                    .requestMatchers("/answers/question/{questionId}").hasRole("admin")
+                    .requestMatchers("/answers/{answerId}/position").hasRole("admin")
+                    .requestMatchers("/answers/{id}/status").hasRole("admin")
+
+                    .requestMatchers("/questions/**").hasRole("admin")
+
+                    .requestMatchers("/records/users/{userId}/quizzes/{quizId}").hasRole("trainee")
+                    .requestMatchers("/records/users/{userId}").hasRole("admin")
+                    .requestMatchers("/records/quizzes/{quizId}").hasRole("admin")
+
+                    .requestMatchers("/records/{recordId}").hasAnyRole("admin", "trainee")
+                    .requestMatchers("/records/{recordId}/answers").hasAnyRole("admin", "trainee")
+
+                    .requestMatchers("/records/{recordId}/delete").hasRole("admin")
+
+                    .requestMatchers("/themes").hasRole("admin")
+                    .requestMatchers("/themes/{themeId}").hasRole("admin")
+
+                    //.requestMatchers("/users").hasRole("admin")
+                    .anyRequest().authenticated() // Require authentication for all other endpoints
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter before username/password authentication
+
+    return http.build();
+ */
