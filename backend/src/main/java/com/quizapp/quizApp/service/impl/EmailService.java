@@ -23,7 +23,7 @@ public class EmailService {
     // Méthode principale pour envoyer l'email avec les informations de connexion
     public void sendCredentialsEmail(String toEmail, String firstName, String email, String password) {
         String messageText = buildCredentialsMessage(firstName, email, password);
-        Mail mail = buildMail(toEmail, "Vos informations de connexion à QuizApp", messageText);
+        Mail mail = buildMail(toEmail, "Your QuizApp credentials", messageText);
         sendEmail(mail);
     }
 
@@ -58,9 +58,9 @@ public class EmailService {
     // Construction du message de bienvenue avec un lien d'activation
     private Mail buildWelcomeMail(String toEmail, String firstName, String activationToken) {
         String activationUrl = "http://localhost:8080/users/activate?token=" + activationToken;
-        String subject = "Bienvenue dans l'application QuizApp";
+        String subject = "Welcome on QuizApp !";
         String messageText = String.format(
-                "Bonjour %s,\n\nMerci de vous être inscrit sur QuizApp. Cliquez sur le lien ci-dessous pour activer votre compte :\n%s\n\nCordialement,\nL'équipe QuizApp.",
+                "Welcome %s,\n\nThank you for registering on QuizApp. Click on the link %s to activate your account.\n\nBest regards,\nQuizApp Team.",
                 firstName, activationUrl
         );
         return buildMail(toEmail, subject, messageText);
@@ -69,7 +69,8 @@ public class EmailService {
     // Construction du message contenant les informations de connexion
     private String buildCredentialsMessage(String firstName, String email, String password) {
         return String.format(
-                "Bonjour %s,\n\nVotre compte a été activé avec succès. Voici vos informations de connexion :\n\nEmail : %s\nMot de passe temporaire : %s\n\nVeuillez vous connecter avec ce mot de passe et, une fois connecté, vous pourrez changer votre mot de passe dans les paramètres de votre compte.\n\nCordialement,\nL'équipe QuizApp.",
+                "Hello %s,\n\nYour account has been created successfully." +
+                        "Here are your credentials:\n\nE-mail : %s\nTemporary password : %s\n\nPlease log in with this password, once logged in, you can change it in your account settings.\n\nBest regards,\nQuizApp Team.",
                 firstName, email, password
         );
     }
