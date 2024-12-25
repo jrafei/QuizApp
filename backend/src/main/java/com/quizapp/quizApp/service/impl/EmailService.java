@@ -77,7 +77,7 @@ public class EmailService {
 
     // Méthode pour construire un mail SendGrid générique
     private Mail buildMail(String toEmail, String subject, String messageText) {
-        Email from = new Email("quizapputc@gmail.com"); // Remplacez par l'email de l'expéditeur
+        Email from = new Email("quizapputc@gmail.com");
         Email to = new Email(toEmail);
         Content content = new Content("text/plain", messageText);
         return new Mail(from, subject, to, content);

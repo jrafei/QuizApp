@@ -15,11 +15,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Random;
 
 @Service
 @AllArgsConstructor
@@ -46,6 +43,7 @@ public class UserServiceImpl implements UserService {
 
         // Hacher le mot de passe
         String hashedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
+        user.setPassword(hashedPassword);
 
         user.setIsActive(false); // Par défaut inactif
 
@@ -172,7 +170,9 @@ public class UserServiceImpl implements UserService {
         user.setActivationToken(null); // Supprimer le token après l'activation
 
         String temporaryPassword = generateTemporaryPassword();
-        user.setPassword(temporaryPassword);
+        String hashedPassword = passwordEncoder.encode(temporaryPassword);
+        user.setPassword(hashedPassword);
+
         userRepository.save(user);
 
         // Envoyer un email avec le mot de passe temporaire
@@ -186,13 +186,43 @@ public class UserServiceImpl implements UserService {
     }
 
     public String generateTemporaryPassword() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        // Catégories de caractères
+        String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String specialCharacters = "!@#$%^&*";
+        String allCharacters = upperCaseLetters + lowerCaseLetters + digits + specialCharacters;
+
         Random rand = new Random();
-        StringBuilder password = new StringBuilder(12);
-        for (int i = 0; i < 12; i++) {
-            password.append(characters.charAt(rand.nextInt(characters.length())));
+
+        // Garantir que le mot de passe contient au moins une lettre majuscule, une minuscule, un chiffre et un caractère spécial
+        StringBuilder password = new StringBuilder();
+
+        password.append(upperCaseLetters.charAt(rand.nextInt(upperCaseLetters.length())));
+        password.append(lowerCaseLetters.charAt(rand.nextInt(lowerCaseLetters.length())));
+        password.append(digits.charAt(rand.nextInt(digits.length())));
+        password.append(specialCharacters.charAt(rand.nextInt(specialCharacters.length())));
+
+        // Ajouter des caractères supplémentaires pour atteindre la longueur requise (12 caractères)
+        for (int i = 4; i < 12; i++) {
+            password.append(allCharacters.charAt(rand.nextInt(allCharacters.length())));
         }
-        return password.toString();
+
+        // Mélanger les caractères pour éviter une structure prévisible
+        return shuffleString(password.toString());
     }
+
+    private String shuffleString(String input) {
+        List<Character> characters = input.chars()
+                .mapToObj(c -> (char) c)
+                .collect(Collectors.toList());
+        Collections.shuffle(characters);
+        StringBuilder shuffled = new StringBuilder();
+        for (char c : characters) {
+            shuffled.append(c);
+        }
+        return shuffled.toString();
+    }
+
 
 }

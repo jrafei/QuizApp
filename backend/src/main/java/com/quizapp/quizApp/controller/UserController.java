@@ -67,9 +67,9 @@ public class UserController {
     public ResponseEntity<String> activateUser(@RequestParam String token) {
         boolean isActivated = userService.activateUserByToken(token);
         if (isActivated) {
-            return ResponseEntity.ok("Votre compte a été activé avec succès !");
+            return ResponseEntity.ok("Your account was successfully activated !");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le token d'activation est invalide.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid validation token.");
         }
     }
 
