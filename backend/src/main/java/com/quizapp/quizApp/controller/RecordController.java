@@ -2,6 +2,7 @@ package com.quizapp.quizApp.controller;
 
 
 import com.quizapp.quizApp.model.dto.AssignQuizRequestDTO;
+import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 
@@ -65,6 +66,13 @@ public class RecordController {
         return ResponseEntity.ok(completedRecords);
     }
 
+    @GetMapping("/{userId}/stats/quizs/{quizId}")
+    public ResponseEntity<UserQuizResultsDTO> getUserResultsForQuiz(
+            @PathVariable UUID userId,
+            @PathVariable UUID quizId) {
+        UserQuizResultsDTO results = recordService.getUserResultsForQuiz(userId, quizId);
+        return ResponseEntity.ok(results);
+    }
 
     // les resultats (note et durée) d'un stagiaire par themes
     @GetMapping("/{userId}/stats/themes")
@@ -92,8 +100,6 @@ public class RecordController {
 
         return ResponseEntity.ok(pendingRecords);
     }
-
-
 }
 
 

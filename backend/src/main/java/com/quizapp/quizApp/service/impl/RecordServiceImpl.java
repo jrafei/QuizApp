@@ -5,6 +5,7 @@ import com.quizapp.quizApp.exception.UserNotFoundException;
 import com.quizapp.quizApp.model.beans.*;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
+import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
@@ -127,6 +128,31 @@ public class RecordServiceImpl implements RecordService {
         return completedRecords.stream()
                 .map(record -> modelMapper.map(record, CompletedRecordDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserQuizResultsDTO getUserResultsForQuiz(UUID userId, UUID quizId) {
+        // Vérifiez si l'utilisateur existe
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        // Vérifiez si le quiz existe
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new QuizNotFoundException("Quiz not found with ID: " + quizId));
+
+        // Récupérez les records pour l'utilisateur et le quiz
+        List<Record> records = recordRepository.findByTraineeIdAndQuizId(userId, quizId);
+
+        if (records.isEmpty()) {
+            throw new IllegalArgumentException("No records found for this user and quiz.");
+        }
+
+        // Calculer les statistiques
+        double averageScore = records.stream().mapToInt(Record::getScore).average().orElse(0);
+        int bestScore = records.stream().mapToInt(Record::getScore).max().orElse(0);
+        int worstScore = records.stream().mapToInt(Record::getScore).min().orElse(0);
+
+        return new UserQuizResultsDTO(quiz.getName(), averageScore, bestScore, worstScore);
     }
 
     @Override

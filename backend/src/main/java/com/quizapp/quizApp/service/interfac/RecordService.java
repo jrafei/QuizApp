@@ -4,6 +4,7 @@ import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.UserCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
+import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
@@ -25,4 +26,6 @@ public interface RecordService {
     List<RecordResponseDTO> getPendingQuizzesForTraineeByEmail(String email);
 
     List<CompletedRecordDTO> getCompletedRecordsForUser(String email);
+
+    UserQuizResultsDTO getUserResultsForQuiz(UUID userId, UUID quizId);
 }
