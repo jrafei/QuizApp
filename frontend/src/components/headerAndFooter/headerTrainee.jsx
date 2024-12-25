@@ -9,7 +9,7 @@ const HeaderTrainee = () => {
                 <button className="bg-black px-4 py-2 rounded hover:bg-gray-600">Records</button>
                 <button className="bg-black px-4 py-2 rounded hover:bg-gray-600">Profile</button>
                 <button className="bg-black px-4 py-2 rounded hover:bg-gray-600">Deactivate</button>
-                <button className="bg-black px-4 py-2 rounded hover:bg-gray-600">Disconnect</button>
+                <button className="bg-black px-4 py-2 rounded hover:bg-gray-600">Log Out</button>
             </div>
             <div>
                 <img src={logo} alt="Logo" className="h-10" />
