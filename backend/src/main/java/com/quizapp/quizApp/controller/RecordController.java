@@ -2,6 +2,7 @@ package com.quizapp.quizApp.controller;
 
 
 import com.quizapp.quizApp.model.dto.AssignQuizRequestDTO;
+import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
 import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
@@ -80,6 +81,12 @@ public class RecordController {
             @PathVariable UUID userId) {
         List<UserThemeStatsDTO> stats = recordService.getUserStatsByTheme(userId);
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/quizs/{quizId}/leaderboard")
+    public ResponseEntity<List<QuizLeaderboardDTO>> getQuizLeaderboard(@PathVariable UUID quizId) {
+        List<QuizLeaderboardDTO> leaderboard = recordService.getQuizLeaderboard(quizId);
+        return ResponseEntity.ok(leaderboard);
     }
 
     // Endpoint pour assigner un quiz à un stagiaire

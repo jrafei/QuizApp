@@ -8,6 +8,7 @@ import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,4 +29,6 @@ public interface RecordService {
     List<CompletedRecordDTO> getCompletedRecordsForUser(String email);
 
     UserQuizResultsDTO getUserResultsForQuiz(UUID userId, UUID quizId);
+
+    List<QuizLeaderboardDTO> getQuizLeaderboard(UUID quizId);
 }

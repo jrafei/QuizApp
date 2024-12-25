@@ -5,6 +5,7 @@ import com.quizapp.quizApp.exception.UserNotFoundException;
 import com.quizapp.quizApp.model.beans.*;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
+import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
 import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
@@ -153,6 +154,66 @@ public class RecordServiceImpl implements RecordService {
         int worstScore = records.stream().mapToInt(Record::getScore).min().orElse(0);
 
         return new UserQuizResultsDTO(quiz.getName(), averageScore, bestScore, worstScore);
+    }
+
+    @Override
+    public List<QuizLeaderboardDTO> getQuizLeaderboard(UUID quizId) {
+        // Vérifiez si le quiz existe
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new QuizNotFoundException("Quiz not found with ID: " + quizId));
+
+        // Récupérez tous les records pour ce quiz avec le statut COMPLETED
+        List<Record> completedRecords = recordRepository.findByQuizIdAndStatus(quizId, Record.RecordStatus.COMPLETED);
+
+        if (completedRecords.isEmpty()) {
+            throw new IllegalArgumentException("No completed records found for this quiz.");
+        }
+
+        // Groupez les records par utilisateur
+        Map<User, List<Record>> recordsByUser = completedRecords.stream()
+                .collect(Collectors.groupingBy(Record::getTrainee));
+
+        // Pour chaque utilisateur, sélectionnez la meilleure tentative et calculez le score pondéré
+        List<QuizLeaderboardDTO> leaderboard = recordsByUser.entrySet().stream()
+                .map(entry -> {
+                    User user = entry.getKey();
+                    List<Record> userRecords = entry.getValue();
+
+                    // Trouvez la meilleure tentative (meilleur score, durée minimale si égalité)
+                    Record bestAttempt = userRecords.stream()
+                            .max(Comparator.comparingInt(Record::getScore)
+                                    .thenComparingInt(Record::getDuration))
+                            .orElseThrow();
+
+                    int bestScore = bestAttempt.getScore();
+                    double averageDuration = userRecords.stream().mapToInt(Record::getDuration).average().orElse(0);
+                    int attempts = userRecords.size();
+
+                    // Calculez le score pondéré
+                    double weightedScore = (bestScore * 1) - (averageDuration * 0.01); // Poids : Score=1, Temps=0.01
+
+                    return new QuizLeaderboardDTO(
+                            user.getId(),
+                            user.getFirstname() + " " + user.getLastname(),
+                            bestScore,
+                            averageDuration,
+                            attempts,
+                            0, // Le rang sera calculé après
+                            weightedScore // Ajoutez le score pondéré
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Triez le classement par score pondéré
+        leaderboard.sort(Comparator
+                .comparingDouble(QuizLeaderboardDTO::getWeightedScore).reversed()); // Score pondéré décroissant
+
+        // Assignez les rangs
+        for (int i = 0; i < leaderboard.size(); i++) {
+            leaderboard.get(i).setRank(i + 1);
+        }
+
+        return leaderboard;
     }
 
     @Override
