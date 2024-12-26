@@ -16,6 +16,28 @@ const Dashboard = () => {
         <div>
             <h1>Tableau de bord</h1>
             <p>Bienvenue, {localStorage.getItem('userEmail')} !</p>
+
+            
+            <a href="/quizlist">
+                <button className="btn1">
+                    <i className="fas fa-copy"></i>
+                    Questionnaires
+                </button>
+            </a>
+
+            <a href="lien">
+                <button className="btn2">
+                    <i className="fas fa-star"></i>
+                    Résultats aux évaluations
+                </button>
+            </a>
+
+            <a href="lien">
+                <button className="btn3">
+                    <i className="fas fa-user"></i>
+                    Profil
+                </button>
+            </a>
         </div>
     );
 };

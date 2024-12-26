@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Header from './components/Header';
+import QuizList from './pages/QuizList';
 
 function App() {
   return (
@@ -13,6 +14,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/quizlist" element={<QuizList />} />
+          <Route path="/quizzes/" element={<QuizList />} />
+
+
         </Routes>
       </Router>
   );

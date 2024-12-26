@@ -32,9 +32,9 @@ const Login = () => {
     return (
         <div>
             <h2>Se connecter</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleSubmit}>
-                <div>
+                {error && <p style={{ color: 'red', marginBottom: '10px' }}>{error}</p>}
+                <div style={{ marginTop: '50px' }}>
                     <label>Email</label>
                     <input
                         type="email"
@@ -52,10 +52,15 @@ const Login = () => {
                         required
                     />
                 </div>
-                <button type="submit">Se connecter</button>
+                <div style={{ marginTop: '20px' }}>
+                    <button type="submit">Se connecter</button>
+                </div>
             </form>
-            <Footer></Footer>
+            <div style={{ marginTop: '20px' }}>
+                <Footer />
+            </div>
         </div>
+
     );
 };
 
