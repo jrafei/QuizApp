@@ -1,9 +1,14 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
+
 import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
 import Footer from "../../components/headerAndFooter/footer";
 
 
 function Signin() {
+
+    const navigate = useNavigate();
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
             <header className="flex-0"> <HeaderVisitor /> </header>
@@ -49,11 +54,15 @@ function Signin() {
                 
             </main>
             <div className="mt-auto flex justify-between w-full p-4">
-                <button className="bg-blue-700 text-white text-italic px-6 py-3 rounded-lg hover:bg-blue-500">
-                    New here?
+                <button 
+                    onClick={() => navigate('/signup')}
+                    className="bg-blue-700 text-white text-italic px-6 py-3 rounded-lg hover:bg-blue-500">
+                        New here?
                 </button>
-                <button className="bg-blue-700 text-white text-italic px-6 py-3 rounded-lg hover:bg-blue-500">
-                    Forgot password?
+                <button 
+                    onClick={() => navigate('/forgotpassword')}
+                    className="bg-blue-700 text-white text-italic px-6 py-3 rounded-lg hover:bg-blue-500">
+                        Forgot password?
                 </button>
             </div>
             <Footer />

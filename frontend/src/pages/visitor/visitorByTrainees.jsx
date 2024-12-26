@@ -1,5 +1,6 @@
 import React from "react";
 import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
+import SignInButton from "../../components/headerAndFooter/signInButton";
 import Footer from "../../components/headerAndFooter/footer";
 
 import TraineeTrainee from "../../components/visitor/traineesTrainees"; 
@@ -30,11 +31,8 @@ function VisitorByTrainees() {
             </div>
             
         </main>
-        <div className="mt-auto flex justify-end w-full p-4">
-            <button className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-500">
-                Sign in
-            </button>
-        </div>
+        
+        <SignInButton />
         <Footer />
     </div>
   );
