@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 "/users/{id}"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/auth/activate," +
+                                "/auth/activate",
                                 "/records",
                                 "/records/{userId}/stats/themes",
                                 "/records/{userId}/stats/quizs/{quizId}",

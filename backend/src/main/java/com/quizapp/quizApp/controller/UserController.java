@@ -64,17 +64,6 @@ public class UserController {
         return ResponseEntity.ok(message); // Retourne 200 OK avec un message
     }
 
-    // Activer l'utilisateur via un lien
-    @GetMapping("/activate")
-    public ResponseEntity<String> activateUser(@RequestParam String token) {
-        boolean isActivated = userService.activateUserByToken(token);
-        if (isActivated) {
-            return ResponseEntity.ok("Your account was successfully activated !");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid validation token.");
-        }
-    }
-
     // Désactiver un utilisateur
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<String> deactivateUser(@PathVariable UUID id) {

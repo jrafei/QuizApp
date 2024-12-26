@@ -57,7 +57,7 @@ public class EmailService {
 
     // Construction du message de bienvenue avec un lien d'activation
     private Mail buildWelcomeMail(String toEmail, String firstName, String activationToken) {
-        String activationUrl = "http://localhost:8080/users/activate?token=" + activationToken;
+        String activationUrl = "http://localhost:8080/auth/activate?token=" + activationToken;
         String subject = "Welcome on QuizApp !";
         String messageText = String.format(
                 "Welcome %s,\n\nThank you for registering on QuizApp. Click on the link %s to activate your account.\n\nBest regards,\nQuizApp Team.",
