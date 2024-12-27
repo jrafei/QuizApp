@@ -1,8 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // requêtes HTTP
+import { toast, Toaster } from 'sonner';
+
 import HeaderGeneral from "../../components/headerAndFooter/headerGeneral";
 import Footer from "../../components/headerAndFooter/footer";
 
 function WelcomeBack() {
+
+    const navigate = useNavigate();
+    
+    const [email, setemail] = useState();
+    const [activationcode, setactivationcode] = useState();
+
+    const handleauthentification = async(e) => {
+        e.preventDefault(); // pour ne pas rafraichir la page (juste tu envoies les req vers le back)
+        try {
+            const response = await axios.post("http://localhost:8080/auth/login", {username:email, password:password}); //envoie 2 infos vers le backpour qu'ils soient traités
+            console.log(response.data.token);
+            toast.success("Signed successfully");
+            setTimeout(() => {
+                navigate("/traineespace");
+            }, 2000);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error while authenticating");
+
+        }
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
             <header className="flex-0"> <HeaderGeneral /> </header>

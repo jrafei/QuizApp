@@ -37,9 +37,11 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @CrossOrigin(origins="http://localhost:5176")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequest) {
         try {
+            System.out.println(authRequest);
             // Authenticate the user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
@@ -63,7 +65,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
     }
-
+    @CrossOrigin(origins="http://localhost:5176")
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");

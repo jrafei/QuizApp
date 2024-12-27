@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // requêtes HTTP
+import { toast, Toaster } from 'sonner';
 
 import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
 import Footer from "../../components/headerAndFooter/footer";
@@ -8,6 +10,20 @@ import Footer from "../../components/headerAndFooter/footer";
 function ForgotPassword() {
 
     const navigate = useNavigate();
+    const [email, setemail] = useState();
+    const handlecredentialssending= async(e) => {
+        e.preventDefault(); // pour ne pas rafraichir la page (juste tu envoies les req vers le back)
+        try {
+            const response = await axios.post("http://localhost:8080/auth/forgot-password", {email:email}); //envoie 2 infos vers le backpour qu'ils soient traités
+            toast.success("Your credentials have been sent successfully !");
+            setTimeout(() => {
+                navigate("/signin");
+            }, 5000);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error sending your credentials ! ");
+        }
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -17,10 +33,13 @@ function ForgotPassword() {
                 <h1 className="text-4xl font-bold text-gray-800 mb-16 text-center mt-32">
                     Forgot password?
                 </h1>
-                <form className="w-full max-w-sm">
+                <Toaster /> 
+                <form className="w-full max-w-sm" onSubmit={handlecredentialssending}>
                     <div className="mb-8">
                         <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">E-mail</label>
-                        <input 
+                        <input
+                            value={email}
+                            onChange={(e) => setemail(e.target.value)}
                             type="email" 
                             id="email" 
                             name="email" 

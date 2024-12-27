@@ -14,7 +14,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SecurityConfig {
@@ -39,13 +40,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Désactiver CSRF pour une API REST
+        http.cors().and() // Enable CORS support
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
                 .authorizeHttpRequests(auth -> auth
 
                         // *********** Routes publiques *************
-                        .requestMatchers(
-                                HttpMethod.POST,
+                        .requestMatchers(HttpMethod.POST,
                                 "/auth/login",
                                 "/auth/logout",
                                 "/auth/forgot-password",
@@ -119,7 +119,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/records/pending").hasRole("TRAINEE") // Quizzes assignés accessibles uniquement aux TRAINEE
 
 
-                        // Toute autre requête nécessite une authentification
+                        // All other requests must be authenticated
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
@@ -127,61 +127,18 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // Apply to all endpoints
+                        .allowedOrigins("http://localhost:5176") // Specify allowed origins
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE") // Specify allowed methods
+                        .allowedHeaders("*") // Allow all headers
+                        .allowCredentials(true); // Allow credentials like cookies
+            }
+        };
+    }
 }
-
-/*
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    System.out.println("In Security.config");
-    http
-            .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for simplicity
-            .addFilterBefore(customCorsFilter, UsernamePasswordAuthenticationFilter.class) // Ajout du filtre CORS
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/auth/login").permitAll() // Allow access to /auth/login for everyone
-                    .requestMatchers("/users/all").permitAll() // Allow access to /auth/login for everyone
-                    .requestMatchers("/users/{userId}/stats").permitAll()
-                    .requestMatchers("/themes/{themeId}/quizzes").permitAll()
-                    .requestMatchers("/themes/all").permitAll()
-                    .requestMatchers("/quizzes/{quizId}/stats").permitAll()
-
-                    .requestMatchers("/quizzes").hasAnyRole("admin", "trainee")
-
-                    .requestMatchers("/quizzes/user/{userId}").hasRole("admin")
-                    .requestMatchers("/quizzes/active").hasRole("admin")
-                    .requestMatchers("/quizzes/{quizId}/status").hasRole("admin")
-                    .requestMatchers("/quizzes/{quizId}").hasRole("admin")
-                    .requestMatchers("/quizzes/user/{userId}/created").hasRole("admin")
-                    .requestMatchers("/quizzes/{quizId}/versions").hasRole("admin")
-                    .requestMatchers("/quizzes/{quizId}/latest").hasRole("admin")
-
-                    .requestMatchers("/users").hasRole("admin")
-                    .requestMatchers("/users/{id}").hasRole("admin")
-                    .requestMatchers("/users/{id}/status").hasRole("admin")
-
-                    .requestMatchers("/answers").hasRole("trainee")
-                    .requestMatchers("/answers/{id}").hasRole("admin")
-                    .requestMatchers("/answers/question/{questionId}").hasRole("admin")
-                    .requestMatchers("/answers/{answerId}/position").hasRole("admin")
-                    .requestMatchers("/answers/{id}/status").hasRole("admin")
-
-                    .requestMatchers("/questions/**").hasRole("admin")
-
-                    .requestMatchers("/records/users/{userId}/quizzes/{quizId}").hasRole("trainee")
-                    .requestMatchers("/records/users/{userId}").hasRole("admin")
-                    .requestMatchers("/records/quizzes/{quizId}").hasRole("admin")
-
-                    .requestMatchers("/records/{recordId}").hasAnyRole("admin", "trainee")
-                    .requestMatchers("/records/{recordId}/answers").hasAnyRole("admin", "trainee")
-
-                    .requestMatchers("/records/{recordId}/delete").hasRole("admin")
-
-                    .requestMatchers("/themes").hasRole("admin")
-                    .requestMatchers("/themes/{themeId}").hasRole("admin")
-
-                    //.requestMatchers("/users").hasRole("admin")
-                    .anyRequest().authenticated() // Require authentication for all other endpoints
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter before username/password authentication
-
-    return http.build();
- */

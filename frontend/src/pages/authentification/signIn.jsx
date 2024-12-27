@@ -10,6 +10,7 @@ import Footer from "../../components/headerAndFooter/footer";
 function Signin() {
 
     const navigate = useNavigate();
+    
     const [email, setemail] = useState();
     const [password, setpassword] = useState();
     const handleauthentification = async(e) => {
