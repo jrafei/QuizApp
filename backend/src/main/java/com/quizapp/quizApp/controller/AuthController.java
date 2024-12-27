@@ -37,7 +37,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @CrossOrigin(origins="http://localhost:5176")
+    @CrossOrigin(origins="http://localhost:5173")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequest) {
         try {
@@ -65,7 +65,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
     }
-    @CrossOrigin(origins="http://localhost:5176")
+    @CrossOrigin(origins="http://localhost:5173")
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
@@ -78,7 +78,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/reactivation-request")
+    @PostMapping("/reactivation-request") //Envoie le mail
     public ResponseEntity<String> requestReactivation(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         if (email == null || email.isBlank()) {
@@ -89,7 +89,7 @@ public class AuthController {
         return ResponseEntity.ok("If this email is associated with an inactive account, you will receive a validation code.");
     }
 
-    @PostMapping("/reactivate-account")
+    @PostMapping("/reactivate-account") //Renseigne le code 
     public ResponseEntity<String> reactivateAccount(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         String validationCode = requestBody.get("validationCode");

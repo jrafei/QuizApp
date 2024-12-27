@@ -83,6 +83,7 @@ public class RecordController {
         return ResponseEntity.ok(stats);
     }
 
+    // Par quiz 
     @GetMapping("/quizs/{quizId}/leaderboard")
     public ResponseEntity<List<QuizLeaderboardDTO>> getQuizLeaderboard(@PathVariable UUID quizId) {
         List<QuizLeaderboardDTO> leaderboard = recordService.getQuizLeaderboard(quizId);
