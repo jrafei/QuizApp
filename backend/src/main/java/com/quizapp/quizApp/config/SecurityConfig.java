@@ -56,6 +56,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/auth/activate",
+                                "/themes",
                                 "/records",
                                 "/records/{userId}/stats/themes",
                                 "/records/{userId}/stats/quizs/{quizId}",
@@ -73,7 +74,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN") // Suppression : uniquement pour ADMIN
 
                         // THEMES
-                        .requestMatchers(HttpMethod.GET, "/themes").hasAnyRole("ADMIN", "TRAINEE") // Lister tous les thèmes
+                        // .requestMatchers(HttpMethod.GET, "/themes").hasAnyRole("ADMIN", "TRAINEE") // Lister tous les thèmes
                         .requestMatchers(HttpMethod.GET, "/themes/{id}").hasAnyRole("ADMIN", "TRAINEE") // Obtenir un thème par ID
 
                         .requestMatchers(HttpMethod.POST, "/themes").hasRole("ADMIN") // Création uniquement pour ADMIN

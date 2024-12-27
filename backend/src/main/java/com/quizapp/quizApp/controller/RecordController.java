@@ -46,7 +46,7 @@ public class RecordController {
         return ResponseEntity.ok(records);
     }
 
-
+    
     // les resultats (note et durée) d'un stagiaire par questionnaire
     @GetMapping("/{userId}/stats/quizs")
     public ResponseEntity<List<UserQuizStatsDTO>> getUserStatsByQuiz(
