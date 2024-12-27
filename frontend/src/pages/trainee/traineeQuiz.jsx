@@ -6,10 +6,11 @@ import Footer from "../../components/headerAndFooter/footer";
 
 import CurrentQuiz from "../../components/trainee/currentQuiz";
 
-function TraineeQuiz() {
+function TraineeQuiz(quizId) {
 
     const navigate = useNavigate();
-    
+    //const { quizId } = useParams(); // Get the quiz ID from the URL
+
     const record = {
         name: 'Géographie - La Terre',
         nb_questions: 15,
@@ -42,10 +43,10 @@ function TraineeQuiz() {
         <div className="flex flex-col min-h-screen bg-gray-100">
             <header className="flex-0"> <HeaderTrainee /> </header>
             <h1 className="text-3xl font-bold text-gray-800 mt-6 mb-8 text-center">
-                Quiz : {record.name}
+                Quiz : {/*record.name*/}
             </h1>
             <main className="flex-1 flex flex-col justify-center items-center">
-                <CurrentQuiz />
+                <CurrentQuiz quizId={quizId} />
             </main>
             
             <div className="mt-auto flex justify-center w-full p-4 mb-2">
