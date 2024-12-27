@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // requêtes HTTP
+import { toast, Toaster } from 'sonner';
 
 import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
 import Footer from "../../components/headerAndFooter/footer";
@@ -8,6 +10,23 @@ import Footer from "../../components/headerAndFooter/footer";
 function Signin() {
 
     const navigate = useNavigate();
+    const [email, setemail] = useState();
+    const [password, setpassword] = useState();
+    const handleauthentification = async(e) => {
+        e.preventDefault(); // pour ne pas rafraichir la page (juste tu envoies les req vers le back)
+        try {
+            const response = await axios.post("http://localhost:8080/auth/login", {username:email, password:password}); //envoie 2 infos vers le backpour qu'ils soient traités
+            console.log(response.data.token);
+            toast.success("Signed successfully");
+            setTimeout(() => {
+                navigate("/traineespace");
+            }, 2000);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error while authenticating");
+
+        }
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -17,10 +36,13 @@ function Signin() {
                 <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center mt-32">
                     Sign in
                 </h1>
-                <form className="w-full max-w-sm">
+                <Toaster /> 
+                <form className="w-full max-w-sm" onSubmit={handleauthentification}>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">E-mail</label>
                         <input 
+                            value={email}
+                            onChange={(e) => setemail(e.target.value)}
                             type="email" 
                             id="email" 
                             name="email" 
@@ -33,6 +55,8 @@ function Signin() {
                     <div className="mb-6">
                         <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">Password</label>
                         <input 
+                            value={password}
+                            onChange={(e) => setpassword(e.target.value)}
                             type="password" 
                             id="password" 
                             name="password" 
@@ -43,10 +67,9 @@ function Signin() {
                     </div>
 
                     <div className="flex justify-center">
-                        <button 
+                        <button
                             type="submit"
-                            className="bg-blue-700 text-white py-2 px-6 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
+                            className="bg-blue-700 text-white py-2 px-6 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">                       
                             Submit
                         </button>
                     </div>
