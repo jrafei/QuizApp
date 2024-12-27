@@ -1,13 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // requêtes HTTP
+import { toast, Toaster } from 'sonner';
 
 import HeaderVisitor from "../../components/headerAndFooter/headerVisitor";
 import Footer from "../../components/headerAndFooter/footer";
 
-
 function Signup() {
 
     const navigate = useNavigate();
+    const [firstname, setfirstname] = useState();
+    const [lastname, setlastname] = useState();
+    const [role, setrole] = useState("TRAINEE");
+    const [company, setcompany] = useState();
+    const [phone, setphone] = useState();
+    const [email, setemail] = useState();
+    const [password, setpassword] = useState();
+    const [isActive, setisactive] = useState(false);
+
+    const handleauthentification = async(e) => {
+        e.preventDefault(); // pour ne pas rafraichir la page (juste tu envoies les req vers le back)
+        try {
+            const response = await axios.post("http://localhost:8080/users", {firstname:firstname, lastname:lastname, role:role, company:company, phone:phone, email:email, password:password, isActive:isActive});
+            console.log(response.data);
+            toast.success("Registered successfully");
+            toast.info("Please activate your account by clicking on the link received in your mails, then sign in");
+            setTimeout(() => {
+                navigate("/signin");
+            }, 5000);
+        } catch (error) {
+            console.log(error);
+            toast.error("Error while registering");
+
+        }
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -17,10 +43,13 @@ function Signup() {
                 <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center mt-16">
                     Sign up
                 </h1>
-                <form className="w-full max-w-sm">
+                <Toaster />
+                <form className="w-full max-w-sm" onSubmit={handleauthentification}>
                     <div className="mb-4">
                         <label htmlFor="firstname" className="block text-gray-700 text-sm font-bold mb-2">First Name</label>
-                        <input 
+                        <input
+                            value={firstname}
+                            onChange={(e) => setfirstname(e.target.value)}
                             type="text" 
                             id="firstname" 
                             name="firstname" 
@@ -32,7 +61,9 @@ function Signup() {
 
                     <div className="mb-4">
                         <label htmlFor="lastname" className="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
-                        <input 
+                        <input
+                            value={lastname}
+                            onChange={(e) => setlastname(e.target.value)}
                             type="text" 
                             id="lastname" 
                             name="lastname" 
@@ -44,7 +75,9 @@ function Signup() {
 
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">E-mail</label>
-                        <input 
+                        <input
+                            value={email}
+                            onChange={(e) => setemail(e.target.value)}
                             type="email" 
                             id="email" 
                             name="email" 
@@ -56,7 +89,9 @@ function Signup() {
 
                     <div className="mb-4">
                         <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                        <input 
+                        <input
+                            value={password}
+                            onChange={(e) => setpassword(e.target.value)}
                             type="password" 
                             id="password" 
                             name="password" 
@@ -68,7 +103,9 @@ function Signup() {
 
                     <div className="mb-4">
                         <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                        <input 
+                        <input
+                            value={phone}
+                            onChange={(e) => setphone(e.target.value)}
                             type="tel" 
                             id="phone" 
                             name="phone" 
@@ -79,7 +116,9 @@ function Signup() {
 
                     <div className="mb-8">
                         <label htmlFor="company" className="block text-gray-700 text-sm font-bold mb-2">Company</label>
-                        <input 
+                        <input
+                            value={company}
+                            onChange={(e) => setcompany(e.target.value)}
                             type="text" 
                             id="company" 
                             name="company" 
