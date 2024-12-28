@@ -32,9 +32,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO userCreateDTO) {
-        // Validation du mot de passe
-        passwordValidator.validate(userCreateDTO.getPassword());
-
         // Vérifier si l'email est déjà utilisé
         if (userRepository.findByEmail(userCreateDTO.getEmail().toLowerCase()).isPresent()) {
             throw new DuplicateEmailException("L'email " + userCreateDTO.getEmail() + " est déjà utilisé.");
@@ -43,10 +40,7 @@ public class UserServiceImpl implements UserService {
         // Mapper le DTO vers l'entité User avec ModelMapper
         User user = modelMapper.map(userCreateDTO, User.class);
 
-        // Hacher le mot de passe
-        String hashedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
-        user.setPassword(hashedPassword);
-
+        user.setPassword(null);
         user.setIsActive(false); // Par défaut inactif
 
         // Générer un token d'activation
