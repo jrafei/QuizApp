@@ -31,7 +31,6 @@ public class InactiveUserCleanerAtStartup {
     }
 
     private void deleteUserData(User user) {
-        // Si l'utilisateur a d'autres données associées (historiques, réponses, etc.), supprimez-les ici
         System.out.println("Suppression des données associées pour l'utilisateur : " + user.getEmail());
     }
 }
