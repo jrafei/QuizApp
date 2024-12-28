@@ -13,7 +13,7 @@ public class QuizResponseDTO {
     private Boolean isActive;
     private Integer position;
     private LocalDateTime creationDate;
-    private UUID creatorId;
+    //private UUID creatorId;
     private UUID themeId;
 
 }

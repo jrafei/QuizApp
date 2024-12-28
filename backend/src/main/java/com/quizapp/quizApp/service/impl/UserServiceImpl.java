@@ -116,6 +116,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
         user.setIsActive(status);
+
+        if (!status) {
+            user.setDeactivationDate(LocalDateTime.now()); // Date de désactivation
+        } else {
+            user.setDeactivationDate(null); // Réinitialiser si le compte est réactivé
+        }
+
         userRepository.save(user);
         return status ? "Utilisateur activé" : "Utilisateur désactivé";
     }
@@ -239,6 +246,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isAccountDeactivated(String email) {
+        User user = userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        return !user.getIsActive();
+    }
+
+
+    @Override
     public void requestAccountReactivation(String email) {
         User user = userRepository.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
@@ -281,6 +296,9 @@ public class UserServiceImpl implements UserService {
         user.setIsActive(true);
         user.setValidationCode(null);
         user.setValidationCodeExpiration(null);
+
+        // Réinitialiser la date de désactivation
+        user.setDeactivationDate(null);
 
         userRepository.save(user);
     }

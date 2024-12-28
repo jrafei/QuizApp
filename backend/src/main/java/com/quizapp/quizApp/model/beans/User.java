@@ -56,14 +56,17 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
+    @Column(name = "deactivation_date")
+    private LocalDateTime deactivationDate;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 10)
     private Role role;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)
-    @JsonManagedReference  // Sérialiser les quiz associés à ce créateur
-    private List<Quiz> quizzes; // Liste des quiz créés par cet utilisateur
+//    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)
+//    @JsonManagedReference  // Sérialiser les quiz associés à ce créateur
+//    private List<Quiz> quizzes; // Liste des quiz créés par cet utilisateur
 
     public enum Role {
         ADMIN, TRAINEE

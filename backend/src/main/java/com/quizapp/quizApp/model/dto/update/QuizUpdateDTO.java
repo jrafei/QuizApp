@@ -14,7 +14,7 @@ import java.util.UUID;
 public class QuizUpdateDTO {
     private String name;
     private Integer position;
-    private UUID creatorId;
+    //private UUID creatorId;
     private UUID themeId;
     //private List<QuestionCreateDTO> questions; // Liste des questions associées
 

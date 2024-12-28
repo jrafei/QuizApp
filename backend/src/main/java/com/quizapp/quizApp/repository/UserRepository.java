@@ -4,8 +4,10 @@ import com.quizapp.quizApp.model.beans.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
@@ -13,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByActivationToken(String token);
+
+    List<User> findByIsActiveFalseAndDeactivationDateBefore(LocalDateTime oneMonthAgo);
 }

@@ -21,7 +21,6 @@ import java.util.*;
 public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
-    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final ThemeRepository themeRepository;
     private final QuestionRepository questionRepository;
@@ -56,8 +55,8 @@ public class QuizServiceImpl implements QuizService {
 
         System.out.println("debut createQUiz");
         // Charger le créateur et le thème
-        User creator = userRepository.findById(quizCreateDTO.getCreatorId())
-                .orElseThrow(() -> new IllegalArgumentException("Créateur introuvable."));
+//        User creator = userRepository.findById(quizCreateDTO.getCreatorId())
+//                .orElseThrow(() -> new IllegalArgumentException("Créateur introuvable."));
         Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
                 .orElseThrow(() -> new IllegalArgumentException("Thème introuvable."));
 
@@ -65,7 +64,7 @@ public class QuizServiceImpl implements QuizService {
         System.out.println("debut modelMapper configuration");
         // // Configurer le TypeMap avec les règles de mapping spécifiques
         modelMapper.typeMap(QuizCreateDTO.class, Quiz.class).addMappings(mapper -> {
-            mapper.skip(Quiz::setCreator); // Ignorer le mapping par défaut
+            //mapper.skip(Quiz::setCreator); // Ignorer le mapping par défaut
             mapper.skip(Quiz::setTheme);   // Ignorer le mapping par défaut
         });
 
@@ -74,7 +73,7 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = modelMapper.map(quizCreateDTO, Quiz.class);
 
         System.out.println("fin Mapper");
-        quiz.setCreator(creator);
+//        quiz.setCreator(creator);
         quiz.setTheme(theme);
 
         // Quiz inactif à la création
@@ -112,13 +111,13 @@ public class QuizServiceImpl implements QuizService {
                 .toList();
     }
 
-    @Override
-    public List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId) {
-        return quizRepository.findByCreatorId(creatorId)
-                .stream()
-                .map(quiz -> modelMapper.map(quiz, QuizResponseDTO.class))
-                .toList();
-    }
+//    @Override
+//    public List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId) {
+//        return quizRepository.findByCreatorId(creatorId)
+//                .stream()
+//                .map(quiz -> modelMapper.map(quiz, QuizResponseDTO.class))
+//                .toList();
+//    }
 
     @Override
     @Transactional

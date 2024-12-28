@@ -20,8 +20,8 @@ public class QuizCreateDTO {
     @Min(value = 1, message = "L'ordre doit être un entier positif.")
     private Integer position;
 
-    @NotNull(message = "L'ID du créateur est obligatoire.")
-    private UUID creatorId;
+//    @NotNull(message = "L'ID du créateur est obligatoire.")
+//    private UUID creatorId;
 
     @NotNull(message = "L'ID du thème est obligatoire.")
     private UUID themeId;
