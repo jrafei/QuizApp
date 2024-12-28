@@ -57,6 +57,7 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @OrderBy("position ASC")
     private List<Question> questions;//= new ArrayList<>(); // Liste des questions associées
 
 
@@ -68,6 +69,16 @@ public class Quiz {
     public int getNbQuestion(){
        return questions.size();
     }
+
+
+    // pour voir si l'ordre des questions dans la liste respecte leur position
+    public void printListQuesions(){
+        for (Question quest: questions) {
+            System.out.println("Label de la question : " + quest.getLabel());
+        }
+    }
+
+
 
 
 }
