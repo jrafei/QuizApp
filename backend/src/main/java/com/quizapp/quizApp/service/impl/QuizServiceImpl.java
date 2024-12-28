@@ -158,6 +158,22 @@ public class QuizServiceImpl implements QuizService {
         return modelMapper.map(updatedQuiz, QuizResponseDTO.class);
     }
 
+    /*
+    private void updatePosition(Quiz quiz, QuizCreateDTO quizCreateDTO) {
+        int newPosition = quizCreateDTO.getPosition();
+
+        Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
+                .orElseThrow(() -> new IllegalArgumentException("Thème associé au quiz est introuvable."));
+
+        int nbQuiz = theme.getQuizzes().size();
+        if (newPosition > nbQuiz){
+            throw new RuntimeException("Position invalide : supérieur au nombre de quizs ");
+        }
+
+    }
+    */
+
+
     @Override
     public QuizResponseDTO setActiveStatus(UUID id, Boolean isActive) {
         Quiz quiz = quizRepository.findById(id)
