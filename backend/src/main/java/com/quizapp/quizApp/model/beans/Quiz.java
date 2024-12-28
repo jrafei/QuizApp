@@ -55,10 +55,11 @@ public class Quiz {
     @JsonBackReference
     private Theme theme; // Relation avec le thème
 
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    @NotNull
-    private List<Question> questions = new ArrayList<>(); // Liste des questions associées
+    private List<Question> questions;//= new ArrayList<>(); // Liste des questions associées
+
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
@@ -68,4 +69,6 @@ public class Quiz {
     public int getNbQuestion(){
        return questions.size();
     }
+
+
 }

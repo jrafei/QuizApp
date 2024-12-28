@@ -1,5 +1,6 @@
 package com.quizapp.quizApp.model.beans;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -36,7 +37,7 @@ public class Question {
     //@ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne
     @JoinColumn(name = "quiz_id", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference
     private Quiz quiz; // Association au Quiz parent
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)

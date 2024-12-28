@@ -6,8 +6,10 @@ import com.quizapp.quizApp.model.dto.creation.AnswerCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.QuestionCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
+import com.quizapp.quizApp.model.dto.update.QuizUpdateDTO;
 import com.quizapp.quizApp.repository.*;
 import com.quizapp.quizApp.service.interfac.QuizService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -79,6 +81,7 @@ public class QuizServiceImpl implements QuizService {
         quiz.setIsActive(false); // Par défaut, le quiz est inactif
         quiz.setPosition(null); // Position par défaut pour les quiz inactifs
 
+
         // Initialiser les positions des questions
         if (quizCreateDTO.getQuestions() != null && !quizCreateDTO.getQuestions().isEmpty()) {
             int position = 1;
@@ -118,33 +121,38 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public QuizResponseDTO updateQuiz(UUID id, QuizCreateDTO quizCreateDTO) {
+    @Transactional
+    public QuizResponseDTO updateQuiz(UUID id, QuizUpdateDTO quizUpdateDTO) {
         // Log : Afficher le DTO reçu
-        System.out.println("Received QuizCreateDTO: " + quizCreateDTO);
+        System.out.println("Received QuizCreateDTO: " + quizUpdateDTO);
 
+        System.out.println("id de quiz = "+ id);
         // Récupérer le quiz existant
         Quiz quiz = quizRepository.findById(id)
                 .orElseThrow(() -> new QuizNotFoundException("Quiz non trouvé avec l'ID : " + id));
 
         // Log : Afficher l'état du quiz avant la mise à jour
-        System.out.println("Quiz before update: " + quiz);
+        System.out.println("Quiz before update: ");
 
         // Modifier les champs du quiz
-        if (quizCreateDTO.getName() != null) {
-            quiz.setName(quizCreateDTO.getName());
-        }
-        if (quizCreateDTO.getPosition() != null) {
-            quiz.setPosition(quizCreateDTO.getPosition());
+        if (quizUpdateDTO.getName() != null) {
+            quiz.setName(quizUpdateDTO.getName());
         }
 
+
+        if (quizUpdateDTO.getPosition() != null) {
+            quiz.setPosition(quizUpdateDTO.getPosition());
+        }
+
+
         // Log : Afficher les valeurs après modification
-        System.out.println("Updated quiz: " + quiz);
+        System.out.println("Updated quiz: " );
 
         // Sauvegarder les modifications
         Quiz updatedQuiz = quizRepository.save(quiz);
 
         // Log : Afficher l'objet mis à jour
-        System.out.println("Saved quiz: " + updatedQuiz);
+        System.out.println("Saved quiz: ");
 
         // Retourner le DTO de la réponse
         return modelMapper.map(updatedQuiz, QuizResponseDTO.class);
