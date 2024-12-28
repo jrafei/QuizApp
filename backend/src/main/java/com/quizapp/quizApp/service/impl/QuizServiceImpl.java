@@ -6,16 +6,15 @@ import com.quizapp.quizApp.model.dto.creation.AnswerCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.QuestionCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
+import com.quizapp.quizApp.model.dto.update.QuizUpdateDTO;
 import com.quizapp.quizApp.repository.*;
 import com.quizapp.quizApp.service.interfac.QuizService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -55,15 +54,15 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public QuizResponseDTO createQuiz(QuizCreateDTO quizCreateDTO) {
 
+        System.out.println("debut createQUiz");
         // Charger le créateur et le thème
         User creator = userRepository.findById(quizCreateDTO.getCreatorId())
                 .orElseThrow(() -> new IllegalArgumentException("Créateur introuvable."));
         Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
                 .orElseThrow(() -> new IllegalArgumentException("Thème introuvable."));
 
-        // Debug
-        System.out.println("Received QuizCreateDTO: " + quizCreateDTO);
 
+        System.out.println("debut modelMapper configuration");
         // // Configurer le TypeMap avec les règles de mapping spécifiques
         modelMapper.typeMap(QuizCreateDTO.class, Quiz.class).addMappings(mapper -> {
             mapper.skip(Quiz::setCreator); // Ignorer le mapping par défaut
@@ -71,32 +70,36 @@ public class QuizServiceImpl implements QuizService {
         });
 
         // Mapper le DTO vers une entité Quiz
+        System.out.println("debut Mapper");
         Quiz quiz = modelMapper.map(quizCreateDTO, Quiz.class);
 
+        System.out.println("fin Mapper");
         quiz.setCreator(creator);
         quiz.setTheme(theme);
-
-
-        // Debug
-        System.out.println("Mapped Quiz entity: " + quiz);
 
         // Quiz inactif à la création
         quiz.setIsActive(false); // Par défaut, le quiz est inactif
         quiz.setPosition(null); // Position par défaut pour les quiz inactifs
 
-        // Debug
-        System.out.println("Quiz entity before saving: " + quiz);
 
-
-        // Sauvegarder les questions associées si elles existent
+        // Initialiser les positions des questions
         if (quizCreateDTO.getQuestions() != null && !quizCreateDTO.getQuestions().isEmpty()) {
-            // Associer les relations imbriquées (questions et réponses)
-            quiz.getQuestions().forEach(question -> {
-                question.setQuiz(quiz);
-                question.getAnswers().forEach(answer -> answer.setQuestion(question));
-            });
+            int position = 1;
+            for (Question question : quiz.getQuestions()) {
+                question.setQuiz(quiz); // Associer la question au quiz
+                question.setPosition(position++); // Définir la position de la question
+                question.getAnswers().forEach(answer -> answer.setQuestion(question)); // Associer les réponses
+            }
         }
+        System.out.println("Save quiz ");
+
+        if (quiz.getQuestions() == null) {
+            quiz.setQuestions(new ArrayList<>());
+        }
+
         quizRepository.save(quiz);
+
+        System.out.println("taille de la liste des questions : " + quiz.getNbQuestion());
         // Mapper l'entité sauvegardée vers un QuizResponseDTO
         return modelMapper.map(quiz, QuizResponseDTO.class);
     }
@@ -118,37 +121,58 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public QuizResponseDTO updateQuiz(UUID id, QuizCreateDTO quizCreateDTO) {
+    @Transactional
+    public QuizResponseDTO updateQuiz(UUID id, QuizUpdateDTO quizUpdateDTO) {
         // Log : Afficher le DTO reçu
-        System.out.println("Received QuizCreateDTO: " + quizCreateDTO);
+        System.out.println("Received QuizCreateDTO: " + quizUpdateDTO);
 
+        System.out.println("id de quiz = "+ id);
         // Récupérer le quiz existant
         Quiz quiz = quizRepository.findById(id)
                 .orElseThrow(() -> new QuizNotFoundException("Quiz non trouvé avec l'ID : " + id));
 
         // Log : Afficher l'état du quiz avant la mise à jour
-        System.out.println("Quiz before update: " + quiz);
+        System.out.println("Quiz before update: ");
 
         // Modifier les champs du quiz
-        if (quizCreateDTO.getName() != null) {
-            quiz.setName(quizCreateDTO.getName());
-        }
-        if (quizCreateDTO.getPosition() != null) {
-            quiz.setPosition(quizCreateDTO.getPosition());
+        if (quizUpdateDTO.getName() != null) {
+            quiz.setName(quizUpdateDTO.getName());
         }
 
+
+        if (quizUpdateDTO.getPosition() != null) {
+            quiz.setPosition(quizUpdateDTO.getPosition());
+        }
+
+
         // Log : Afficher les valeurs après modification
-        System.out.println("Updated quiz: " + quiz);
+        System.out.println("Updated quiz: " );
 
         // Sauvegarder les modifications
         Quiz updatedQuiz = quizRepository.save(quiz);
 
         // Log : Afficher l'objet mis à jour
-        System.out.println("Saved quiz: " + updatedQuiz);
+        System.out.println("Saved quiz: ");
 
         // Retourner le DTO de la réponse
         return modelMapper.map(updatedQuiz, QuizResponseDTO.class);
     }
+
+    /*
+    private void updatePosition(Quiz quiz, QuizCreateDTO quizCreateDTO) {
+        int newPosition = quizCreateDTO.getPosition();
+
+        Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
+                .orElseThrow(() -> new IllegalArgumentException("Thème associé au quiz est introuvable."));
+
+        int nbQuiz = theme.getQuizzes().size();
+        if (newPosition > nbQuiz){
+            throw new RuntimeException("Position invalide : supérieur au nombre de quizs ");
+        }
+
+    }
+    */
+
 
     @Override
     public QuizResponseDTO setActiveStatus(UUID id, Boolean isActive) {

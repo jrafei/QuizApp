@@ -2,6 +2,7 @@ package com.quizapp.quizApp.controller;
 
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
+import com.quizapp.quizApp.model.dto.update.QuizUpdateDTO;
 import com.quizapp.quizApp.service.interfac.QuizService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class QuizController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<QuizResponseDTO> updateQuiz(@PathVariable UUID id, @RequestBody QuizCreateDTO quizCreateDTO) {
+    public ResponseEntity<QuizResponseDTO> updateQuiz(@PathVariable UUID id, @RequestBody QuizUpdateDTO quizCreateDTO) {
         QuizResponseDTO updatedQuiz = quizService.updateQuiz(id, quizCreateDTO);
         return ResponseEntity.ok(updatedQuiz); // 200 OK
     }
