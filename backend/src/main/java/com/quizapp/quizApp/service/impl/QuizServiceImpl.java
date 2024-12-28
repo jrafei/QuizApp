@@ -2,8 +2,6 @@ package com.quizapp.quizApp.service.impl;
 
 import com.quizapp.quizApp.exception.QuizNotFoundException;
 import com.quizapp.quizApp.model.beans.*;
-import com.quizapp.quizApp.model.dto.creation.AnswerCreateDTO;
-import com.quizapp.quizApp.model.dto.creation.QuestionCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
 import com.quizapp.quizApp.model.dto.update.QuizUpdateDTO;
@@ -25,6 +23,7 @@ public class QuizServiceImpl implements QuizService {
     private final ThemeRepository themeRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final UserRepository userRepository;
 
     private void reorganizePositions(UUID themeId) {
         // Récupérer les quiz actifs triés par position
@@ -55,8 +54,8 @@ public class QuizServiceImpl implements QuizService {
 
         System.out.println("debut createQUiz");
         // Charger le créateur et le thème
-//        User creator = userRepository.findById(quizCreateDTO.getCreatorId())
-//                .orElseThrow(() -> new IllegalArgumentException("Créateur introuvable."));
+        User creator = userRepository.findById(quizCreateDTO.getCreatorId())
+                .orElseThrow(() -> new IllegalArgumentException("Créateur introuvable."));
         Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
                 .orElseThrow(() -> new IllegalArgumentException("Thème introuvable."));
 
@@ -64,7 +63,7 @@ public class QuizServiceImpl implements QuizService {
         System.out.println("debut modelMapper configuration");
         // // Configurer le TypeMap avec les règles de mapping spécifiques
         modelMapper.typeMap(QuizCreateDTO.class, Quiz.class).addMappings(mapper -> {
-            //mapper.skip(Quiz::setCreator); // Ignorer le mapping par défaut
+            mapper.skip(Quiz::setCreator); // Ignorer le mapping par défaut
             mapper.skip(Quiz::setTheme);   // Ignorer le mapping par défaut
         });
 
@@ -73,7 +72,7 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = modelMapper.map(quizCreateDTO, Quiz.class);
 
         System.out.println("fin Mapper");
-//        quiz.setCreator(creator);
+        quiz.setCreator(creator);
         quiz.setTheme(theme);
 
         // Quiz inactif à la création
@@ -111,13 +110,13 @@ public class QuizServiceImpl implements QuizService {
                 .toList();
     }
 
-//    @Override
-//    public List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId) {
-//        return quizRepository.findByCreatorId(creatorId)
-//                .stream()
-//                .map(quiz -> modelMapper.map(quiz, QuizResponseDTO.class))
-//                .toList();
-//    }
+    @Override
+    public List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId) {
+        return quizRepository.findByCreatorId(creatorId)
+                .stream()
+                .map(quiz -> modelMapper.map(quiz, QuizResponseDTO.class))
+                .toList();
+    }
 
     @Override
     @Transactional

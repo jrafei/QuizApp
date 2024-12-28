@@ -42,11 +42,11 @@ public class Quiz {
     @Column(name = "position", nullable = true)
     private Integer position; // Ordre du quiz dans un thème
 
-//    //@ManyToOne(fetch = FetchType.LAZY)
-//    @ManyToOne
-//    @JoinColumn(name = "creator_id", nullable = false)
-//    @JsonBackReference
-//    private User creator; // Utilisateur qui a créé le quiz
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "creator_id", nullable = false)
+    @JsonBackReference
+    private User creator; // Utilisateur qui a créé le quiz
 
     //@ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne

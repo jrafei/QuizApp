@@ -36,11 +36,11 @@ public class QuizController {
         return ResponseEntity.ok(quizzes); // 200 OK
     }
 
-//    @GetMapping("/users/{creatorId}")
-//    public ResponseEntity<List<QuizResponseDTO>> getQuizzesByCreator(@PathVariable UUID creatorId) {
-//        List<QuizResponseDTO> quizzes = quizService.getQuizzesByCreator(creatorId);
-//        return ResponseEntity.ok(quizzes); // 200 OK
-//    }
+    @GetMapping("/users/{creatorId}")
+    public ResponseEntity<List<QuizResponseDTO>> getQuizzesByCreator(@PathVariable UUID creatorId) {
+        List<QuizResponseDTO> quizzes = quizService.getQuizzesByCreator(creatorId);
+        return ResponseEntity.ok(quizzes); // 200 OK
+    }
 
     @GetMapping("/theme/{themeId}")
     public ResponseEntity<List<QuizResponseDTO>> getQuizzesByTheme(@PathVariable UUID themeId) {

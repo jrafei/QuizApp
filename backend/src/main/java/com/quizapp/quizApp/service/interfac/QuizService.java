@@ -10,6 +10,9 @@ import java.util.UUID;
 public interface QuizService {
     QuizResponseDTO createQuiz(QuizCreateDTO quizCreateDTO);
     List<QuizResponseDTO> getAllQuizzes();
+
+    List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId);
+
     //List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId);
     QuizResponseDTO updateQuiz(UUID id, QuizUpdateDTO quizCreateDTO);
     QuizResponseDTO setActiveStatus(UUID id, Boolean isActive);
