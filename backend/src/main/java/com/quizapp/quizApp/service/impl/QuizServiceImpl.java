@@ -12,10 +12,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -55,15 +52,15 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public QuizResponseDTO createQuiz(QuizCreateDTO quizCreateDTO) {
 
+        System.out.println("debut createQUiz");
         // Charger le créateur et le thème
         User creator = userRepository.findById(quizCreateDTO.getCreatorId())
                 .orElseThrow(() -> new IllegalArgumentException("Créateur introuvable."));
         Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
                 .orElseThrow(() -> new IllegalArgumentException("Thème introuvable."));
 
-        // Debug
-        System.out.println("Received QuizCreateDTO: " + quizCreateDTO);
 
+        System.out.println("debut modelMapper configuration");
         // // Configurer le TypeMap avec les règles de mapping spécifiques
         modelMapper.typeMap(QuizCreateDTO.class, Quiz.class).addMappings(mapper -> {
             mapper.skip(Quiz::setCreator); // Ignorer le mapping par défaut
@@ -71,32 +68,35 @@ public class QuizServiceImpl implements QuizService {
         });
 
         // Mapper le DTO vers une entité Quiz
+        System.out.println("debut Mapper");
         Quiz quiz = modelMapper.map(quizCreateDTO, Quiz.class);
 
+        System.out.println("fin Mapper");
         quiz.setCreator(creator);
         quiz.setTheme(theme);
-
-
-        // Debug
-        System.out.println("Mapped Quiz entity: " + quiz);
 
         // Quiz inactif à la création
         quiz.setIsActive(false); // Par défaut, le quiz est inactif
         quiz.setPosition(null); // Position par défaut pour les quiz inactifs
 
-        // Debug
-        System.out.println("Quiz entity before saving: " + quiz);
-
-
-        // Sauvegarder les questions associées si elles existent
+        // Initialiser les positions des questions
         if (quizCreateDTO.getQuestions() != null && !quizCreateDTO.getQuestions().isEmpty()) {
-            // Associer les relations imbriquées (questions et réponses)
-            quiz.getQuestions().forEach(question -> {
-                question.setQuiz(quiz);
-                question.getAnswers().forEach(answer -> answer.setQuestion(question));
-            });
+            int position = 1;
+            for (Question question : quiz.getQuestions()) {
+                question.setQuiz(quiz); // Associer la question au quiz
+                question.setPosition(position++); // Définir la position de la question
+                question.getAnswers().forEach(answer -> answer.setQuestion(question)); // Associer les réponses
+            }
         }
+        System.out.println("Save quiz ");
+
+        if (quiz.getQuestions() == null) {
+            quiz.setQuestions(new ArrayList<>());
+        }
+
         quizRepository.save(quiz);
+
+        System.out.println("taille de la liste des questions : " + quiz.getNbQuestion());
         // Mapper l'entité sauvegardée vers un QuizResponseDTO
         return modelMapper.map(quiz, QuizResponseDTO.class);
     }

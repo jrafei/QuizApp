@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,9 +28,12 @@ public class Quiz {
     @Column(name = "id_quiz", updatable = false, nullable = false, unique = true)
     private UUID id;
 
+    @Version
+    private int version;
+
     @NotBlank(message = "Le nom du quiz est obligatoire.")
     @Size(max = 100, message = "Le nom du quiz ne doit pas dépasser 100 caractères.")
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 100, unique = true)
     private String name;
 
     @NotNull
@@ -53,9 +57,15 @@ public class Quiz {
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Question> questions; // Liste des questions associées
+    @NotNull
+    private List<Question> questions = new ArrayList<>(); // Liste des questions associées
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
     private LocalDateTime creationDate = LocalDateTime.now(); // Date de création du quiz
+
+
+    public int getNbQuestion(){
+       return questions.size();
+    }
 }
