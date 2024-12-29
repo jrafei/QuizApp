@@ -9,12 +9,10 @@ import com.quizapp.quizApp.model.dto.QuestionDTO;
 import com.quizapp.quizApp.repository.QuestionRepository;
 import com.quizapp.quizApp.repository.QuizRepository;
 import com.quizapp.quizApp.service.interfac.QuestionService;
-import jakarta.validation.constraints.Null;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -157,9 +155,9 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
         UUID quizId = question.getQuiz().getId();
         questionRepository.deleteById(id);
-        Quiz quiz = question.getQuiz();
-        System.out.println("Après sppression de question : " + id);
-        quiz.printListQuesions();
+        //Quiz quiz = question.getQuiz();
+        //System.out.println("Après sppression de question : " + id);
+        //quiz.printListQuesions();
         reorderQuestions(quizId); // Réorganiser après suppression
     }
 
