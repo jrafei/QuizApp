@@ -7,6 +7,10 @@ import com.quizapp.quizApp.model.dto.response.AnswerResponseDTO;
 import com.quizapp.quizApp.repository.AnswerRepository;
 import com.quizapp.quizApp.service.interfac.AnswerService;
 import com.quizapp.quizApp.repository.QuestionRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,8 @@ public class AnswerServiceImpl implements AnswerService {
     private final AnswerRepository answerRepository;
     private final ModelMapper modelMapper;
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<AnswerDTO> getAllAnswers() {
@@ -52,8 +58,15 @@ public class AnswerServiceImpl implements AnswerService {
         return modelMapper.map(answer, AnswerDTO.class);
     }
 
+
     @Override
+    @Transactional
     public AnswerDTO createAnswer(AnswerDTO answerDTO) {
+
+        if (!questionRepository.existsById(answerDTO.getQuestionId())) {
+            throw new EntityNotFoundException("Invalid questionId: " + answerDTO.getQuestionId());
+        }
+
         // Vérifie si une réponse correcte existe déjà pour la question
         if (answerDTO.getIsCorrect() != null && answerDTO.getIsCorrect()) {
             boolean hasActiveCorrectAnswer = answerRepository.existsByQuestionIdAndCorrectTrueAndIsActiveTrue(answerDTO.getQuestionId());
@@ -71,20 +84,39 @@ public class AnswerServiceImpl implements AnswerService {
         Question question = questionRepository.findById(answerDTO.getQuestionId())
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable pour l'ID spécifié."));
 
-        // Créer l'entité Answer
-        Answer answer = new Answer();
-        answer.setLabel(answerDTO.getLabel());
-        answer.setQuestion(question);
+        System.out.println("1  question id = " + question.getId() );
+        Answer answer = modelMapper.map(answerDTO,Answer.class);
+        //System.out.println("2 = " + answer.getId());
         answer.setCorrect(answerDTO.getIsCorrect() != null ? answerDTO.getIsCorrect() : false);
+        System.out.println('3');
+
+
         answer.setIsActive(false); // Désactivé par défaut
-        answer.setPosition(null); // Position non définie par défaut
+
+        // Determine the next position for the new question
+        int nextPosition = question.getAnswers().size()+1; // A VERIFIER
+        answer.setPosition(nextPosition);
+
+        System.out.println('4');
 
         // Sauvegarder l'entité
         Answer savedAnswer = answerRepository.save(answer);
 
+        System.out.println("5 , id de la question : " + savedAnswer.getId());
+        question.addAnswer(answer);
+
+        // Debug: Afficher les réponses ajoutées
+        // Vérifie si la question associée
+        entityManager.refresh(question);
+
+        System.out.println("test liste des reponses de quiz");
+        question.printListAnswers();
+
+
         // Retourner le DTO
         return modelMapper.map(savedAnswer, AnswerDTO.class);
     }
+
 
     @Override
     public AnswerDTO updateAnswer(UUID id, AnswerDTO answerDTO) {

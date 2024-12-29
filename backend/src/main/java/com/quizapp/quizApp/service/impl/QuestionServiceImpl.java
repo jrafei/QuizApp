@@ -4,6 +4,7 @@ import com.quizapp.quizApp.exception.QuizNotFoundException;
 import com.quizapp.quizApp.model.beans.Answer;
 import com.quizapp.quizApp.model.beans.Question;
 import com.quizapp.quizApp.model.beans.Quiz;
+import com.quizapp.quizApp.model.dto.AnswerDTO;
 import com.quizapp.quizApp.model.dto.QuestionDTO;
 import com.quizapp.quizApp.repository.QuestionRepository;
 import com.quizapp.quizApp.repository.QuizRepository;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -65,12 +67,11 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public QuestionDTO createQuestion(QuestionDTO questionDTO) { // OK
-        System.out.println("Received QuestionDTO: {}" + questionDTO);
+        System.out.println("Received QuestionDTO");
 
         // recuperation du quiz
         Quiz quiz = quizRepository.findById(questionDTO.getQuizId())
                 .orElseThrow(() -> new QuizNotFoundException("Quiz non trouvé avec l'ID : " + questionDTO.getQuizId()));
-
 
 
         System.out.println("Quiz ID is valid: {}" + questionDTO.getQuizId());
@@ -79,11 +80,8 @@ public class QuestionServiceImpl implements QuestionService {
         if (questionRepository.existsByLabelAndQuizId(questionDTO.getLabel(), questionDTO.getQuizId())) {
             throw new IllegalArgumentException("Une question avec le même libellé existe déjà dans ce quiz.");
         }
-        System.out.println("Question label is unique for the quiz.");
 
         Question question = modelMapper.map(questionDTO, Question.class);
-        System.out.println("Mapped Question entity: {}" +  question);
-
         question.setIsActive(false); // Par défaut
 
 
@@ -93,53 +91,32 @@ public class QuestionServiceImpl implements QuestionService {
                 .max()
                 .orElse(0) + 1;
 
+
         question.setPosition(nextPosition);
 
-        // Ajouter les réponses si présentes
+        /* Ajouter les réponses si présentes*/
         if (questionDTO.getAnswers() != null && !questionDTO.getAnswers().isEmpty()) {
-            List<Answer> answers = questionDTO.getAnswers().stream()
-                    .map(answerDTO -> {
-                        Answer answer = modelMapper.map(answerDTO, Answer.class);
-                        answer.setQuestion(question); // Associer la réponse à la question
-
-                        // Définir une valeur par défaut pour isActive
-                        if (answer.getIsActive() == null) {
-                            answer.setIsActive(false);
-                        }
-                        // Définir une valeur par défaut pour isCorrect
-                        if (answer.getCorrect() == null) {
-                            answer.setCorrect(false);
-                        }
-
+            List<Answer> answers = IntStream.range(0, questionDTO.getAnswers().size())
+                    .mapToObj(i -> {
+                        Answer answer = transformToAnswer(questionDTO.getAnswers().get(i), question);
+                        answer.setPosition(i + 1); // Position starts from 1
                         return answer;
                     })
                     .collect(Collectors.toList());
+
+            // Associer la liste des réponses à la question
             question.setAnswers(answers);
         }
-        System.out.println("Final Question entity with answers: {}" + question);
 
         Question savedQuestion = questionRepository.save(question);
-        System.out.println("Saved Question entity: {}" + savedQuestion);
 
 
-        Quiz quiz2 = quizRepository.findById(questionDTO.getQuizId())
-                .orElseThrow(() -> new QuizNotFoundException("Quiz non trouvé avec l'ID : " + questionDTO.getQuizId()));
-
-        /* Pour tester si la liste des questions respectent bien toujours les positions
-        List<Question> listQ = quiz2.getQuestions();
-
-
-        // Parcours et affichage des labels des questions
-        for (Question quest: listQ) {
-            System.out.println("Label de la question : " + quest.getLabel());
-        }
-        */
 
         return modelMapper.map(savedQuestion, QuestionDTO.class);
     }
 
     @Override
-    public QuestionDTO updateQuestion(UUID id, QuestionDTO questionDTO) {
+    public QuestionDTO updateQuestion(UUID id, QuestionDTO questionDTO) { // OK
         Question existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
 
@@ -154,7 +131,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         // Vérifie si la position demandée est cohérente et faire la permutation
         if (questionDTO.getPosition() != null) {
-            validatePositionChange(existingQuestion,existingQuestion.getQuiz().getId(), questionDTO.getPosition());
+            validatePositionChange(existingQuestion, existingQuestion.getQuiz().getId(), questionDTO.getPosition());
             permutePosition(existingQuestion, questionDTO.getPosition());
         }
 
@@ -175,19 +152,19 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public void deleteQuestion(UUID id) {
+    public void deleteQuestion(UUID id) { // OK
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
         UUID quizId = question.getQuiz().getId();
         questionRepository.deleteById(id);
         Quiz quiz = question.getQuiz();
-        System.out.println("Après sppression de question : " +  id);
+        System.out.println("Après sppression de question : " + id);
         quiz.printListQuesions();
         reorderQuestions(quizId); // Réorganiser après suppression
     }
 
     @Override
-    public void activateQuestion(UUID id) {
+    public void activateQuestion(UUID id) { //OK
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
 
@@ -196,7 +173,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void deactivateQuestion(UUID id) {
+    public void deactivateQuestion(UUID id) { // OK
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
         question.setIsActive(false);
@@ -215,7 +192,7 @@ public class QuestionServiceImpl implements QuestionService {
     /*
     Verifie si la position est valide : 1<= position <= size(list_question)
     */
-    private void validatePositionChange(Question existingQuestion,UUID quizId, Integer newPosition) {
+    private void validatePositionChange(Question existingQuestion, UUID quizId, Integer newPosition) {
         if (newPosition == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle.");
         }
@@ -226,7 +203,7 @@ public class QuestionServiceImpl implements QuestionService {
         if (newPosition < 1 || newPosition > listQuestions.size()) {
             throw new IllegalArgumentException("La position demandée est invalide.");
         }
-        if (existingQuestion.getPosition().equals(newPosition)){
+        if (existingQuestion.getPosition().equals(newPosition)) {
             throw new IllegalArgumentException("La position demandée est déjà affecté au question.");
         }
     }
@@ -236,7 +213,7 @@ public class QuestionServiceImpl implements QuestionService {
             throw new IllegalArgumentException("La position ne peut pas être nulle.");
         }
 
-        Question questAPermuter = questionRepository.findQuestionByQuizIdAndPosition(question.getQuiz().getId(),newPosition);
+        Question questAPermuter = questionRepository.findQuestionByQuizIdAndPosition(question.getQuiz().getId(), newPosition);
 
         questAPermuter.setPosition(question.getPosition());
         question.setPosition(newPosition);
@@ -264,4 +241,24 @@ public class QuestionServiceImpl implements QuestionService {
         }
     }
 
+
+    // Méthode pour transformer AnswerDTO en Answer avec gestion des valeurs par défaut
+    private Answer transformToAnswer(AnswerDTO answerDTO, Question question) {
+        Answer answer = modelMapper.map(answerDTO, Answer.class);
+
+        // Associer la réponse à la question
+        answer.setQuestion(question);
+
+        // Définir une valeur par défaut pour isActive si null
+        if (answer.getIsActive() == null) {
+            answer.setIsActive(false);
+        }
+
+        // Définir une valeur par défaut pour isCorrect si null
+        if (answer.getCorrect() == null) {
+            answer.setCorrect(false);
+        }
+
+        return answer;
+    }
 }

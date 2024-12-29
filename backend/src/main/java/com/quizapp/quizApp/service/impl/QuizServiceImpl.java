@@ -88,9 +88,19 @@ public class QuizServiceImpl implements QuizService {
             for (Question question : quiz.getQuestions()) {
                 question.setQuiz(quiz); // Associer la question au quiz
                 question.setPosition(position++); // Définir la position de la question
-                question.getAnswers().forEach(answer -> answer.setQuestion(question)); // Associer les réponses
+
+                // Associer les réponses et Initialiser les positions des réponses
+                int answer_pos = 1;
+                for (Answer answer : question.getAnswers()){
+                    answer.setQuestion(question);
+                    answer.setPosition(answer_pos++);
+
+                }
+
             }
         }
+
+
         System.out.println("Save quiz ");
 
         if (quiz.getQuestions() == null) {
