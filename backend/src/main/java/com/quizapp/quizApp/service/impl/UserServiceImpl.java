@@ -32,9 +32,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO userCreateDTO) {
-        // Validation du mot de passe
-        passwordValidator.validate(userCreateDTO.getPassword());
-
         // Vérifier si l'email est déjà utilisé
         if (userRepository.findByEmail(userCreateDTO.getEmail().toLowerCase()).isPresent()) {
             throw new DuplicateEmailException("L'email " + userCreateDTO.getEmail() + " est déjà utilisé.");
@@ -43,10 +40,7 @@ public class UserServiceImpl implements UserService {
         // Mapper le DTO vers l'entité User avec ModelMapper
         User user = modelMapper.map(userCreateDTO, User.class);
 
-        // Hacher le mot de passe
-        String hashedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
-        user.setPassword(hashedPassword);
-
+        user.setPassword(null);
         user.setIsActive(false); // Par défaut inactif
 
         // Générer un token d'activation
@@ -122,6 +116,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'id : " + id));
         user.setIsActive(status);
+
+        if (!status) {
+            user.setDeactivationDate(LocalDateTime.now()); // Date de désactivation
+        } else {
+            user.setDeactivationDate(null); // Réinitialiser si le compte est réactivé
+        }
+
         userRepository.save(user);
         return status ? "Utilisateur activé" : "Utilisateur désactivé";
     }
@@ -245,6 +246,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isAccountDeactivated(String email) {
+        User user = userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        return !user.getIsActive();
+    }
+
+
+    @Override
     public void requestAccountReactivation(String email) {
         User user = userRepository.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
@@ -287,6 +296,9 @@ public class UserServiceImpl implements UserService {
         user.setIsActive(true);
         user.setValidationCode(null);
         user.setValidationCodeExpiration(null);
+
+        // Réinitialiser la date de désactivation
+        user.setDeactivationDate(null);
 
         userRepository.save(user);
     }

@@ -2,8 +2,6 @@ package com.quizapp.quizApp.service.impl;
 
 import com.quizapp.quizApp.exception.QuizNotFoundException;
 import com.quizapp.quizApp.model.beans.*;
-import com.quizapp.quizApp.model.dto.creation.AnswerCreateDTO;
-import com.quizapp.quizApp.model.dto.creation.QuestionCreateDTO;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
 import com.quizapp.quizApp.model.dto.update.QuizUpdateDTO;
@@ -21,11 +19,11 @@ import java.util.*;
 public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
-    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final ThemeRepository themeRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final UserRepository userRepository;
 
     private void reorganizePositions(UUID themeId) {
         // Récupérer les quiz actifs triés par position

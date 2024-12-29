@@ -31,7 +31,7 @@ public class AppConfig {
                 map().setName(source.getName());
                 map().setPosition(source.getPosition());
                 // Ignorer `creatorId` et `themeId`
-                skip(destination.getCreator());
+                //skip(destination.getCreator());
                 skip(destination.getTheme());
                 skip(destination.getId());
             }
