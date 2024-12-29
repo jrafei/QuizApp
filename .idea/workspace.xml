@@ -4,15 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6a5d34e8-1d52-4d21-8cd9-f7f27892512d" name="Changes" comment="add_version_positions_questions">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/dto/update/QuizUpdateDTO.java" afterDir="false" />
+    <list default="true" id="6a5d34e8-1d52-4d21-8cd9-f7f27892512d" name="Changes" comment="CRUD Questions + order">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/controller/QuizController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/controller/QuizController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/beans/Question.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/beans/Question.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/beans/Quiz.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/beans/Quiz.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/repository/QuizRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/repository/QuizRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuizServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuizServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/interfac/QuizService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/interfac/QuizService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/repository/AnswerRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/repository/AnswerRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/AnswerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/AnswerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuestionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuestionServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +61,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.Application.executor": "Debug",
-    "Spring Boot.QuizAppApplication.executor": "Debug",
+    "Spring Boot.QuizAppApplication.executor": "Run",
     "git-widget-placeholder": "update__classes",
     "ignore.virus.scanning.warn.message": "true",
     "jdk.selected.JAVA_MODULE": "17",
@@ -88,6 +84,7 @@
       <recent name="com.quizapp.quizApp.exception" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\UTCPRET\Desktop\A24\AI13\ai13-projet-questionnaire\backend\src\main\java\com\quizapp\quizApp\service\impl" />
       <recent name="C:\Users\33667\Documents\AI13\Projet\GIT\ai13-projet-questionnaire" />
       <recent name="C:\Users\33667\Documents\AI13\Projet\GIT\ai13-projet-questionnaire\backend" />
     </key>
@@ -158,7 +155,31 @@
       <option name="project" value="LOCAL" />
       <updated>1735377558937</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="add_version_positions_questions">
+      <option name="closed" value="true" />
+      <created>1735395608777</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1735395608777</updated>
+    </task>
+    <task id="LOCAL-00003" summary="finish_create_delete_update_quiz+order_questions_in_quiz">
+      <option name="closed" value="true" />
+      <created>1735418942666</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1735418942667</updated>
+    </task>
+    <task id="LOCAL-00004" summary="CRUD Questions + order">
+      <option name="closed" value="true" />
+      <created>1735483616876</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1735483616876</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -178,6 +199,24 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="models/user" />
     <MESSAGE value="add_version_positions_questions" />
-    <option name="LAST_COMMIT_MESSAGE" value="add_version_positions_questions" />
+    <MESSAGE value="finish_create_delete_update_quiz+order_questions_in_quiz" />
+    <MESSAGE value="CRUD Questions + order" />
+    <option name="LAST_COMMIT_MESSAGE" value="CRUD Questions + order" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/model/beans/Quiz.java</url>
+          <line>33</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/backend/src/main/java/com/quizapp/quizApp/service/impl/QuestionServiceImpl.java</url>
+          <line>81</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

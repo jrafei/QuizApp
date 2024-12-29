@@ -34,7 +34,7 @@ public class Question {
     @Column(name = "position")
     private Integer position = null; // Par défaut, aucune position définie
 
-    //@ManyToOne(fetch = FetchType.LAZY)
+
     @ManyToOne
     @JoinColumn(name = "quiz_id", nullable = false)
     @JsonBackReference
@@ -42,7 +42,7 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    @ToString.Exclude
+    @OrderBy("position ASC")
     private List<Answer> answers; // Liste de réponses associées
 
     /**
@@ -78,5 +78,11 @@ public class Question {
     public void addAnswer(Answer answer){
         answer.setQuestion(this);
         this.answers.add(answer);
+    }
+
+    public void printListAnswers(){
+        for (Answer ans: answers) {
+            System.out.println("Label de la answer : " + ans.getLabel());
+        }
     }
 }

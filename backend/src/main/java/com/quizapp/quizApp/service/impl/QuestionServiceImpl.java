@@ -1,8 +1,10 @@
 package com.quizapp.quizApp.service.impl;
 
+import com.quizapp.quizApp.exception.QuizNotFoundException;
 import com.quizapp.quizApp.model.beans.Answer;
 import com.quizapp.quizApp.model.beans.Question;
 import com.quizapp.quizApp.model.beans.Quiz;
+import com.quizapp.quizApp.model.dto.AnswerDTO;
 import com.quizapp.quizApp.model.dto.QuestionDTO;
 import com.quizapp.quizApp.repository.QuestionRepository;
 import com.quizapp.quizApp.repository.QuizRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -61,58 +64,57 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionDTO createQuestion(QuestionDTO questionDTO) {
-        System.out.println("Received QuestionDTO: {}" + questionDTO);
+    public QuestionDTO createQuestion(QuestionDTO questionDTO) { // OK
+        System.out.println("Received QuestionDTO");
 
-        // Vérifie si l'ID du quiz est valide
-        if (!quizRepository.existsById(questionDTO.getQuizId())) {
-            throw new IllegalArgumentException("L'ID du quiz spécifié est invalide ou introuvable.");
-        }
+        // recuperation du quiz
+        Quiz quiz = quizRepository.findById(questionDTO.getQuizId())
+                .orElseThrow(() -> new QuizNotFoundException("Quiz non trouvé avec l'ID : " + questionDTO.getQuizId()));
+
+
         System.out.println("Quiz ID is valid: {}" + questionDTO.getQuizId());
 
         // Vérifie si une question avec le même libellé existe déjà dans le quiz
         if (questionRepository.existsByLabelAndQuizId(questionDTO.getLabel(), questionDTO.getQuizId())) {
             throw new IllegalArgumentException("Une question avec le même libellé existe déjà dans ce quiz.");
         }
-        System.out.println("Question label is unique for the quiz.");
 
         Question question = modelMapper.map(questionDTO, Question.class);
-        System.out.println("Mapped Question entity: {}" +  question);
-
         question.setIsActive(false); // Par défaut
-        question.setPosition(null); // Par défaut
 
-        // Ajouter les réponses si présentes
+
+        // Determine the next position for the new question
+        int nextPosition = quiz.getQuestions().stream()
+                .mapToInt(q -> q.getPosition() != null ? q.getPosition() : 0)
+                .max()
+                .orElse(0) + 1;
+
+
+        question.setPosition(nextPosition);
+
+        /* Ajouter les réponses si présentes*/
         if (questionDTO.getAnswers() != null && !questionDTO.getAnswers().isEmpty()) {
-            List<Answer> answers = questionDTO.getAnswers().stream()
-                    .map(answerDTO -> {
-                        Answer answer = modelMapper.map(answerDTO, Answer.class);
-                        answer.setQuestion(question); // Associer la réponse à la question
-
-                        // Définir une valeur par défaut pour isActive
-                        if (answer.getIsActive() == null) {
-                            answer.setIsActive(false);
-                        }
-                        // Définir une valeur par défaut pour isCorrect
-                        if (answer.getCorrect() == null) {
-                            answer.setCorrect(false);
-                        }
-
+            List<Answer> answers = IntStream.range(0, questionDTO.getAnswers().size())
+                    .mapToObj(i -> {
+                        Answer answer = transformToAnswer(questionDTO.getAnswers().get(i), question);
+                        answer.setPosition(i + 1); // Position starts from 1
                         return answer;
                     })
                     .collect(Collectors.toList());
+
+            // Associer la liste des réponses à la question
             question.setAnswers(answers);
         }
-        System.out.println("Final Question entity with answers: {}" + question);
 
         Question savedQuestion = questionRepository.save(question);
-        System.out.println("Saved Question entity: {}" + savedQuestion);
+
+
 
         return modelMapper.map(savedQuestion, QuestionDTO.class);
     }
 
     @Override
-    public QuestionDTO updateQuestion(UUID id, QuestionDTO questionDTO) {
+    public QuestionDTO updateQuestion(UUID id, QuestionDTO questionDTO) { // OK
         Question existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
 
@@ -125,10 +127,10 @@ public class QuestionServiceImpl implements QuestionService {
             throw new IllegalArgumentException("Une question avec le même libellé existe déjà dans ce quiz.");
         }
 
-        // Vérifie si la position demandée est cohérente
+        // Vérifie si la position demandée est cohérente et faire la permutation
         if (questionDTO.getPosition() != null) {
-            validatePositionChange(existingQuestion.getQuiz().getId(), questionDTO.getPosition());
-            reorderQuestionsAfterPositionChange(existingQuestion, questionDTO.getPosition());
+            validatePositionChange(existingQuestion, existingQuestion.getQuiz().getId(), questionDTO.getPosition());
+            permutePosition(existingQuestion, questionDTO.getPosition());
         }
 
         // Mappage des champs uniquement s'ils sont fournis
@@ -148,99 +150,81 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     @Override
-    public void deleteQuestion(UUID id) {
+    public void deleteQuestion(UUID id) { // OK
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
         UUID quizId = question.getQuiz().getId();
         questionRepository.deleteById(id);
+        //Quiz quiz = question.getQuiz();
+        //System.out.println("Après sppression de question : " + id);
+        //quiz.printListQuesions();
         reorderQuestions(quizId); // Réorganiser après suppression
     }
 
     @Override
-    public void activateQuestion(UUID id) {
+    public void activateQuestion(UUID id) { //OK
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
 
-        // Validation avant activation
-        validateQuestionActivation(question);
-
-        if (question.getPosition() == null) {
-            List<Question> activeQuestions = questionRepository.findAllByQuizIdAndIsActiveTrueOrderByPosition(
-                    question.getQuiz().getId());
-            question.setPosition(activeQuestions.size() + 1); // Ajoute à la fin
-        }
         question.setIsActive(true);
         questionRepository.save(question);
     }
 
     @Override
-    public void deactivateQuestion(UUID id) {
+    public void deactivateQuestion(UUID id) { // OK
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
         question.setIsActive(false);
-        question.setPosition(null); // Annule la position
         questionRepository.save(question);
-        reorderQuestions(question.getQuiz().getId()); // Réorganiser après désactivation
     }
 
 
     private void reorderQuestions(UUID quizId) {
-        List<Question> activeQuestions = questionRepository.findAllByQuizIdAndIsActiveTrueOrderByPosition(quizId);
+        List<Question> activeQuestions = questionRepository.findAllByQuizIdOrderByPosition(quizId);
         for (int i = 0; i < activeQuestions.size(); i++) {
             activeQuestions.get(i).setPosition(i + 1); // Réordonne à partir de 1
         }
         questionRepository.saveAll(activeQuestions);
     }
 
-    private void validatePositionChange(UUID quizId, Integer newPosition) {
+    /*
+    Verifie si la position est valide : 1<= position <= size(list_question)
+    */
+    private void validatePositionChange(Question existingQuestion, UUID quizId, Integer newPosition) {
         if (newPosition == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle.");
         }
-
         // Récupérer toutes les questions actives triées par position
-        List<Question> activeQuestions = questionRepository.findAllByQuizIdAndIsActiveTrueOrderByPosition(quizId);
+        List<Question> listQuestions = questionRepository.findAllByQuizId(quizId);
 
         // Vérifie que la position demandée est dans la plage valide
-        if (newPosition < 1 || newPosition > activeQuestions.size()) {
-            throw new IllegalArgumentException("La position demandée est incohérente avec l'ordre actuel des questions actives.");
+        if (newPosition < 1 || newPosition > listQuestions.size()) {
+            throw new IllegalArgumentException("La position demandée est invalide.");
         }
-
-        // Vérifie que la nouvelle position ne casse pas la continuité logique
-        for (int i = 0; i < activeQuestions.size(); i++) {
-            int expectedPosition = i + 1; // Les positions doivent être séquentielles
-            if (activeQuestions.get(i).getPosition() != expectedPosition && expectedPosition != newPosition) {
-                throw new IllegalArgumentException("La modification de la position casse l'ordre séquentiel des questions actives.");
-            }
+        if (existingQuestion.getPosition().equals(newPosition)) {
+            throw new IllegalArgumentException("La position demandée est déjà affecté au question.");
         }
     }
 
-    private void reorderQuestionsAfterPositionChange(Question question, Integer newPosition) {
+    private void permutePosition(Question question, Integer newPosition) {
         if (newPosition == null) {
             throw new IllegalArgumentException("La position ne peut pas être nulle.");
         }
 
-        // Récupérer toutes les questions actives triées par position
-        List<Question> activeQuestions = questionRepository.findAllByQuizIdAndIsActiveTrueOrderByPosition(question.getQuiz().getId());
+        Question questAPermuter = questionRepository.findQuestionByQuizIdAndPosition(question.getQuiz().getId(), newPosition);
 
-        // Retirer temporairement la question modifiée de la liste
-        activeQuestions.removeIf(q -> q.getId().equals(question.getId()));
-
-        // Insérer la question modifiée à la nouvelle position
-        activeQuestions.add(newPosition - 1, question);
-
-        // Réattribuer les positions séquentielles
-        for (int i = 0; i < activeQuestions.size(); i++) {
-            activeQuestions.get(i).setPosition(i + 1);
-        }
+        questAPermuter.setPosition(question.getPosition());
+        question.setPosition(newPosition);
 
         // Sauvegarder les questions réorganisées
-        questionRepository.saveAll(activeQuestions);
+        questionRepository.save(questAPermuter);
+        questionRepository.save(question);
     }
 
     private void validateQuestionActivation(Question question) {
         List<Answer> activeAnswers = question.getAnswers().stream()
                 .filter(Answer::getIsActive) // Filtrer uniquement les réponses actives
-                .collect(Collectors.toList());
+                .toList();
 
         if (activeAnswers.size() < 2) {
             throw new IllegalArgumentException("Une question doit avoir au moins deux réponses actives pour être activée.");
@@ -255,4 +239,24 @@ public class QuestionServiceImpl implements QuestionService {
         }
     }
 
+
+    // Méthode pour transformer AnswerDTO en Answer avec gestion des valeurs par défaut
+    private Answer transformToAnswer(AnswerDTO answerDTO, Question question) {
+        Answer answer = modelMapper.map(answerDTO, Answer.class);
+
+        // Associer la réponse à la question
+        answer.setQuestion(question);
+
+        // Définir une valeur par défaut pour isActive si null
+        if (answer.getIsActive() == null) {
+            answer.setIsActive(false);
+        }
+
+        // Définir une valeur par défaut pour isCorrect si null
+        if (answer.getCorrect() == null) {
+            answer.setCorrect(false);
+        }
+
+        return answer;
+    }
 }

@@ -7,6 +7,10 @@ import com.quizapp.quizApp.model.dto.response.AnswerResponseDTO;
 import com.quizapp.quizApp.repository.AnswerRepository;
 import com.quizapp.quizApp.service.interfac.AnswerService;
 import com.quizapp.quizApp.repository.QuestionRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,8 @@ public class AnswerServiceImpl implements AnswerService {
     private final AnswerRepository answerRepository;
     private final ModelMapper modelMapper;
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<AnswerDTO> getAllAnswers() {
@@ -52,8 +58,16 @@ public class AnswerServiceImpl implements AnswerService {
         return modelMapper.map(answer, AnswerDTO.class);
     }
 
+
     @Override
-    public AnswerDTO createAnswer(AnswerDTO answerDTO) {
+    @Transactional
+    public AnswerDTO createAnswer(AnswerDTO answerDTO) { //OK
+
+        // verifie l'existence de question
+        if (!questionRepository.existsById(answerDTO.getQuestionId())) {
+            throw new EntityNotFoundException("Invalid questionId: " + answerDTO.getQuestionId());
+        }
+
         // Vérifie si une réponse correcte existe déjà pour la question
         if (answerDTO.getIsCorrect() != null && answerDTO.getIsCorrect()) {
             boolean hasActiveCorrectAnswer = answerRepository.existsByQuestionIdAndCorrectTrueAndIsActiveTrue(answerDTO.getQuestionId());
@@ -71,23 +85,27 @@ public class AnswerServiceImpl implements AnswerService {
         Question question = questionRepository.findById(answerDTO.getQuestionId())
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable pour l'ID spécifié."));
 
-        // Créer l'entité Answer
-        Answer answer = new Answer();
-        answer.setLabel(answerDTO.getLabel());
-        answer.setQuestion(question);
+        Answer answer = modelMapper.map(answerDTO,Answer.class);
         answer.setCorrect(answerDTO.getIsCorrect() != null ? answerDTO.getIsCorrect() : false);
+
         answer.setIsActive(false); // Désactivé par défaut
-        answer.setPosition(null); // Position non définie par défaut
+
+        // Determine the next position for the new question
+        int nextPosition = question.getAnswers().size()+1; // A VERIFIER
+        answer.setPosition(nextPosition);
 
         // Sauvegarder l'entité
         Answer savedAnswer = answerRepository.save(answer);
+
+        //question.addAnswer(answer); // pas nécessaire , ca se fait automatiquement à cause de cascade
 
         // Retourner le DTO
         return modelMapper.map(savedAnswer, AnswerDTO.class);
     }
 
+
     @Override
-    public AnswerDTO updateAnswer(UUID id, AnswerDTO answerDTO) {
+    public AnswerDTO updateAnswer(UUID id, AnswerDTO answerDTO) { //OK
         System.out.println("Entree dans update answer");
 
         // Récupérer l'entité existante
@@ -95,7 +113,7 @@ public class AnswerServiceImpl implements AnswerService {
                 .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
 
         System.out.println("Récupération existingAnswer ok");
-        System.out.println("Existing Answer: " + existingAnswer);
+
 
         // Vérifiez que le DTO ne tente pas de modifier l'ID de la question associée
         if (answerDTO.getQuestionId() != null &&
@@ -125,7 +143,9 @@ public class AnswerServiceImpl implements AnswerService {
 
         // Vérifier que la modification de la position est cohérente
         if (answerDTO.getPosition() != null) {
-            validatePositionChange(existingAnswer.getQuestion().getId(), answerDTO.getPosition());
+            validatePositionChange(existingAnswer,existingAnswer.getQuestion().getId(), answerDTO.getPosition());
+            permutePosition(existingAnswer, answerDTO.getPosition());
+            System.out.println("Permutation des position done");
         }
 
         // Mappage des champs uniquement s'ils sont fournis
@@ -138,23 +158,17 @@ public class AnswerServiceImpl implements AnswerService {
         if (answerDTO.getIsActive() != null) { // Correction du champ
             existingAnswer.setIsActive(answerDTO.getIsActive());
         }
-        if (answerDTO.getPosition() != null) {
-            existingAnswer.setPosition(answerDTO.getPosition());
-        }
-
-        System.out.println("Answer to save: " + existingAnswer);
 
         // Sauvegarder l'entité mise à jour
         Answer updatedAnswer = answerRepository.save(existingAnswer);
 
-        System.out.println("Saved Answer: " + updatedAnswer);
 
         // Retourner le DTO mis à jour
         return modelMapper.map(updatedAnswer, AnswerDTO.class);
     }
 
     @Override
-    public void setCorrectAnswer(UUID id) {
+    public void setCorrectAnswer(UUID id) { // OK
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
 
@@ -171,7 +185,7 @@ public class AnswerServiceImpl implements AnswerService {
 
 
     @Override
-    public void deleteAnswer(UUID id) {
+    public void deleteAnswer(UUID id) { //OK
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
         UUID questionId = answer.getQuestion().getId();
@@ -180,7 +194,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public void activateAnswer(UUID id) {
+    public void activateAnswer(UUID id) { //OK
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
 
@@ -200,7 +214,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public void deactivateAnswer(UUID id) {
+    public void deactivateAnswer(UUID id) { //ok
         Answer answer = answerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Réponse introuvable"));
         answer.setIsActive(false);
@@ -210,30 +224,46 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     private void reorderAnswers(UUID questionId) {
-        List<Answer> activeAnswers = answerRepository.findAllByQuestionIdAndIsActiveTrueOrderByPosition(questionId);
+        List<Answer> activeAnswers = answerRepository.findAllByQuestionId(questionId);
         for (int i = 0; i < activeAnswers.size(); i++) {
             activeAnswers.get(i).setPosition(i + 1); // Réordonne à partir de 1
         }
         answerRepository.saveAll(activeAnswers);
     }
 
-    private void validatePositionChange(UUID questionId, int newPosition) {
-        // Récupérer toutes les réponses actives pour cette question, triées par position
-        List<Answer> activeAnswers = answerRepository.findAllByQuestionIdAndIsActiveTrueOrderByPosition(questionId);
+    private void validatePositionChange(Answer existingAnswer,UUID questionId, Integer newPosition) {
+        if (newPosition == null) {
+            throw new IllegalArgumentException("La position ne peut pas être nulle.");
+        }
+
+        // Récupérer toutes les réponses pour cette question
+        List<Answer> answers = answerRepository.findAllByQuestionId(questionId);
 
         // Vérifie que la position demandée est comprise dans la plage valide
-        if (newPosition < 1 || newPosition > activeAnswers.size()) {
+        if (newPosition < 1 || newPosition > answers.size()) {
             throw new IllegalArgumentException("La position demandée est incohérente avec l'ordre actuel des réponses actives.");
         }
 
-        // Vérifie que la nouvelle position ne casse pas la continuité logique
-        for (int i = 0; i < activeAnswers.size(); i++) {
-            int expectedPosition = i + 1; // Les positions doivent être séquentielles
-            if (activeAnswers.get(i).getPosition() != expectedPosition && expectedPosition != newPosition) {
-                throw new IllegalArgumentException("La modification de la position casse l'ordre séquentiel des réponses actives.");
-            }
+        if (existingAnswer.getPosition().equals(newPosition)) {
+            throw new IllegalArgumentException("La position demandée est déjà affecté au question.");
         }
+
     }
 
+
+    private void permutePosition(Answer answer, Integer newPosition) {
+        if (newPosition == null) {
+            throw new IllegalArgumentException("La position ne peut pas être nulle.");
+        }
+
+        Answer answAPermuter = answerRepository.findAnswerByQuestionIdAndPosition(answer.getQuestion().getId(), newPosition);
+
+        answAPermuter.setPosition(answer.getPosition());
+        answer.setPosition(newPosition);
+
+        // Sauvegarder les questions réorganisées
+        answerRepository.save(answAPermuter);
+        answerRepository.save(answer);
+    }
 
 }
