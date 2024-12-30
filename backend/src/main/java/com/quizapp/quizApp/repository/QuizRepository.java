@@ -19,4 +19,12 @@ public interface QuizRepository extends JpaRepository<Quiz, UUID> {
 
     List<Quiz> findByThemeIdAndIsActive(@NotNull(message = "L'ID du thème est obligatoire.") UUID themeId, Boolean b);
     Collection<Object> findByCreatorId(UUID creatorId);
+
+
+    // Pour afficher la dernière version de quiz aux trainee
+    Optional<Quiz> findTopByIdOrderByVersionDesc(UUID id);
+
+    Optional<Quiz> findTopByVersionIdAndIsActiveTrueOrderByVersionDesc(UUID parentId);
+
+
 }

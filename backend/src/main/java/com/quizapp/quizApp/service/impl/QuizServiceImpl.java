@@ -77,7 +77,8 @@ public class QuizServiceImpl implements QuizService {
 
         // Quiz inactif à la création
         quiz.setIsActive(false); // Par défaut, le quiz est inactif
-        quiz.setPosition(null); // Position par défaut pour les quiz inactifs
+        quiz.setVersion(1);
+
 
 
         // Initialiser les positions des questions
@@ -105,6 +106,9 @@ public class QuizServiceImpl implements QuizService {
             quiz.setQuestions(new ArrayList<>());
         }
 
+        // Set parentId to its own id (after saving)
+        quizRepository.save(quiz);
+        quiz.setVersionId(quiz.getId());
         quizRepository.save(quiz);
 
         System.out.println("taille de la liste des questions : " + quiz.getNbQuestion());
@@ -120,6 +124,11 @@ public class QuizServiceImpl implements QuizService {
                 .toList();
     }
 
+    public QuizResponseDTO getLatestQuiz_test(UUID id){
+         Optional<Quiz> q = quizRepository.findTopByVersionIdAndIsActiveTrueOrderByVersionDesc(id);
+         return modelMapper.map(q, QuizResponseDTO.class);
+    }
+
     @Override
     public List<QuizResponseDTO> getQuizzesByCreator(UUID creatorId) {
         return quizRepository.findByCreatorId(creatorId)
@@ -130,56 +139,54 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional
-    public QuizResponseDTO updateQuiz(UUID id, QuizUpdateDTO quizUpdateDTO) {
-        // Log : Afficher le DTO reçu
-        System.out.println("Received QuizCreateDTO: " + quizUpdateDTO);
+    public QuizResponseDTO updateQuiz(UUID id, QuizUpdateDTO quizCreateDTO) {
 
-        System.out.println("id de quiz = "+ id);
         // Récupérer le quiz existant
-        Quiz quiz = quizRepository.findById(id)
+        Quiz existingQuiz = quizRepository.findById(id)
                 .orElseThrow(() -> new QuizNotFoundException("Quiz non trouvé avec l'ID : " + id));
 
-        // Log : Afficher l'état du quiz avant la mise à jour
-        System.out.println("Quiz before update: ");
+        // Create a new Quiz object for the updated version
+        Quiz newQuiz = new Quiz();
+        newQuiz.setName(quizCreateDTO.getName() != null ? quizCreateDTO.getName() : existingQuiz.getName());
+        newQuiz.setPosition(quizCreateDTO.getPosition() != null ? quizCreateDTO.getPosition() : existingQuiz.getPosition());
+        newQuiz.setCreator(existingQuiz.getCreator());
+        newQuiz.setTheme(existingQuiz.getTheme());
+        newQuiz.setIsActive(existingQuiz.getIsActive()); // Default to inactive
+        newQuiz.setVersion(existingQuiz.getVersion() + 1);
 
-        // Modifier les champs du quiz
-        if (quizUpdateDTO.getName() != null) {
-            quiz.setName(quizUpdateDTO.getName());
-        }
+        // Duplicate the questions and answers
+        List<Question> newQuestions = existingQuiz.getQuestions().stream().map(existingQuestion -> {
+            Question newQuestion = new Question();
+            newQuestion.setLabel(existingQuestion.getLabel());
+            newQuestion.setPosition(existingQuestion.getPosition());
+            newQuestion.setIsActive(existingQuestion.getIsActive()); // Default to inactive
+            newQuestion.setQuiz(newQuiz);
 
+            // Duplicate answers
+            List<Answer> newAnswers = existingQuestion.getAnswers().stream().map(existingAnswer -> {
+                Answer newAnswer = new Answer();
+                newAnswer.setLabel(existingAnswer.getLabel());
+                newAnswer.setCorrect(existingAnswer.getCorrect());
+                newAnswer.setIsActive(existingAnswer.getIsActive()); // Default to inactive
+                newAnswer.setQuestion(newQuestion);
+                return newAnswer;
+            }).toList();
 
-        if (quizUpdateDTO.getPosition() != null) {
-            quiz.setPosition(quizUpdateDTO.getPosition());
-        }
+            newQuestion.setAnswers(newAnswers);
+            return newQuestion;
+        }).toList();
 
+        newQuiz.setQuestions(newQuestions);
 
-        // Log : Afficher les valeurs après modification
-        System.out.println("Updated quiz: " );
+        newQuiz.setVersionId(id);
+        // Save the new quiz version
+        quizRepository.save(newQuiz);
 
-        // Sauvegarder les modifications
-        Quiz updatedQuiz = quizRepository.save(quiz);
+        return modelMapper.map(newQuiz, QuizResponseDTO.class);
 
-        // Log : Afficher l'objet mis à jour
-        System.out.println("Saved quiz: ");
-
-        // Retourner le DTO de la réponse
-        return modelMapper.map(updatedQuiz, QuizResponseDTO.class);
     }
 
-    /*
-    private void updatePosition(Quiz quiz, QuizCreateDTO quizCreateDTO) {
-        int newPosition = quizCreateDTO.getPosition();
 
-        Theme theme = themeRepository.findById(quizCreateDTO.getThemeId())
-                .orElseThrow(() -> new IllegalArgumentException("Thème associé au quiz est introuvable."));
-
-        int nbQuiz = theme.getQuizzes().size();
-        if (newPosition > nbQuiz){
-            throw new RuntimeException("Position invalide : supérieur au nombre de quizs ");
-        }
-
-    }
-    */
 
 
     @Override
@@ -269,6 +276,13 @@ public class QuizServiceImpl implements QuizService {
         }
 
         return true;
+    }
+
+    public QuizResponseDTO getLatestQuiz(UUID id) {
+        System.out.println(id);
+        Quiz latestQuiz = quizRepository.findTopByVersionIdAndIsActiveTrueOrderByVersionDesc(id)
+                .orElseThrow(() -> new QuizNotFoundException("Quiz active not found with ID_Version: " + id));
+        return modelMapper.map(latestQuiz, QuizResponseDTO.class);
     }
 
 }

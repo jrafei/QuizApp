@@ -30,6 +30,13 @@ public class QuizController {
         return ResponseEntity.ok(quizzes); // 200 OK
     }
 
+
+    @GetMapping("/{idVersion}")
+    public ResponseEntity<QuizResponseDTO> getLatestQuiz(@PathVariable UUID idVersion) {
+        QuizResponseDTO quiz= quizService.getLatestQuiz(idVersion);
+        return ResponseEntity.ok(quiz); // 200 OK
+    }
+
     @GetMapping("/status")
     public ResponseEntity<List<QuizResponseDTO>> getQuizzesByIsActive(@RequestParam Boolean isActive) {
         List<QuizResponseDTO> quizzes = quizService.getQuizzesByIsActive(isActive);
@@ -71,4 +78,7 @@ public class QuizController {
         quizService.deleteQuiz(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
+
+
 }
