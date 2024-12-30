@@ -1,5 +1,6 @@
 package com.quizapp.quizApp.service.impl;
 
+import com.quizapp.quizApp.exception.QuizUpdateNotAllowedException;
 import com.quizapp.quizApp.model.beans.Answer;
 import com.quizapp.quizApp.model.beans.Question;
 import com.quizapp.quizApp.model.dto.AnswerDTO;
@@ -29,6 +30,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @PersistenceContext
     private EntityManager entityManager;
+    private QuizSessionManager quizManager;
 
     @Override
     public List<AnswerDTO> getAllAnswers() {
@@ -106,6 +108,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public AnswerDTO updateAnswer(UUID id, AnswerDTO answerDTO) { //OK
+
         System.out.println("Entree dans update answer");
 
         // Récupérer l'entité existante
@@ -119,6 +122,10 @@ public class AnswerServiceImpl implements AnswerService {
         if (answerDTO.getQuestionId() != null &&
                 !answerDTO.getQuestionId().equals(existingAnswer.getQuestion().getId())) {
             throw new IllegalArgumentException("Modification de l'ID de la question associée non autorisée.");
+        }
+
+        if (quizManager.isTraineeWorkingOnQuiz(existingAnswer.getQuestion().getQuiz().getId())) {
+            throw new QuizUpdateNotAllowedException("Cannot update answer: a trainee is working on it, please create a new version.");
         }
 
         System.out.println("Récupération associated question ok");

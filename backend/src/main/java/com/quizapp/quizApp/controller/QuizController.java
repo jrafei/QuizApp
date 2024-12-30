@@ -24,6 +24,12 @@ public class QuizController {
         return ResponseEntity.status(201).body(createdQuiz); // 201 Created
     }
 
+    @PostMapping("/{idQuiz}")
+    public ResponseEntity<QuizResponseDTO> createNewVersion(@PathVariable UUID idQuiz) {
+        QuizResponseDTO createdQuiz = quizService.createNewVersion(idQuiz);
+        return ResponseEntity.status(201).body(createdQuiz); // 201 Created
+    }
+
     @GetMapping
     public ResponseEntity<List<QuizResponseDTO>> getAllQuizzes() {
         List<QuizResponseDTO> quizzes = quizService.getAllQuizzes();

@@ -1,6 +1,7 @@
 package com.quizapp.quizApp.service.impl;
 
 import com.quizapp.quizApp.exception.QuizNotFoundException;
+import com.quizapp.quizApp.exception.QuizUpdateNotAllowedException;
 import com.quizapp.quizApp.model.beans.Answer;
 import com.quizapp.quizApp.model.beans.Question;
 import com.quizapp.quizApp.model.beans.Quiz;
@@ -23,6 +24,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final QuizRepository quizRepository; // Ajout de QuizRepository
     private final ModelMapper modelMapper;
+    private QuizSessionManager quizManager;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                QuizRepository quizRepository, // Injecter QuizRepository ici
@@ -115,8 +117,14 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public QuestionDTO updateQuestion(UUID id, QuestionDTO questionDTO) { // OK
+
+
         Question existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Question introuvable"));
+
+        if (quizManager.isTraineeWorkingOnQuiz(existingQuestion.getQuiz().getId())) {
+            throw new QuizUpdateNotAllowedException("Cannot update question: a trainee is working on it, please create a new version.");
+        }
 
         // Vérifie si une autre question avec le même libellé existe déjà dans le même quiz
         if (questionDTO.getLabel() != null &&

@@ -95,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/quizzes/{id}/activate").hasRole("ADMIN") // Activation uniquement pour ADMIN
                         .requestMatchers(HttpMethod.PATCH, "/quizzes/{id}/deactivate").hasRole("ADMIN") // Désactivation uniquement pour ADMIN
                         .requestMatchers(HttpMethod.DELETE, "/quizzes/{id}").hasRole("ADMIN") // Suppression uniquement pour ADMIN
+                        .requestMatchers(HttpMethod.POST, "/quizzes/{idQuiz}").hasRole("ADMIN") // ajout d'une nouvelle version de quiz
 
                         // QUESTIONS
                         .requestMatchers(HttpMethod.GET, "/questions").hasAnyRole("ADMIN", "TRAINEE") // Liste accessible à ADMIN et TRAINEE

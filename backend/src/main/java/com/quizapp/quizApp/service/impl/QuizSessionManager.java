@@ -1,10 +1,13 @@
-package com.quizapp.quizApp.service.interfac;
+package com.quizapp.quizApp.service.impl;
+
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class QuizSessionManager {
 
     // clé : id de quiz, valeur : liste des trainees travaillant sur le quiz
