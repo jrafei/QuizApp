@@ -41,6 +41,7 @@ public class UserController {
         return ResponseEntity.ok(users); // Retourne une liste concise avec un code 200 OK
     }
 
+
     // Récupération d'un utilisateur par son ID
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable UUID id) {
@@ -91,4 +92,6 @@ public class UserController {
         String message = userService.deleteUser(id);
         return ResponseEntity.noContent().header("Message", message).build(); // 204 No Content avec un header pour le message
     }
+
+
 }

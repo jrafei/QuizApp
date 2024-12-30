@@ -19,4 +19,10 @@ public interface QuizService {
     void deleteQuiz(UUID id);
     List<QuizResponseDTO> getQuizzesByIsActive(Boolean isActive);
     List<QuizResponseDTO> getQuizzesByTheme(UUID themeId);
+
+
+    // Afficher les derniers version des quizs ;
+    QuizResponseDTO getLatestQuiz(UUID idVersion);
+
+    QuizResponseDTO createNewVersion(UUID idQuiz);
 }

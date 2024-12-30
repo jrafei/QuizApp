@@ -27,8 +27,12 @@ public class Quiz {
     @Column(name = "id_quiz", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @Version
-    private int version;
+    @Column(name = "version", nullable = false)
+    private Integer version;
+
+
+    @Column(name = "versionId")
+    private UUID versionId;
 
     @NotBlank(message = "Le nom du quiz est obligatoire.")
     @Size(max = 100, message = "Le nom du quiz ne doit pas dépasser 100 caractères.")
