@@ -65,7 +65,7 @@ public class AuthController {
                     .orElse("ROLE_USER");  // Assurez-vous que le rôle existe
 
             // Generate the JWT
-            String token = jwtUtil.generateToken(authRequest.getUsername(), role);
+            String token = jwtUtil.generateToken(authRequest.getUsername(), role, user.getId().toString());
 
             return ResponseEntity.ok(new AuthResponseDTO(token));
         } catch (AuthenticationException e) {

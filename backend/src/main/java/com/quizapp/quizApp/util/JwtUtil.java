@@ -14,15 +14,25 @@ public class JwtUtil {
     // Utilisation de la classe Keys pour générer une clé valide
     private final Key SECRET_KEY = Keys.hmacShaKeyFor("my_super_long_secret_key_32_characters_minimum".getBytes());
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String role, String userId) {
         long expirationTime = 1000 * 60 * 60; // 1 hour
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SECRET_KEY)
                 .compact();
+    }
+
+    public String extractUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId", String.class); // Récupère l'ID utilisateur à partir des claims
     }
 
     public String extractRole(String token) {
