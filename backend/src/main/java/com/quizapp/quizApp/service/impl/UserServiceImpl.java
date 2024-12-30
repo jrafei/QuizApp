@@ -79,30 +79,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO updatePartialUser(UUID id, UserUpdateDTO userUpdateDTO) {
+    public UserResponseDTO updatePartialUser(UUID id, UserUpdateDTO userUpdateDTO, UUID currentUserId, User.Role currentRole) {
+        // Vérification des permissions
+        if (currentRole == User.Role.TRAINEE && !id.equals(currentUserId)) {
+            throw new SecurityException("You are not authorized to update another user's profile.");
+        }
+
         // Récupérer l'utilisateur existant
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec l'id : " + id));
 
         // Vérifier et mettre à jour uniquement les champs non nuls dans le DTO
-        Optional.ofNullable(userUpdateDTO.getFirstname()).ifPresent(user::setFirstname);
-        Optional.ofNullable(userUpdateDTO.getLastname()).ifPresent(user::setLastname);
-        Optional.ofNullable(userUpdateDTO.getEmail()).ifPresent(email -> {
-            // Valider que l'email est unique
-            if (userRepository.findByEmail(email).isPresent() && !user.getEmail().equals(email)) {
-                throw new DuplicateEmailException("L'email " + email + " est déjà utilisé.");
+        if (userUpdateDTO.getFirstname() != null) {
+            if (!userUpdateDTO.getFirstname().isBlank()) {
+                user.setFirstname(userUpdateDTO.getFirstname());
             }
-            user.setEmail(email.toLowerCase());
-        });
-        Optional.ofNullable(userUpdateDTO.getPassword()).ifPresent(password -> {
-            passwordValidator.validate(password);
-            String hashedPassword = passwordEncoder.encode(password); // Hacher le mot de passe avant mise à jour
-            user.setPassword(hashedPassword);
-        });
-        Optional.ofNullable(userUpdateDTO.getPhone()).ifPresent(user::setPhone);
-        Optional.ofNullable(userUpdateDTO.getCompany()).ifPresent(user::setCompany);
-        Optional.ofNullable(userUpdateDTO.getRole()).ifPresent(user::setRole);
-        Optional.ofNullable(userUpdateDTO.getIsActive()).ifPresent(user::setIsActive);
+        }
+        if (userUpdateDTO.getLastname() != null) {
+            if (!userUpdateDTO.getLastname().isBlank()) {
+                user.setLastname(userUpdateDTO.getLastname());
+            }
+        }
+        if (userUpdateDTO.getPassword() != null) {
+            if (!userUpdateDTO.getPassword().isBlank()) {
+                passwordValidator.validate(userUpdateDTO.getPassword());
+                String hashedPassword = passwordEncoder.encode(userUpdateDTO.getPassword());
+                user.setPassword(hashedPassword);
+            }
+        }
+        if (userUpdateDTO.getPhone() != null) {
+            user.setPhone(userUpdateDTO.getPhone());
+        }
+        if (userUpdateDTO.getCompany() != null) {
+            user.setCompany(userUpdateDTO.getCompany());
+        }
 
         // Sauvegarder l'utilisateur mis à jour
         User updatedUser = userRepository.save(user);

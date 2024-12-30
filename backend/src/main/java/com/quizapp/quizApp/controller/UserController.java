@@ -7,11 +7,13 @@ import com.quizapp.quizApp.model.dto.response.UserResponseDTO;
 import com.quizapp.quizApp.model.dto.update.UserUpdateDTO;
 import com.quizapp.quizApp.service.impl.EmailService;
 import com.quizapp.quizApp.service.interfac.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,8 +55,17 @@ public class UserController {
 
     // Mise à jour partielle d'un utilisateur
     @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> update(@PathVariable UUID id, @RequestBody UserUpdateDTO userUpdateDTO) {
-        UserResponseDTO updatedUser = userService.updatePartialUser(id, userUpdateDTO);
+    public ResponseEntity<UserResponseDTO> update(@PathVariable UUID id, @RequestBody @Valid UserUpdateDTO userUpdateDTO, HttpServletRequest request) {
+
+        // Récupérer l'ID utilisateur et le rôle depuis le contexte
+        UUID currentUserId = UUID.fromString((String) request.getAttribute("userId"));
+        String currentRole = (String) SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator().next().getAuthority();
+
+        // Convertir le rôle avec la méthode utilitaire
+        User.Role currentUserRole = User.Role.fromPrefixedRole(currentRole);
+
+        // Appeler le service pour gérer la mise à jour et les permissions
+        UserResponseDTO updatedUser = userService.updatePartialUser(id, userUpdateDTO, currentUserId, currentUserRole);
         return ResponseEntity.ok(updatedUser); // 200 OK pour mise à jour réussie
     }
 

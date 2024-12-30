@@ -19,7 +19,9 @@ public interface UserService {
 
     Optional<User> getUserByEmail(String email);
 
-    UserResponseDTO updatePartialUser(UUID id, UserUpdateDTO userUpdateDTO);
+    //UserResponseDTO updatePartialUser(UUID id, UserUpdateDTO userUpdateDTO);
+
+    UserResponseDTO updatePartialUser(UUID id, UserUpdateDTO userUpdateDTO, UUID currentUserId, User.Role currentUserRole);
 
     String setActiveStatus(UUID id, Boolean status);
 

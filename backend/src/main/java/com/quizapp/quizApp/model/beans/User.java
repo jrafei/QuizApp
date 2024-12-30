@@ -69,7 +69,14 @@ public class User {
     private List<Quiz> quizzes; // Liste des quiz créés par cet utilisateur
 
     public enum Role {
-        ADMIN, TRAINEE
+        ADMIN, TRAINEE;
+
+        public static Role fromPrefixedRole(String prefixedRole) {
+            if (prefixedRole.startsWith("ROLE_")) {
+                return Role.valueOf(prefixedRole.replace("ROLE_", ""));
+            }
+            throw new IllegalArgumentException("Invalid role: " + prefixedRole);
+        }
     }
 
     @Column(name = "activation_token", unique = true)

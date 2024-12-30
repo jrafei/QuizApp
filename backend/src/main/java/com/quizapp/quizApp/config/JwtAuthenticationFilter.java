@@ -43,6 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Ajouter l'ID utilisateur comme détail supplémentaire
             authenticationToken.setDetails(userId);
 
+            // Ajouter l'ID utilisateur à la requête
+            request.setAttribute("userId", userId);
+
             // Finaliser l'objet d'authentification
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
