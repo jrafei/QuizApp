@@ -32,6 +32,8 @@ public interface UserService {
 
     void forgotPassword(String email);
 
+    boolean isAccountDeactivated(String email);
+
     void requestAccountReactivation(String email);
 
     void validateAndReactivateAccount(String email, String validationCode);

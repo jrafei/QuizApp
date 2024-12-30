@@ -2,6 +2,7 @@ package com.quizapp.quizApp.controller;
 
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
+import com.quizapp.quizApp.model.dto.update.QuizUpdateDTO;
 import com.quizapp.quizApp.service.interfac.QuizService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +24,23 @@ public class QuizController {
         return ResponseEntity.status(201).body(createdQuiz); // 201 Created
     }
 
+    @PostMapping("/{idQuiz}")
+    public ResponseEntity<QuizResponseDTO> createNewVersion(@PathVariable UUID idQuiz) {
+        QuizResponseDTO createdQuiz = quizService.createNewVersion(idQuiz);
+        return ResponseEntity.status(201).body(createdQuiz); // 201 Created
+    }
+
     @GetMapping
     public ResponseEntity<List<QuizResponseDTO>> getAllQuizzes() {
         List<QuizResponseDTO> quizzes = quizService.getAllQuizzes();
         return ResponseEntity.ok(quizzes); // 200 OK
+    }
+
+
+    @GetMapping("/{idVersion}")
+    public ResponseEntity<QuizResponseDTO> getLatestQuiz(@PathVariable UUID idVersion) {
+        QuizResponseDTO quiz= quizService.getLatestQuiz(idVersion);
+        return ResponseEntity.ok(quiz); // 200 OK
     }
 
     @GetMapping("/status")
@@ -48,7 +62,7 @@ public class QuizController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<QuizResponseDTO> updateQuiz(@PathVariable UUID id, @RequestBody QuizCreateDTO quizCreateDTO) {
+    public ResponseEntity<QuizResponseDTO> updateQuiz(@PathVariable UUID id, @RequestBody QuizUpdateDTO quizCreateDTO) {
         QuizResponseDTO updatedQuiz = quizService.updateQuiz(id, quizCreateDTO);
         return ResponseEntity.ok(updatedQuiz); // 200 OK
     }
@@ -70,4 +84,7 @@ public class QuizController {
         quizService.deleteQuiz(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
+
+
 }

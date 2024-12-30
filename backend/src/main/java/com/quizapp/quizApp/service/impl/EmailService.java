@@ -52,7 +52,6 @@ public class EmailService {
 
     private void handleError(IOException ex) {
         System.err.println("Error sending email: " + ex.getMessage());
-        // Ajoutez une gestion des erreurs plus approfondie si nécessaire (logs, alertes, etc.)
     }
 
     // Construction du message de bienvenue avec un lien d'activation

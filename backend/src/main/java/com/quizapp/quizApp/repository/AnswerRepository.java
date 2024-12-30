@@ -26,4 +26,8 @@ public interface AnswerRepository extends JpaRepository<Answer, UUID> {
     boolean existsByQuestionIdAndCorrectTrueAndIsActiveTrue(UUID id);
 
     List<Answer> findAllByQuestionIdAndIsActiveTrue(UUID id);
+
+    List<Answer> findAllByQuestionId(UUID questionId);
+
+    Answer findAnswerByQuestionIdAndPosition(UUID questionID,Integer position);
 }

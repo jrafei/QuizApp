@@ -56,10 +56,12 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/auth/activate",
+                                "/themes",
                                 "/records",
                                 "/records/{userId}/stats/themes",
                                 "/records/{userId}/stats/quizs/{quizId}",
-                                "/records/{userId}/stats/quizs")
+                                "/records/{userId}/stats/quizs",
+                                "/quizzes/{idVersion}")
                         .permitAll()
 
                         // *********** Routes protégées *************
@@ -73,7 +75,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN") // Suppression : uniquement pour ADMIN
 
                         // THEMES
-                        .requestMatchers(HttpMethod.GET, "/themes").hasAnyRole("ADMIN", "TRAINEE") // Lister tous les thèmes
+                        // .requestMatchers(HttpMethod.GET, "/themes").hasAnyRole("ADMIN", "TRAINEE") // Lister tous les thèmes
                         .requestMatchers(HttpMethod.GET, "/themes/{id}").hasAnyRole("ADMIN", "TRAINEE") // Obtenir un thème par ID
 
                         .requestMatchers(HttpMethod.POST, "/themes").hasRole("ADMIN") // Création uniquement pour ADMIN
@@ -93,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/quizzes/{id}/activate").hasRole("ADMIN") // Activation uniquement pour ADMIN
                         .requestMatchers(HttpMethod.PATCH, "/quizzes/{id}/deactivate").hasRole("ADMIN") // Désactivation uniquement pour ADMIN
                         .requestMatchers(HttpMethod.DELETE, "/quizzes/{id}").hasRole("ADMIN") // Suppression uniquement pour ADMIN
+                        .requestMatchers(HttpMethod.POST, "/quizzes/{idQuiz}").hasRole("ADMIN") // ajout d'une nouvelle version de quiz
 
                         // QUESTIONS
                         .requestMatchers(HttpMethod.GET, "/questions").hasAnyRole("ADMIN", "TRAINEE") // Liste accessible à ADMIN et TRAINEE
@@ -134,7 +137,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Apply to all endpoints
-                        .allowedOrigins("http://localhost:5176") // Specify allowed origins
+                        .allowedOrigins("http://localhost:5173") // Specify allowed origins
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE") // Specify allowed methods
                         .allowedHeaders("*") // Allow all headers
                         .allowCredentials(true); // Allow credentials like cookies

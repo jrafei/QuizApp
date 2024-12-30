@@ -21,12 +21,12 @@ function VisitorByTheme() {
                 <div className="border-r border-gray-300 p-4 flex justify-center">
                     <ThemeTheme />
                 </div>
-                <div className="border-r border-gray-300 p-4 flex justify-center">
+                {/* <div className="border-r border-gray-300 p-4 flex justify-center">
                     <ThemeQuiz />
                 </div>
                 <div className="p-4 flex justify-center">
                     <ThemeRanking />
-                </div>
+                </div> */}
             </div>
         </main>
         

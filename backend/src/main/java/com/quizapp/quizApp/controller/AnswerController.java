@@ -38,7 +38,7 @@ public class AnswerController {
         return ResponseEntity.ok(answerService.createAnswer(answerDTO));
     }
 
-    @PatchMapping("/{id}/activate")
+   @PatchMapping("/{id}/activate")
     public ResponseEntity<Void> activateAnswer(@PathVariable UUID id) {
         answerService.activateAnswer(id);
         return ResponseEntity.noContent().build();
@@ -50,7 +50,7 @@ public class AnswerController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<AnswerDTO> updateAnswer(
             @PathVariable UUID id,
             @RequestBody AnswerDTO answerDTO) {

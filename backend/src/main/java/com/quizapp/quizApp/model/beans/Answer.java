@@ -34,12 +34,11 @@ public class Answer {
     private Boolean isActive = false; // Par défaut : inactif
 
     @Column(name = "position")
-    private Integer position = null; // Par défaut, pas d'ordre défini
+    private Integer position; // Par défaut, pas d'ordre défini
 
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
     @JsonBackReference
-    @ToString.Exclude
     private Question question; // Association à une Question parent
 
 

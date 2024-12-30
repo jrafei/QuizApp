@@ -1,6 +1,7 @@
 package com.quizapp.quizApp.controller;
 
 import com.quizapp.quizApp.exception.UserNotFoundException;
+import com.quizapp.quizApp.model.beans.User;
 import com.quizapp.quizApp.model.dto.AuthRequestDTO;
 import com.quizapp.quizApp.model.dto.AuthResponseDTO;
 import com.quizapp.quizApp.service.impl.CustomUserDetailsService;
@@ -37,7 +38,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @CrossOrigin(origins="http://localhost:5176")
+    @CrossOrigin(origins="http://localhost:5173")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequestDTO authRequest) {
         try {
@@ -49,6 +50,13 @@ public class AuthController {
 
             // Extraire les détails de l'utilisateur authentifié
             UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+
+            // Vérifier si l'utilisateur est désactivé
+            User user = userService.getUserByEmail(authRequest.getUsername())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            if (!user.getIsActive()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Your account is deactivated. Please reactivate it.");
+            }
 
             // Extraire le rôle de l'utilisateur
             String role = userDetails.getAuthorities().stream()
@@ -65,7 +73,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
     }
-    @CrossOrigin(origins="http://localhost:5176")
+    @CrossOrigin(origins="http://localhost:5173")
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
@@ -78,18 +86,27 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/reactivation-request")
+    @PostMapping("/reactivation-request") // Envoie le mail
     public ResponseEntity<String> requestReactivation(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email is required.");
         }
 
-        userService.requestAccountReactivation(email);
-        return ResponseEntity.ok("If this email is associated with an inactive account, you will receive a validation code.");
+        try {
+            if (userService.isAccountDeactivated(email)) {
+                userService.requestAccountReactivation(email);
+                return ResponseEntity.ok("If this email is associated with an inactive account, you will receive a validation code.");
+            } else {
+                return ResponseEntity.badRequest().body("Your account is already active.");
+            }
+        } catch (UserNotFoundException ex) {
+            // Toujours répondre de manière générique pour éviter de révéler si l'email existe ou non
+            return ResponseEntity.ok("If this email is associated with an inactive account, you will receive a validation code.");
+        }
     }
 
-    @PostMapping("/reactivate-account")
+    @PostMapping("/reactivate-account") // Renseigne le code
     public ResponseEntity<String> reactivateAccount(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         String validationCode = requestBody.get("validationCode");

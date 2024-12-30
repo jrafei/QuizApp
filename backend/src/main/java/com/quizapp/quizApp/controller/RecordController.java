@@ -46,7 +46,7 @@ public class RecordController {
         return ResponseEntity.ok(records);
     }
 
-
+    
     // les resultats (note et durée) d'un stagiaire par questionnaire
     @GetMapping("/{userId}/stats/quizs")
     public ResponseEntity<List<UserQuizStatsDTO>> getUserStatsByQuiz(
@@ -83,6 +83,7 @@ public class RecordController {
         return ResponseEntity.ok(stats);
     }
 
+    // Par quiz 
     @GetMapping("/quizs/{quizId}/leaderboard")
     public ResponseEntity<List<QuizLeaderboardDTO>> getQuizLeaderboard(@PathVariable UUID quizId) {
         List<QuizLeaderboardDTO> leaderboard = recordService.getQuizLeaderboard(quizId);

@@ -38,9 +38,8 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @NotNull
     @Size(min = 8)
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = true)
     private String password;
 
     @Column(name = "company", length = 100) // nullable par défaut
@@ -56,6 +55,9 @@ public class User {
     @NotNull
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
+
+    @Column(name = "deactivation_date")
+    private LocalDateTime deactivationDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)

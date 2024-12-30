@@ -33,7 +33,7 @@ public class QuestionController {
         return ResponseEntity.ok(createdQuestion);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<QuestionDTO> updateQuestion(
             @PathVariable UUID id,
             @RequestBody QuestionDTO questionDTO) {
