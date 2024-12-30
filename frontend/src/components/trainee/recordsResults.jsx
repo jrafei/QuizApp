@@ -1,20 +1,48 @@
 import React from 'react';
+import CurrentQuiz from './currentQuiz';
 
 const RecordsResults = () => {
+    const quiz = JSON.parse(localStorage.getItem("currentQuiz"));
+    const quizAnswers = JSON.parse(localStorage.getItem("quizAnswers"));
 
-    const quizDetails = {
-        score: 17,
-        nb_questions: 20,
-        runtime: "10.22",
-        questions: [
-            "What is your name?", 
-            "What is your favorite color?", 
-        ],
-        answers: [
-            "John", 
-            "Blue", 
-        ]
+    const scoreCalculation = () => {
+        let score = 0;
+        quiz.forEach((question, index) => {
+            if (question.answers[quizAnswers[index]].isCorrect) {
+                score += 1;
+            }
+        });
+        return score;
     };
+
+    const quizRecord = {
+        duration: "10.22",
+        score: scoreCalculation(),
+        quizId : localStorage.getItem("CurrentQuizId"),
+        answersId : quizAnswers,
+        traineeId : ""
+    };
+
+    
+    
+    /*useEffect (() => {
+        const postRecord = async () => {
+            const token = localStorage.getItem("authToken");
+            try {
+            
+                const response = await axios.post("http://localhost:8080/records", {
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    params: { quizId }
+                });
+            }
+            catch {
+
+            }
+        }
+    })*/
 
     return (
         <div className="flex flex-col items-center p-4">
@@ -26,14 +54,14 @@ const RecordsResults = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Score:
                     </label>
-                    <p className="text-gray-800 text-lg">{quizDetails.score}/ {quizDetails.nb_questions}</p>
-                </div>
+                    <p className="text-gray-800 text-lg">{/*quizRecord.score*/}/ {/*quiz.length*/}</p>
+                </div>;
 
                 <div className="mb-4 w-full">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Runtime:
                     </label>
-                    <p className="text-gray-800 text-lg">{quizDetails.runtime} minutes</p>
+                    <p className="text-gray-800 text-lg">{/*quizRecord.duration*/} minutes</p>
                 </div>
 
                 <div className="mb-4 w-full">
@@ -41,11 +69,7 @@ const RecordsResults = () => {
                         Your Answers:
                     </label>
                     <ul className="list-inside pl-4 text-gray-800">
-                        {quizDetails.questions.map((question, index) => (
-                            <li key={index} className="mb-2">
-                                <strong>{question}</strong>: {quizDetails.answers[index]}
-                            </li>
-                        ))}
+                        
                     </ul>
                 </div>
             </div>

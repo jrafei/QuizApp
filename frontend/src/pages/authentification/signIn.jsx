@@ -10,14 +10,17 @@ import Footer from "../../components/headerAndFooter/footer";
 function Signin() {
 
     const navigate = useNavigate();
-    
     const [email, setemail] = useState();
     const [password, setpassword] = useState();
     const handleauthentification = async(e) => {
         e.preventDefault(); // pour ne pas rafraichir la page (juste tu envoies les req vers le back)
         try {
             const response = await axios.post("http://localhost:8080/auth/login", {username:email, password:password}); //envoie 2 infos vers le backpour qu'ils soient traités
-            console.log(response.data.token);
+            const token = response.data.token
+
+            // Store the token in localStorage
+            localStorage.setItem("authToken", token);
+
             toast.success("Signed successfully");
             setTimeout(() => {
                 navigate("/traineespace");
@@ -25,7 +28,6 @@ function Signin() {
         } catch (error) {
             console.log(error);
             toast.error("Error while authenticating");
-
         }
     }
 
