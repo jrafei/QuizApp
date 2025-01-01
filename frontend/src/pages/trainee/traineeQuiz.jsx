@@ -6,38 +6,15 @@ import Footer from "../../components/headerAndFooter/footer";
 
 import CurrentQuiz from "../../components/trainee/currentQuiz";
 
-function TraineeQuiz(quizId) {
+function TraineeQuiz() {
 
     const navigate = useNavigate();
-    //const { quizId } = useParams(); // Get the quiz ID from the URL
 
-    const record = {
-        name: 'Géographie - La Terre',
-        nb_questions: 15,
-        quiz: [
-            {
-                question: "What is the capital of France?",
-                answer1: "Berlin",
-                answer2: "Madrid",
-                answer3: "Paris",
-                answer4: "Rome"
-            },
-            {
-                question: "Which planet is known as the Red Planet?",
-                answer1: "Earth",
-                answer2: "Mars",
-                answer3: "Venus",
-                answer4: "Jupiter"
-            },
-            {
-                question: "Who wrote 'Romeo and Juliet'?",
-                answer1: "Shakespeare",
-                answer2: "Dickens",
-                answer3: "Hemingway",
-                answer4: "Fitzgerald"
-            }
-        ]
-    };
+     // Extract the query string
+     const queryParams = new URLSearchParams(location.search);
+     const quizId = queryParams.get("index");
+
+    console.log('trainee quiz quizId', quizId)
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -48,14 +25,6 @@ function TraineeQuiz(quizId) {
             <main className="flex-1 flex flex-col justify-center items-center">
                 <CurrentQuiz quizId={quizId} />
             </main>
-            
-            <div className="mt-auto flex justify-center w-full p-4 mb-2">
-                <button 
-                    onClick={() => navigate('/traineespace/endquiz')}
-                    className="bg-blue-700 text-white text-italic px-12 py-4 rounded-lg hover:bg-blue-500">
-                        Continue
-                </button>
-            </div>
             <Footer />
         </div>
     );

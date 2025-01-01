@@ -20,6 +20,9 @@ function Signin() {
 
             // Store the token in localStorage
             localStorage.setItem("authToken", token);
+            
+            const payload = parseJWTPayload(token)
+            localStorage.setItem("userId", payload.userId)
 
             toast.success("Signed successfully");
             setTimeout(() => {
@@ -29,6 +32,11 @@ function Signin() {
             console.log(error);
             toast.error("Error while authenticating");
         }
+    }
+
+    function parseJWTPayload(token) {
+        const [header, payload, signature] = token.split('.');
+        return JSON.parse(atob(payload)); // Return the decoded payload
     }
 
     return (

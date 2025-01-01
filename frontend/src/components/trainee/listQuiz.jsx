@@ -79,7 +79,7 @@ const ListQuiz = ({searchQuery}) => {
                                 </td>
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">
                                     <button
-                                        onClick={() => navigate(`/traineespace/quiz?` + index)}
+                                        onClick={() => navigate(`/traineespace/quiz?index=${quiz.id}`)}
                                         className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-600"
                                     >
                                         Start

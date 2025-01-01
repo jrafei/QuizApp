@@ -5,10 +5,9 @@ import axios from "axios";
 const CurrentQuiz = ({quizId}) => {
     const navigate = useNavigate();
     const [questionId, setQuestionId] = useState(0);
-    const [selectedAnswers, setSelectedAnswers] = useState({});
     const [score, setScore] = useState(0);
+    const [selectedAnswers, setSelectedAnswers] = useState({});
     const [error, setError] = useState(null);
-
     const [quiz, setQuiz] = useState(null);
 
     useEffect(() => {    
@@ -16,13 +15,12 @@ const CurrentQuiz = ({quizId}) => {
         const fetchQuiz = async () => {
             const token = localStorage.getItem("authToken");
             try {
-            
-                const response = await axios.get("http://localhost:8080/questions", {
+                const url = `http://localhost:8080/questions?${quizId}`;
+                const response = await axios.get(url, {
                     headers: { 
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
                     },
-                    params: { quizId }
                 });
                 setQuiz(response.data || []);
             } catch (err) {
@@ -34,20 +32,14 @@ const CurrentQuiz = ({quizId}) => {
     }, [quizId]);
 
     const handleNextQuestion = () => {
-        // Check the selected answer and update the score
-
-        if (quiz[questionId].answers[selectedAnswers[questionId]].isCorrect) {
-            console.log("previous score", score)
-            setScore((prevScore) => prevScore + 1);
-            console.log("new score", score)
-        }
 
         // Move to the next question if available
+
         if (questionId < quiz.length - 1) {
             setQuestionId((prevId) => prevId + 1);
         } else {
             // Navigate to the end screen or show the final score
-            localStorage.setItem("quizAnswers", JSON.stringify(selectedAnswers));
+            localStorage.setItem("quizAnswersId", JSON.stringify(selectedAnswers));
             localStorage.setItem("currentQuiz", JSON.stringify(quiz));
             localStorage.setItem("currentQuizId", quizId)
             navigate('/traineespace/endquiz');
@@ -78,11 +70,11 @@ const CurrentQuiz = ({quizId}) => {
                                     type="radio"
                                     name={`question-${quiz[questionId].label}`}
                                     value={answerKey.label}
-                                    checked={selectedAnswers[questionId] === idx}
+                                    checked={selectedAnswers[questionId]?.localId === idx}
                                     onChange={() => {
                                         setSelectedAnswers((prevAnswers) => ({
                                             ...prevAnswers,
-                                            [questionId]: idx, // Update answer for the current question
+                                            [questionId]: { localId: idx, answerId: answerKey.id }, 
                                         }));
                                                                        
                                     }}
