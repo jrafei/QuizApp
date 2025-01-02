@@ -14,8 +14,6 @@ function TraineeQuiz() {
      const queryParams = new URLSearchParams(location.search);
      const quizId = queryParams.get("index");
 
-    console.log('trainee quiz quizId', quizId)
-
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
             <header className="flex-0"> <HeaderTrainee /> </header>

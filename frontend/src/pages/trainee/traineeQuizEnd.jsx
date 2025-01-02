@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import HeaderTrainee from "../../components/headerAndFooter/headerTrainee";
 import Footer from "../../components/headerAndFooter/footer";
@@ -7,22 +7,20 @@ import RecordsResults from "../../components/trainee/recordsResults";
 
 
 function TraineeQuizEnd() {
-
-    const record = {
-        name: 'Géographie - La Terre',
-        nb_questions: 15,
-        quiz: [
-            {
-                question: "What is the capital of France?",
-                answer1: "Berlin",
-                answer2: "Madrid",
-                answer3: "Paris",
-                answer4: "Rome"
-            }
-        ]
-    };
-
     const navigate = useNavigate();
+    const [record, setRecord] = useState("");
+    const [quiz, setQuiz] = useState();
+
+    const location = useLocation();
+
+    useEffect(() => {
+        setRecord(location.state?.quizRecord || null);
+        setQuiz(location.state?.quiz || null);
+    }, [location.state]);
+
+    if (!record) {
+        return <p>No quiz record available.</p>;
+    }
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -31,7 +29,7 @@ function TraineeQuizEnd() {
                 Quiz : {record.name}
             </h1>
             <main className="flex-1 flex flex-col justify-center items-center">
-                <RecordsResults />
+                <RecordsResults record={record} quiz={quiz} />
             </main>
             
             <div className="mt-auto flex justify-center w-full p-4 mb-2">

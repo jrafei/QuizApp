@@ -1,47 +1,88 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
+import { use } from "react";
 
 const RecordsHistory = () => {
+      const [recordList, setRecordList] = useState('');
+      const [selectedQuiz, setSelectedQuiz] = useState();
+    
+    useEffect (() => {
+        const getRecord = async () => {
+            const token = localStorage.getItem("authToken");
+            try {
+            
+                const response = await axios.get("http://localhost:8080/records/completed", {
+                    headers: { 
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                });
 
-    const quizzes = [
-        { name: 'Quiz 1', theme: 'Math', questions: 10, creationDate: '2024-12-01' },
-        { name: 'Quiz 2', theme: 'Science', questions: 15, creationDate: '2024-12-05' },
-        { name: 'Quiz 3', theme: 'History', questions: 20, creationDate: '2024-12-10' },
-    ];
+                setRecordList(response.data)
+            }
+            catch(error) {
+                console.error("Failed to get quiz record:", error);
+            }
+        };
+        getRecord()
+        ;
+    }, []);
+
+    // Fetch details for a selected record
+    const getQuizDetails = async (quizId) => {
+        const token = localStorage.getItem("authToken");
+        console.log(quizId)
+        try {
+            const response = await axios.get(`http://localhost:8080/questions?quizId=${quizId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            setSelectedQuiz(response.data || null);
+            console.log("ok quiz",selectedQuiz)
+
+        } catch (error) {
+            console.error("Failed to load quiz details:", error);
+            console.log(" not ok quiz",selectedQuiz)
+            
+        }
+    };
 
     return (
-        <div className="flex flex-col items-center p-4 ">
-            <h2 className="text-xl font-bold mb-4">History</h2>
+        <div className="flex flex-col items-center p-4">
+            <h2 className="text-xl font-bold mb-4">Quiz Records History</h2>
 
-
-            <table className="table-auto w-full border-collapse border border-gray-300 text-left">
-                <thead>
-                    <tr className="bg-gray-200">
-                        <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">Name</th>
-                        <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">Theme</th>
-                        <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">Number of Questions</th>
-                        <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">Creation Date</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    {quizzes.map((quiz, index) => (
-                        <tr key={index} className="odd:bg-white even:bg-gray-50">
-                            <td className="text-center align-middle border border-gray-300 px-4 py-2 flex items-center justify-center">
-                                <button className="bg-blue-800 text-white py-4 px-6 rounded-lg hover:bg-blue-400 w-[300px]">
-                                    {quiz.name}
-                                </button>
-                            </td>
-                            <td className="text-center align-middle border border-gray-300 px-4 py-2 text-center">{quiz.theme}</td>
-                            <td className="text-center align-middle border border-gray-300 px-4 py-2 text-center">{quiz.questions}</td>
-                            <td className="text-center align-middle border border-gray-300 px-4 py-2 text-center">{quiz.creationDate}</td>
+            {recordList.length > 0 ? (
+                <table className="table-auto w-full border-collapse border border-gray-300 text-left">
+                    <thead>
+                        <tr className="bg-gray-200">
+                            <th className="text-center align-middle border border-gray-300 px-4 py-2">Quiz Name</th>
+                            <th className="text-center align-middle border border-gray-300 px-4 py-2">Score</th>
+                            <th className="text-center align-middle border border-gray-300 px-4 py-2">Duration (mins)</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            
-            <h1 className="text-xl font-bold text-red-500 mt-6 mb-8 text-center">
-                AJOUTER PAGINATION
-            </h1>
+                    </thead>
+                    <tbody>
+                        {recordList.map((record, index) => (
+                            <tr key={index} className="odd:bg-white even:bg-gray-50">
+                                <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.quizName}</td>
+                                <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.score}</td>
+                                <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.duration}</td>
+                                <td className="text-center align-middle border border-gray-300 px-4 py-2">
+                                    <button
+                                        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                        onClick={() => getQuizDetails(record.quizId) }
+                                    >
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p className="text-gray-500 mt-6">No records found.</p>
+            )}
         </div>
     );
 };
