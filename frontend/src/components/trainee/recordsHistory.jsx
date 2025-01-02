@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { use } from "react";
 
-const RecordsHistory = () => {
+const RecordsHistory = ({ setSelectedRecord, setSelectedQuiz, searchQuery, currentPage, itemsPerPage }) => {
       const [recordList, setRecordList] = useState('');
-      const [selectedQuiz, setSelectedQuiz] = useState();
+      /*const [selectedQuiz, setSelectedQuiz] = useState();
+      const [filteredRecords, setFilteredRecords] = useState([]);*/
     
     useEffect (() => {
         const getRecord = async () => {
@@ -18,7 +19,8 @@ const RecordsHistory = () => {
                     },
                 });
 
-                setRecordList(response.data)
+                setRecordList(response.data)                
+                localStorage.setItem('recordNb', recordList.length)
             }
             catch(error) {
                 console.error("Failed to get quiz record:", error);
@@ -40,14 +42,24 @@ const RecordsHistory = () => {
                 },
             });
             setSelectedQuiz(response.data || null);
-            console.log("ok quiz",selectedQuiz)
 
         } catch (error) {
             console.error("Failed to load quiz details:", error);
-            console.log(" not ok quiz",selectedQuiz)
             
         }
     };
+
+    /*useEffect(() => {
+        const filtered = recordList.filter(record =>
+            record.quizName.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRecords(filtered);
+    }, [searchQuery, recordList]);*/
+
+    // Paginate the filtered quizzes
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentRecords = recordList.slice(startIndex, startIndex + itemsPerPage);
+    
 
     return (
         <div className="flex flex-col items-center p-4">
@@ -63,8 +75,8 @@ const RecordsHistory = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {recordList.map((record, index) => (
-                            <tr key={index} className="odd:bg-white even:bg-gray-50">
+                        {currentRecords.map(record => (
+                            <tr key={record.recordId} className="quiz-item">
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.quizName}</td>
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.score}</td>
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.duration}</td>

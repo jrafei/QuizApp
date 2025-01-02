@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Ensure axios is imported
 
 
-const ListQuiz = ({searchQuery}) => {
+const ListQuiz = ({ searchQuery, currentPage, itemsPerPage }) => {
     const navigate = useNavigate();
     const [quizzes, setQuizzes] = useState([]); // State for quizzes
+    const [filteredQuizzes, setFilteredQuizzes] = useState([]);
     const [error, setError] = useState(null); // State for error handling
 
     // Fetch quizzes on component mount
@@ -19,19 +20,26 @@ const ListQuiz = ({searchQuery}) => {
                     }
                 });
                 setQuizzes(response.data);
+                localStorage.setItem('quizNb', quizzes.length)
             } catch (err) {
                 setError("Failed to load quizzes. Please try again later.");
             }
         };
 
         fetchQuizzes();
-    }, []); // Empty dependency array ensures it runs once on mount
+    }, []);
 
-    // Filter quizzes based on the search query
-    const filteredQuizzes = quizzes.filter((quiz) =>
-        quiz.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Filter quizzes based on searchQuery
+    useEffect(() => {
+        const filtered = quizzes.filter(quiz =>
+            quiz.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredQuizzes(filtered);
+    }, [searchQuery, quizzes]);
 
+    // Paginate the filtered quizzes
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentQuizzes = filteredQuizzes.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <div className="overflow-x-auto">
@@ -63,8 +71,8 @@ const ListQuiz = ({searchQuery}) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredQuizzes.map((quiz, index) => (
-                            <tr key={index} className="odd:bg-white even:bg-gray-50">
+                        {currentQuizzes.map(quiz => (
+                        <tr key={quiz.id} className="quiz-item">
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">
                                     {quiz.name}
                                 </td>
@@ -91,9 +99,6 @@ const ListQuiz = ({searchQuery}) => {
                 </table>
             )}
 
-            <h1 className="text-xl font-bold text-red-500 mt-6 mb-8 text-center">
-                ADD PAGINATION
-            </h1>
         </div>
     );
 };

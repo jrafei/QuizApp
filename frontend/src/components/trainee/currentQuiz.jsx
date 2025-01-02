@@ -8,7 +8,13 @@ const CurrentQuiz = ({ quizId }) => {
     const [selectedAnswers, setSelectedAnswers] = useState([]);
     const [quiz, setQuiz] = useState(null);
     const [error, setError] = useState(null);
+    const [startTime, setStartTime] = useState(null);
     const hasPostExecuted = useRef(false); // Track if the POST request has been executed
+
+    // Start the quiz and set the start time
+    const handleStartQuiz = () => {
+        setStartTime(Date.now());
+    };
 
     // Fetch the quiz details
     useEffect(() => {
@@ -29,8 +35,9 @@ const CurrentQuiz = ({ quizId }) => {
         };
 
         fetchQuiz();
-    }, [quizId]);
+        handleStartQuiz();
 
+    }, [quizId]);
 
     const quizRecord = {
         traineeId: localStorage.getItem("userId"),
@@ -40,10 +47,23 @@ const CurrentQuiz = ({ quizId }) => {
         status: "COMPLETED",
     };
 
+    const handleSubmitQuiz = (quizRecord) => {
+        const endTime = Date.now();
+        const timeSpent = endTime - startTime; // Time spent in milliseconds
+    
+        const timeSpentInSeconds = Math.floor(timeSpent / 1000);
+        quizRecord.duration = timeSpentInSeconds
+    }
+
+    
+
     
     // Handle quiz submission (POST request)
     useEffect(() => {
         if (questionId === quiz?.length && !hasPostExecuted.current) {
+
+            handleSubmitQuiz(quizRecord);
+            
             console.log(selectedAnswers)
             const postRecord = async () => {
                 const token = localStorage.getItem("authToken");

@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
 
 import HeaderTrainee from "../../components/headerAndFooter/headerTrainee";
 import Footer from "../../components/headerAndFooter/footer";
@@ -7,8 +6,6 @@ import Footer from "../../components/headerAndFooter/footer";
 import CurrentQuiz from "../../components/trainee/currentQuiz";
 
 function TraineeQuiz() {
-
-    const navigate = useNavigate();
 
      // Extract the query string
      const queryParams = new URLSearchParams(location.search);

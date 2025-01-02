@@ -3,7 +3,6 @@ import axios from "axios";
 import CurrentQuiz from './currentQuiz';
 
 const RecordsResults = ({record, quiz}) => {
-    console.log(record)
 
     if (!quiz) {
         return <div></div>
@@ -52,7 +51,7 @@ const RecordsResults = ({record, quiz}) => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Runtime:
                     </label>
-                    <p className="text-gray-800 text-lg">{record.duration} minutes</p>
+                    <p className="text-gray-800 text-lg">{Math.floor(record.duration / 60)} minutes</p>
                 </div>
 
                 <div className="mb-4 w-full">
