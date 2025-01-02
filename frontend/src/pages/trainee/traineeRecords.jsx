@@ -41,7 +41,7 @@ function TraineeRecords() {
             
                     <div className="mt-4">
                         <Pagination
-                            totalItems={localStorage.getItem("recordNb")}
+                            totalItems={0} // initialized in pagination to ensure it is synchronised
                             itemsPerPage={itemsPerPage}
                             currentPage={currentPage}
                             onPageChange={handlePageChange}

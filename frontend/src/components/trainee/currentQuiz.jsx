@@ -64,7 +64,6 @@ const CurrentQuiz = ({ quizId }) => {
 
             handleSubmitQuiz(quizRecord);
             
-            console.log(selectedAnswers)
             const postRecord = async () => {
                 const token = localStorage.getItem("authToken");
                 try {

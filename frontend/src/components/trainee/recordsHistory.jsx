@@ -3,9 +3,8 @@ import axios from 'axios';
 import { use } from "react";
 
 const RecordsHistory = ({ setSelectedRecord, setSelectedQuiz, searchQuery, currentPage, itemsPerPage }) => {
-      const [recordList, setRecordList] = useState('');
-      /*const [selectedQuiz, setSelectedQuiz] = useState();
-      const [filteredRecords, setFilteredRecords] = useState([]);*/
+      const [recordList, setRecordList] = useState([]);
+      const [filteredRecords, setFilteredRecords] = useState([]);
     
     useEffect (() => {
         const getRecord = async () => {
@@ -33,7 +32,6 @@ const RecordsHistory = ({ setSelectedRecord, setSelectedQuiz, searchQuery, curre
     // Fetch details for a selected record
     const getQuizDetails = async (quizId) => {
         const token = localStorage.getItem("authToken");
-        console.log(quizId)
         try {
             const response = await axios.get(`http://localhost:8080/questions?quizId=${quizId}`, {
                 headers: {
@@ -49,16 +47,16 @@ const RecordsHistory = ({ setSelectedRecord, setSelectedQuiz, searchQuery, curre
         }
     };
 
-    /*useEffect(() => {
+    useEffect(() => {
         const filtered = recordList.filter(record =>
             record.quizName.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setFilteredRecords(filtered);
-    }, [searchQuery, recordList]);*/
+    }, [searchQuery, recordList]);
 
     // Paginate the filtered quizzes
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentRecords = recordList.slice(startIndex, startIndex + itemsPerPage);
+    const currentRecords = filteredRecords.slice(startIndex, startIndex + itemsPerPage);
     
 
     return (

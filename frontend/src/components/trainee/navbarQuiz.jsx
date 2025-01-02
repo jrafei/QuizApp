@@ -16,6 +16,7 @@ const NavbarQuiz = ({ searchQuery, setSearchQuery }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ marginBottom: '20px', padding: '10px', width: '100%' }}
+                className="px-4 py-2 w-64 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
         </header>
