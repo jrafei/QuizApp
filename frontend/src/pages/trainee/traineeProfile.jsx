@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 import HeaderTrainee from "../../components/headerAndFooter/headerTrainee";
 import Footer from "../../components/headerAndFooter/footer";
@@ -8,18 +9,34 @@ import Footer from "../../components/headerAndFooter/footer";
 function Profile() {
 
     const navigate = useNavigate();
-
-    const userProfile = {
+    const [userProfile, setUserProfile] = useState ({
         firstname: "John",
         lastname: "Doe",
         email: "john.doe@example.com",
-        password: "**********",
         company: "Example Corp",
         phone: "+1234567890",
-        creationDate: "2024-01-01",
         isActive: true,
         role: "User",
-    };
+    })
+
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        const userId = localStorage.getItem("userId")
+        const getProfileInfos = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/users/${userId}`, {
+                    headers: { 
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setUserProfile(response.data);
+            } catch (err) {
+                setError("Failed to load quizzes. Please try again later.");
+            }
+        };
+
+        getProfileInfos();
+    }, []);
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
@@ -50,14 +67,7 @@ function Profile() {
                         </label>
                         <p className="text-gray-800">{userProfile.email}</p>
                     </div>
-
-                    <div className="mb-4 w-full">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Password:
-                        </label>
-                        <p className="text-gray-800">{userProfile.password}</p>
-                    </div>
-
+                    
                     <div className="mb-4 w-full">
                         <label className="block text-gray-700 text-sm font-bold mb-2">
                             Company:
@@ -77,20 +87,6 @@ function Profile() {
                             Role:
                         </label>
                         <p className="text-gray-800">{userProfile.role}</p>
-                    </div>
-
-                    <div className="mb-4 w-full">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Account Active:
-                        </label>
-                        <p className="text-gray-800">{userProfile.isActive ? "Active" : "Inactive"}</p>
-                    </div>
-
-                    <div className="mb-4 w-full">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Account Created:
-                        </label>
-                        <p className="text-gray-800">{userProfile.creationDate}</p>
                     </div>
                 </div>
             </main>
