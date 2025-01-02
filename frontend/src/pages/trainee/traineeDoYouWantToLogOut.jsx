@@ -9,6 +9,11 @@ function WantToLogOut() {
 
     const navigate = useNavigate();
 
+    const deconnexion = () => {
+        localStorage.clear();
+        navigate("/");
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
             <header className="flex-0"> <HeaderTrainee /> </header>
@@ -18,7 +23,8 @@ function WantToLogOut() {
                     Do you want to log out? 
                 </h1>
                 <div className="flex gap-16">
-                    <button className="bg-red-700 font-bold text-white px-12 py-3 rounded-lg hover:bg-red-500">
+                    <button onClick={() => deconnexion()}
+                     className="bg-red-700 font-bold text-white px-12 py-3 rounded-lg hover:bg-red-500">
                         Yes
                     </button>
                     <button 
