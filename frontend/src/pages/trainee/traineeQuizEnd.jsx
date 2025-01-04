@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import HeaderTrainee from "../../components/headerAndFooter/headerTrainee";
 import Footer from "../../components/headerAndFooter/footer";
-import RecordsResults from "../../components/trainee/recordsResults";
+import EndQuizResults from "../../components/trainee/EndQuizResults";
 
 
 function TraineeQuizEnd() {
@@ -29,7 +29,7 @@ function TraineeQuizEnd() {
                 Quiz : {record.name}
             </h1>
             <main className="flex-1 flex flex-col justify-center items-center">
-                <RecordsResults record={record} quiz={quiz} />
+                <EndQuizResults record={record} quiz={quiz} />
             </main>
             
             <div className="mt-auto flex justify-center w-full p-4 mb-2">

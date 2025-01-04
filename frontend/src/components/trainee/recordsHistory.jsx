@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { use } from "react";
 
-const RecordsHistory = ({ setRecordNb, setSelectedQuiz, searchQuery, currentPage, itemsPerPage }) => {
+const RecordsHistory = ({ setRecordNb, setSelectedRecord, setSelectedQuiz, searchQuery, currentPage, itemsPerPage }) => {
       const [recordList, setRecordList] = useState([]);
       const [filteredRecords, setFilteredRecords] = useState([]);
     
@@ -18,8 +18,8 @@ const RecordsHistory = ({ setRecordNb, setSelectedQuiz, searchQuery, currentPage
                     },
                 });
 
-                setRecordList(response.data)  
-                setRecordNb(response.data.length)    
+                setRecordList(response.data)
+                setRecordNb(response.data.length)
             }
             catch(error) {
                 console.error("Failed to get quiz record:", error);
@@ -30,16 +30,20 @@ const RecordsHistory = ({ setRecordNb, setSelectedQuiz, searchQuery, currentPage
     }, [setRecordNb]);
 
     // Fetch details for a selected record
-    const getQuizDetails = async (quizId) => {
+    const getQuizDetails = async (record) => {
+        const quizId = record.quizId
         const token = localStorage.getItem("authToken");
+
         try {
-            const response = await axios.get(`http://localhost:8080/questions?quizId=${quizId}`, {
+
+            const quizResponse = await axios.get(`http://localhost:8080/questions?quizId=${quizId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
-                },
+                }
             });
-            setSelectedQuiz(response.data || null);
+            setSelectedRecord(record || null)
+            setSelectedQuiz(quizResponse.data || null);
 
         } catch (error) {
             console.error("Failed to load quiz details:", error);
@@ -81,7 +85,7 @@ const RecordsHistory = ({ setRecordNb, setSelectedQuiz, searchQuery, currentPage
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">
                                     <button
                                         className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                                        onClick={() => getQuizDetails(record.quizId) }
+                                        onClick={() => getQuizDetails(record) }
                                     >
                                         Details
                                     </button>

@@ -34,6 +34,7 @@ function TraineeRecords() {
                 <div className="border-r border-gray-300 p-4 flex flex-col items-center">
                     <RecordsHistory 
                         setRecordNb={setRecordNb} 
+                        setSelectedRecord={setSelectedRecord}
                         setSelectedQuiz={setSelectedQuiz}
                         searchQuery={searchQuery}
                         currentPage={currentPage}
