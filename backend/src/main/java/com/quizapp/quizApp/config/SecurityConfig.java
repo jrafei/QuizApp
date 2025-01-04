@@ -67,7 +67,7 @@ public class SecurityConfig {
                         // *********** Routes protégées *************
 
                         // USERS
-                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN") // Création : uniquement pour ADMIN
+//                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN") // Création : uniquement pour ADMIN
                         .requestMatchers(HttpMethod.PATCH, "/users/{id}").hasAnyRole("ADMIN","TRAINEE") // Modification : ADMIN et TRAINEE
                         .requestMatchers(HttpMethod.PATCH, "/users/{id}/role").hasRole("ADMIN") // Modification du rôle : uniquement pour ADMIN
                         .requestMatchers(HttpMethod.PATCH, "/users/{id}/activate").hasAnyRole("ADMIN","TRAINEE") // Activation : ADMIN et TRAINEE

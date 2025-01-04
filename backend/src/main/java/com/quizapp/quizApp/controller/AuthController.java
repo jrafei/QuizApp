@@ -73,6 +73,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
     }
+
     @CrossOrigin(origins="http://localhost:5173")
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
@@ -86,6 +87,7 @@ public class AuthController {
         }
     }
 
+    @CrossOrigin(origins="http://localhost:5173")
     @PostMapping("/reactivation-request") // Envoie le mail
     public ResponseEntity<String> requestReactivation(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
@@ -106,6 +108,7 @@ public class AuthController {
         }
     }
 
+    @CrossOrigin(origins="http://localhost:5173")
     @PostMapping("/reactivate-account") // Renseigne le code
     public ResponseEntity<String> reactivateAccount(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
@@ -119,8 +122,19 @@ public class AuthController {
             throw new IllegalArgumentException("Validation code is required.");
         }
 
-        userService.validateAndReactivateAccount(email, validationCode);
-        return ResponseEntity.ok("Your account has been successfully reactivated.");
+        try {
+            userService.validateAndReactivateAccount(email, validationCode);
+            return ResponseEntity.ok("Your account has been successfully reactivated.");
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.status(404).body(ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("An unexpected error occurred.");
+        }
+
+        // userService.validateAndReactivateAccount(email, validationCode);
+        // return ResponseEntity.ok("Your account has been successfully reactivated.");
     }
 
     @GetMapping("/activate")

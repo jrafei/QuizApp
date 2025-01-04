@@ -30,7 +30,18 @@ function Signin() {
             }, 2000);
         } catch (error) {
             console.log(error);
-            toast.error("Error while authenticating");
+            if (error.response && error.response.status === 403) {
+                if (error.response.data === "Your account is deactivated. Please reactivate it.") {
+                    toast.error("Your account is deactivated. Redirecting to activation page...");
+                    setTimeout(() => {
+                        navigate("/activate");
+                    }, 4000);
+                } else {
+                    toast.error(error.response.data || "An error occurred. Please try again.");
+                }
+            } else {
+                toast.error("Error while authenticating. Please check your credentials.");
+            }
         }
     }
 

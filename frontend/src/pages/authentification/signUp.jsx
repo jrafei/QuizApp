@@ -15,13 +15,12 @@ function Signup() {
     const [company, setcompany] = useState();
     const [phone, setphone] = useState();
     const [email, setemail] = useState();
-    const [password, setpassword] = useState();
     const [isActive, setisactive] = useState(false);
 
     const handleauthentification = async(e) => {
         e.preventDefault(); // pour ne pas rafraichir la page (juste tu envoies les req vers le back)
         try {
-            const response = await axios.post("http://localhost:8080/users", {firstname:firstname, lastname:lastname, role:role, company:company, phone:phone, email:email, password:password, isActive:isActive});
+            const response = await axios.post("http://localhost:8080/users", {firstname:firstname, lastname:lastname, role:role, company:company, phone:phone, email:email, isActive:isActive});
             console.log(response.data);
             toast.success("Registered successfully");
             toast.info("Please activate your account by clicking on the link received in your mails, then sign in");
@@ -82,20 +81,6 @@ function Signup() {
                             id="email" 
                             name="email" 
                             placeholder="your.email@gmail.com" 
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required 
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                        <input
-                            value={password}
-                            onChange={(e) => setpassword(e.target.value)}
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            placeholder="**********" 
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required 
                         />
