@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { use } from "react";
 
-const RecordsHistory = ({ setSelectedRecord, setSelectedQuiz, searchQuery, currentPage, itemsPerPage }) => {
+const RecordsHistory = ({ setRecordNb, setSelectedQuiz, searchQuery, currentPage, itemsPerPage }) => {
       const [recordList, setRecordList] = useState([]);
       const [filteredRecords, setFilteredRecords] = useState([]);
     
@@ -18,8 +18,8 @@ const RecordsHistory = ({ setSelectedRecord, setSelectedQuiz, searchQuery, curre
                     },
                 });
 
-                setRecordList(response.data)                
-                localStorage.setItem('recordNb', recordList.length)
+                setRecordList(response.data)  
+                setRecordNb(response.data.length)    
             }
             catch(error) {
                 console.error("Failed to get quiz record:", error);
@@ -27,7 +27,7 @@ const RecordsHistory = ({ setSelectedRecord, setSelectedQuiz, searchQuery, curre
         };
         getRecord()
         ;
-    }, []);
+    }, [setRecordNb]);
 
     // Fetch details for a selected record
     const getQuizDetails = async (quizId) => {

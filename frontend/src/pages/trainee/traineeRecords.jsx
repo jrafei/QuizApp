@@ -10,6 +10,7 @@ import RecordsResults from "../../components/trainee/recordsResults";
 
 
 function TraineeRecords() {
+    const [recordNb, setRecordNb] = useState(null);
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [selectedQuiz, setSelectedQuiz] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +33,7 @@ function TraineeRecords() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 px-4 w-full">
                 <div className="border-r border-gray-300 p-4 flex flex-col items-center">
                     <RecordsHistory 
-                        setSelectedRecord={setSelectedRecord} 
+                        setRecordNb={setRecordNb} 
                         setSelectedQuiz={setSelectedQuiz}
                         searchQuery={searchQuery}
                         currentPage={currentPage}
@@ -41,7 +42,7 @@ function TraineeRecords() {
             
                     <div className="mt-4">
                         <Pagination
-                            totalItems={0} // initialized in pagination to ensure it is synchronised
+                            totalItems={recordNb} // initialized in pagination to ensure it is synchronised
                             itemsPerPage={itemsPerPage}
                             currentPage={currentPage}
                             onPageChange={handlePageChange}

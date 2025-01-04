@@ -2,7 +2,6 @@
 import React from 'react';
 
 const Pagination = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => {
-    totalItems = localStorage.getItem("recordNb") // weird fix of bad synchronisation
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     const handleClick = (pageNumber) => {
