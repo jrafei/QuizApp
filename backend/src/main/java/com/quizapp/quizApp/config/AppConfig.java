@@ -64,6 +64,8 @@ public class AppConfig {
             mapper.map(src -> src.getQuiz().getName(), CompletedRecordDTO::setQuizName);
             mapper.map(Record::getScore, CompletedRecordDTO::setScore);
             mapper.map(Record::getDuration, CompletedRecordDTO::setDuration);
+            mapper.map(src -> src.getQuiz().getId(), CompletedRecordDTO::setQuizId);
+            mapper.map(src -> src.getQuiz().getTheme().getId(), CompletedRecordDTO::setThemeId); 
         });
 
         return modelMapper;

@@ -3,13 +3,21 @@ import axios from 'axios';
 import { use } from "react";
 
 const RecordsHistory = ({ setRecordNb, setSelectedRecord, setSelectedQuiz, searchQuery, currentPage, itemsPerPage }) => {
-      const [recordList, setRecordList] = useState([]);
-      const [filteredRecords, setFilteredRecords] = useState([]);
+    const [recordList, setRecordList] = useState([]);
+    const [filteredRecords, setFilteredRecords] = useState([]);
+    const [themes, setThemes] = useState([]); 
+      
     
     useEffect (() => {
         const getRecord = async () => {
             const token = localStorage.getItem("authToken");
             try {
+                const themesResponse = await axios.get(`http://localhost:8080/themes`, {
+                    headers: { 
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setThemes(themesResponse.data);
             
                 const response = await axios.get("http://localhost:8080/records/completed", {
                     headers: { 
@@ -58,6 +66,12 @@ const RecordsHistory = ({ setRecordNb, setSelectedRecord, setSelectedQuiz, searc
         setFilteredRecords(filtered);
     }, [searchQuery, recordList]);
 
+    const findTheme = (quizThemeId) => {
+
+        const theme = themes.find((theme) => theme.id === quizThemeId);
+        return theme ? theme.title : "Unknown Theme"; 
+    };
+
     // Paginate the filtered quizzes
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentRecords = filteredRecords.slice(startIndex, startIndex + itemsPerPage);
@@ -72,16 +86,14 @@ const RecordsHistory = ({ setRecordNb, setSelectedRecord, setSelectedQuiz, searc
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="text-center align-middle border border-gray-300 px-4 py-2">Quiz Name</th>
-                            <th className="text-center align-middle border border-gray-300 px-4 py-2">Score</th>
-                            <th className="text-center align-middle border border-gray-300 px-4 py-2">Duration (mins)</th>
+                            <th className="text-center align-middle border border-gray-300 px-4 py-2">Theme</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentRecords.map(record => (
                             <tr key={record.recordId} className="quiz-item">
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.quizName}</td>
-                                <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.score}</td>
-                                <td className="text-center align-middle border border-gray-300 px-4 py-2">{record.duration}</td>
+                                <td className="text-center align-middle border border-gray-300 px-4 py-2">{findTheme(record.themeId)}</td>
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">
                                     <button
                                         className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"

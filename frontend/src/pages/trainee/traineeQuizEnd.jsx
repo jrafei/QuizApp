@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import HeaderTrainee from "../../components/headerAndFooter/headerTrainee";
 import Footer from "../../components/headerAndFooter/footer";
-import EndQuizResults from "../../components/trainee/EndQuizResults";
+import EndQuizResults from "../../components/trainee/endQuizResults";
 
 
 function TraineeQuizEnd() {

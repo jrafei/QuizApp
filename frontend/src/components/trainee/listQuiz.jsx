@@ -3,24 +3,33 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Ensure axios is imported
 
 
-const ListQuiz = ({ searchQuery, currentPage, itemsPerPage }) => {
+const ListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
     const navigate = useNavigate();
-    const [quizzes, setQuizzes] = useState([]); // State for quizzes
+    const [quizzes, setQuizzes] = useState([]); 
+    const [themes, setThemes] = useState([]); 
     const [filteredQuizzes, setFilteredQuizzes] = useState([]);
-    const [error, setError] = useState(null); // State for error handling
+    const [error, setError] = useState(null); 
 
     // Fetch quizzes on component mount
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         const fetchQuizzes = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/quizzes", {
+                const themesResponse = await axios.get(`http://localhost:8080/themes`, {
                     headers: { 
                         Authorization: `Bearer ${token}`
                     }
                 });
-                setQuizzes(response.data);
-                localStorage.setItem('quizNb', quizzes.length)
+                setThemes(themesResponse.data);
+
+                const quizzesResponse = await axios.get("http://localhost:8080/quizzes", {
+                    headers: { 
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setQuizzes(quizzesResponse.data);
+                setQuizNb(quizzes.length);
+
             } catch (err) {
                 setError("Failed to load quizzes. Please try again later.");
             }
@@ -28,6 +37,12 @@ const ListQuiz = ({ searchQuery, currentPage, itemsPerPage }) => {
 
         fetchQuizzes();
     }, []);
+
+    const findTheme = (quizThemeId) => {
+
+        const theme = themes.find((theme) => theme.id === quizThemeId);
+        return theme ? theme.title : "Unknown Theme"; 
+    };
 
     // Filter quizzes based on searchQuery
     useEffect(() => {
@@ -43,9 +58,6 @@ const ListQuiz = ({ searchQuery, currentPage, itemsPerPage }) => {
 
     return (
         <div className="overflow-x-auto">
-            <h1 className="text-xl font-bold text-gray-800 mt-6 mb-8">
-                Available Quizzes
-            </h1>
 
             {error ? (
                 <p className="text-red-500 text-center mb-4">{error}</p>
@@ -58,9 +70,6 @@ const ListQuiz = ({ searchQuery, currentPage, itemsPerPage }) => {
                             </th>
                             <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">
                                 Theme
-                            </th>
-                            <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">
-                                Number of Questions
                             </th>
                             <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">
                                 Creation Date
@@ -77,10 +86,7 @@ const ListQuiz = ({ searchQuery, currentPage, itemsPerPage }) => {
                                     {quiz.name}
                                 </td>
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">
-                                    {quiz.theme}
-                                </td>
-                                <td className="text-center align-middle border border-gray-300 px-4 py-2">
-                                    {quiz.questions}
+                                    {findTheme(quiz.themeId)}
                                 </td>
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">
                                     {quiz.creationDate}

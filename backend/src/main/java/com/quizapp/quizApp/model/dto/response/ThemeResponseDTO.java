@@ -1,5 +1,7 @@
 package com.quizapp.quizApp.model.dto.response;
 
+import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -11,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 
 public class ThemeResponseDTO {
-    private String id;
+    private UUID id;
     private String title;
     private Boolean isActive;
 }

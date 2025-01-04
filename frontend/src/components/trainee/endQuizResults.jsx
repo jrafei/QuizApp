@@ -7,6 +7,7 @@ const EndQuizResults = ({record, quiz}) => {
     if (!quiz) {
         return <div></div>
     }
+    
     const findAnswers = () => {
         const selectedAnswers = [];
     
@@ -72,4 +73,4 @@ const EndQuizResults = ({record, quiz}) => {
     );
 };
 
-export default RecordsResults;
+export default EndQuizResults;

@@ -16,5 +16,7 @@ public class CompletedRecordDTO {
     private String quizName;
     private int score;
     private int duration;
+    private UUID themeId;
+    private UUID quizId;
 }
 
