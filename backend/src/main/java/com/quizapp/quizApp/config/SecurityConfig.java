@@ -58,13 +58,15 @@ public class SecurityConfig {
                                 "/auth/activate",
                                 "/themes",
                                 "/records",
-                                "/records/{userId}/stats/themes",
-                                "/records/{userId}/stats/quizs/{quizId}",
-                                "/records/{userId}/stats/quizs",
                                 "/quizzes/{idVersion}",
                                 "/records/stats/themes/all",
                                 "/records/stats/themes/byquiz/{themeId}",
-                                "/records/stats/themes/rankings/{quizId}")
+                                "/records/stats/themes/rankings/{quizId}",
+                                "/records/stats/trainees/all",
+                                "/records/stats/trainees/{userId}/themes",
+                                "/records/stats/trainees/{userId}/themes/{themeId}",
+                                "/records/stats/trainees/{userId}/quizs",
+                                "/records/stats/trainees/{userId}/quizs/{quizId}")
                         .permitAll()
 
                         // *********** Routes protégées *************

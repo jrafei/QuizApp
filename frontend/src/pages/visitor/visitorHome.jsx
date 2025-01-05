@@ -27,7 +27,7 @@ function VisitorHome() {
                     <button 
                         onClick={() => navigate('/home/byclients')}
                         className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-400">
-                        Clients
+                        Trainees
                     </button>
                 </div>
             </main>

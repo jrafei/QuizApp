@@ -6,14 +6,16 @@ import com.quizapp.quizApp.model.beans.*;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
-import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizRankingStatsDTO;
 import com.quizapp.quizApp.model.dto.response.QuizStatsDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 import com.quizapp.quizApp.model.dto.response.ThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.response.TraineeStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
+import com.quizapp.quizApp.model.dto.response.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.response.UserThemeResultsDTO;
 import com.quizapp.quizApp.repository.AnswerRepository;
 import com.quizapp.quizApp.repository.QuizRepository;
 import com.quizapp.quizApp.repository.RecordRepository;
@@ -341,10 +343,9 @@ public class RecordServiceImpl implements RecordService {
                                 theme.getTitle(),
                                 frequency
                         );
-                        themeStatsList.sort((a, b) -> Double.compare(b.getFrequency(), a.getFrequency()));
                         themeStatsList.add(themeStatsDTO);
                 }
-
+                themeStatsList.sort((a, b) -> Double.compare(b.getFrequency(), a.getFrequency()));
 
                 return themeStatsList;
         }
@@ -422,5 +423,61 @@ public class RecordServiceImpl implements RecordService {
                 rankingList.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
 
                 return rankingList;
+        }
+
+        @Override
+        public List<TraineeStatsDTO> getRecordedTrainees() {
+
+                List<TraineeStatsDTO> traineeStatsList = new ArrayList<>();
+
+                List<Record> records = recordRepository.findAll();
+                List<User> trainees = records.stream()
+                                                .map(Record::getTrainee)
+                                                .distinct()
+                                                .collect(Collectors.toList()); 
+
+                for (User trainee : trainees) {
+                        TraineeStatsDTO traineeStatsDTO = new TraineeStatsDTO(
+                                trainee.getId(),
+                                trainee.getFirstname(),
+                                trainee.getLastname()
+                        );
+                        traineeStatsList.add(traineeStatsDTO);
+                }
+
+                return traineeStatsList;
+        }
+
+        @Override
+        public UserThemeResultsDTO getUserResultsForTheme(UUID userId, UUID themeId) {
+                // Vérifiez si l'utilisateur existe
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+                // Vérifiez si le quiz existe
+                Theme theme = themeRepository.findById(themeId)
+                        .orElseThrow(() -> new QuizNotFoundException("Theme not found with ID: " + themeId));
+
+                // Récupérez les records pour l'utilisateur
+                List<Record> userrecords = recordRepository.findByTraineeId(userId);
+                List<Record> records = new ArrayList<>();
+
+                // Dans les records, on ne garde que les quizs associé au themeId
+                for (Record userrecord : userrecords){
+                        if (userrecord.getQuiz().getTheme().getId().equals(themeId)) {
+                                records.add(userrecord);
+                        }
+                }
+
+                if (records.isEmpty()) {
+                        throw new IllegalArgumentException("No records found for this user and theme.");
+                }
+
+                // Calculer les statistiques
+                double averageScore = records.stream().mapToInt(Record::getScore).average().orElse(0);
+                int bestScore = records.stream().mapToInt(Record::getScore).max().orElse(0);
+                int worstScore = records.stream().mapToInt(Record::getScore).min().orElse(0);
+
+                return new UserThemeResultsDTO(theme.getTitle(), averageScore, bestScore, worstScore);
         }
 }

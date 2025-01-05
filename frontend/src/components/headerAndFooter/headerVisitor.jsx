@@ -22,7 +22,7 @@ const HeaderVisitor = () => {
                 <button 
                     onClick={() => navigate('/home/byclients')}
                     className="bg-black px-4 py-2 rounded hover:bg-gray-600">
-                        Our clients
+                        Trainees
                 </button>
             </div>
             <div>

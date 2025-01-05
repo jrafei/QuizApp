@@ -15,7 +15,6 @@ public interface RecordRepository extends JpaRepository<Record, UUID> {
     // Méthode générée automatiquement par Spring Data JPA
     List<Record> findByTraineeIdAndQuizId(UUID traineeId, UUID quizId);
 
-    // Trouver tous les records d'un utilisateur
     List<Record> findByTraineeId(UUID traineeId);
 
     List<Record> findByTraineeIdAndStatus(UUID traineeId, Record.RecordStatus recordStatus);
@@ -24,10 +23,5 @@ public interface RecordRepository extends JpaRepository<Record, UUID> {
 
     List<Record> findByQuizIdAndStatus(UUID quizId, Record.RecordStatus status);
 
-    // Stats sur les quizs
-    @Query("SELECT q.id FROM Quiz q WHERE q.theme.id = :themeId")
-    List<UUID> findByThemeId(@Param("themeId") UUID themeId);
-
-    @Query("SELECT COUNT(r) FROM Record r WHERE r.quiz.id IN :quizIds")
-    int countByQuizIdIn(@Param("quizIds") List<UUID> quizIds);
+    int countByQuizIdIn(List<UUID> quizIds);
 }

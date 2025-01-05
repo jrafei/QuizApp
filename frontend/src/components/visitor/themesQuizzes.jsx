@@ -49,7 +49,7 @@ const ThemeQuiz = ({ themeId, onSelectQuiz }) => {
                                             ? "bg-black text-white"
                                             : "bg-blue-700 text-white hover:bg-blue-400"
                                     }`}>
-                                        {quiz.name} 
+                                        {quiz.name}  ({quiz.questionCount} questions)
                                 </button>
                             </td>
                             <td className="text-center align-middle px-4 py-2">

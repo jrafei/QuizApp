@@ -3,14 +3,16 @@ package com.quizapp.quizApp.controller;
 
 import com.quizapp.quizApp.model.dto.AssignQuizRequestDTO;
 import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
-import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 import com.quizapp.quizApp.model.dto.response.ThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.response.TraineeStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
 import com.quizapp.quizApp.model.dto.response.QuizRankingStatsDTO;
+import com.quizapp.quizApp.model.dto.response.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
 import com.quizapp.quizApp.model.dto.response.QuizStatsDTO;
+import com.quizapp.quizApp.model.dto.response.UserThemeResultsDTO;
 import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -48,15 +50,6 @@ public class RecordController {
         return ResponseEntity.ok(records);
     }
 
-
-    // les resultats (note et durée) d'un stagiaire par questionnaire
-    @GetMapping("/{userId}/stats/quizs")
-    public ResponseEntity<List<UserQuizStatsDTO>> getUserStatsByQuiz(
-            @PathVariable UUID userId) {
-        List<UserQuizStatsDTO> stats = recordService.getUserStatsByQuiz(userId);
-        return ResponseEntity.ok(stats);
-    }
-
     // Endpoint pour récupérer les parcours complétés pour l'utilisateur connecté
     @GetMapping("/completed")
     public ResponseEntity<List<CompletedRecordDTO>> getCompletedRecords() {
@@ -67,22 +60,6 @@ public class RecordController {
         List<CompletedRecordDTO> completedRecords = recordService.getCompletedRecordsForUser(email);
 
         return ResponseEntity.ok(completedRecords);
-    }
-
-    @GetMapping("/{userId}/stats/quizs/{quizId}")
-    public ResponseEntity<UserQuizResultsDTO> getUserResultsForQuiz(
-            @PathVariable UUID userId,
-            @PathVariable UUID quizId) {
-        UserQuizResultsDTO results = recordService.getUserResultsForQuiz(userId, quizId);
-        return ResponseEntity.ok(results);
-    }
-
-    // les resultats (note et durée) d'un stagiaire par themes
-    @GetMapping("/{userId}/stats/themes")
-    public ResponseEntity<List<UserThemeStatsDTO>> getUserStatsByTheme(
-            @PathVariable UUID userId) {
-        List<UserThemeStatsDTO> stats = recordService.getUserStatsByTheme(userId);
-        return ResponseEntity.ok(stats);
     }
 
     // Par quiz 
@@ -110,6 +87,7 @@ public class RecordController {
 
         return ResponseEntity.ok(pendingRecords);
     }
+    // ------------------- STATISTIQUES -------------------
 
     // Endpoint pour récupérer liste des thèmes avec score et durée exec
     @CrossOrigin(origins="http://localhost:5173")
@@ -136,8 +114,50 @@ public class RecordController {
         return ResponseEntity.ok(ranking);
     }
 
+    // Endpoint pour récupérer la liste de tous les stagiaires qui ont fait au moins un quiz (présence dans record)   
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/trainees/all")
+    public ResponseEntity<List<TraineeStatsDTO>> getRecordedTrainees() {
+        List<TraineeStatsDTO> trainees = recordService.getRecordedTrainees();
+        return ResponseEntity.ok(trainees);
+    }
+
+    // Endpoint pour récuperer tous les thèmes, note et durée moyenne d'un stagiaire
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/trainees/{userId}/themes")
+    public ResponseEntity<List<UserThemeStatsDTO>> getUserStatsByTheme(
+            @PathVariable UUID userId) {
+        List<UserThemeStatsDTO> stats = recordService.getUserStatsByTheme(userId);
+        return ResponseEntity.ok(stats);
+    }
+
+    // Endpoint pour récupérer résultats d'un thème 
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/trainees/{userId}/themes/{themeId}")
+    public ResponseEntity<UserThemeResultsDTO> getUserResultsForTheme(
+            @PathVariable UUID userId,
+            @PathVariable UUID themeId) {
+        UserThemeResultsDTO results = recordService.getUserResultsForTheme(userId, themeId);
+        return ResponseEntity.ok(results);
+    }
+
+    // Endpoint pour récuperer tous les questionnaires, note et durée d'un stagiaire 
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/trainees/{userId}/quizs")
+    public ResponseEntity<List<UserQuizStatsDTO>> getUserStatsByQuiz(
+            @PathVariable UUID userId) {
+        List<UserQuizStatsDTO> stats = recordService.getUserStatsByQuiz(userId);
+        return ResponseEntity.ok(stats);
+    }
+
+    // Endpoint pour récupérer résultats d'un quiz
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/trainees/{userId}/quizs/{quizId}")
+    public ResponseEntity<UserQuizResultsDTO> getUserResultsForQuiz(
+            @PathVariable UUID userId,
+            @PathVariable UUID quizId) {
+        UserQuizResultsDTO results = recordService.getUserResultsForQuiz(userId, quizId);
+        return ResponseEntity.ok(results);
+    }
+
 }
-
-
-
-
