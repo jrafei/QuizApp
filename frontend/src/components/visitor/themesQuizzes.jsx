@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const ThemeQuiz = ({ themeId, onSelectQuiz }) => {
+const ThemeQuiz = ({ themeId, onSelectQuiz, selectedQuizId }) => {
 
     const [quizzes, setQuizzes] = useState([]); 
     
@@ -45,7 +45,7 @@ const ThemeQuiz = ({ themeId, onSelectQuiz }) => {
                                 <button
                                     onClick={() => onSelectQuiz(quiz.id)}
                                     className={`py-4 px-6 rounded-lg mb-2 w-[300px] ${
-                                        themeId === quiz.id
+                                        selectedQuizId === quiz.id
                                             ? "bg-black text-white"
                                             : "bg-blue-700 text-white hover:bg-blue-400"
                                     }`}>

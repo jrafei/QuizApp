@@ -39,7 +39,11 @@ function VisitorByTheme() {
                         <h2 className="text-xl font-bold mb-4 text-center ">Quizzes</h2>
                         <div className="mb-8 w-full overflow-x-auto">
                         {selectedThemeId ? (
-                            <ThemeQuiz themeId={selectedThemeId} onSelectQuiz={setSelectedQuizId} />
+                            <ThemeQuiz 
+                            themeId={selectedThemeId} 
+                            onSelectQuiz={setSelectedQuizId}
+                            selectedQuizId={selectedQuizId}
+                            />
                         ) : (
                             <p className="text-gray-500 text-center">Select a theme to view quizzes.</p>
                         )}

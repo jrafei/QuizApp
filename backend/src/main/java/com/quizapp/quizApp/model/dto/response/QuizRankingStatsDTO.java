@@ -13,4 +13,6 @@ public class QuizRankingStatsDTO {
     private String lastname;
     private int score;
     private int runtime;
+    private Double averagescore;
+    private Double averageruntime;
 }

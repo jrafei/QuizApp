@@ -399,27 +399,44 @@ public class RecordServiceImpl implements RecordService {
                         throw new IllegalArgumentException("Quiz ID cannot be null");
                 }
 
-                List<QuizRankingStatsDTO> rankingList = new ArrayList<>();
                 List<Record> records = recordRepository.findByQuizId(quizId);
                 
                 Map<UUID, QuizRankingStatsDTO> bestScoresMap = new HashMap<>(); // Meilleur score par trainee
                 
+                Map<UUID, Double> averageScoresMap = records.stream()
+                                                        .collect(Collectors.groupingBy(
+                                                                record -> record.getTrainee().getId(),
+                                                                Collectors.averagingDouble(Record::getScore)
+                ));
+
+                Map<UUID, Double> averageDurationsMap = records.stream()
+                                                        .collect(Collectors.groupingBy(
+                                                                record -> record.getTrainee().getId(),
+                                                                Collectors.averagingDouble(Record::getDuration)
+                ));
+
                 for (Record record : records) {
                         UUID traineeId = record.getTrainee().getId();
                         User trainee = userRepository.findById(traineeId)
                                                         .orElseThrow(() -> new IllegalArgumentException("User not found"));
                         
+
+                        Double averageScore = averageScoresMap.get(traineeId);
+                        Double averageDuration = averageDurationsMap.get(traineeId);
+
                         if (!bestScoresMap.containsKey(traineeId) || bestScoresMap.get(traineeId).getScore() < record.getScore()) {
                                 QuizRankingStatsDTO rankingStatsDTO = new QuizRankingStatsDTO(
                                         trainee.getFirstname(),
                                         trainee.getLastname(), 
                                         record.getScore(),
-                                        record.getDuration()
+                                        record.getDuration(),
+                                        averageScore,
+                                        averageDuration
                                 );
                                 bestScoresMap.put(traineeId, rankingStatsDTO); // put(key, value)
                         }
                 }
-                rankingList.addAll(bestScoresMap.values());
+                List<QuizRankingStatsDTO> rankingList = new ArrayList<>(bestScoresMap.values());
                 rankingList.sort((a, b) -> Double.compare(b.getScore(), a.getScore()));
 
                 return rankingList;
