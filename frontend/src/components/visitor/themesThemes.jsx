@@ -75,7 +75,7 @@ const ThemeTheme = ({ onSelectTheme, selectedThemeId}) => {
                 </thead>
                 <tbody>
                     {themes.map((theme) => (
-                        <tr key={theme.id} className="odd:bg-gray-100 even:bg-gray-100">
+                        <tr key={theme.id} className="bg-gray-100">
                             <td className="text-center align-middle px-4 py-2">
                                 <button
                                     onClick={() => onSelectTheme(theme.id)}

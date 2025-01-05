@@ -21,6 +21,7 @@ function VisitorByTheme() {
                 <h1 className="text-4xl font-bold text-gray-800 mb-8 text-center">
                     Themes
                 </h1>
+                
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
                     {/* Theme */}
@@ -40,9 +41,9 @@ function VisitorByTheme() {
                         <div className="mb-8 w-full overflow-x-auto">
                         {selectedThemeId ? (
                             <ThemeQuiz 
-                            themeId={selectedThemeId} 
-                            onSelectQuiz={setSelectedQuizId}
-                            selectedQuizId={selectedQuizId}
+                                themeId={selectedThemeId} 
+                                onSelectQuiz={setSelectedQuizId}
+                                selectedQuizId={selectedQuizId}
                             />
                         ) : (
                             <p className="text-gray-500 text-center">Select a theme to view quizzes.</p>

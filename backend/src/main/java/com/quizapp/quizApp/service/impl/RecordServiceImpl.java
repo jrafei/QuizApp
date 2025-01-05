@@ -228,49 +228,51 @@ public class RecordServiceImpl implements RecordService {
 
         @Override
         public List<UserQuizStatsDTO> getUserStatsByQuiz(UUID userId) {
-                // Vérification si l'utilisateur existe
                 User trainee = userRepository.findById(userId)
                         .orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + userId));
 
-
-                // Utilisation de la méthode générée automatiquement
                 List<Record> records = recordRepository.findByTraineeId(userId);
 
+                Map<UUID, List<Record>> recordsByQuiz = records.stream()
+                        .collect(Collectors.groupingBy(record -> record.getQuiz().getId()));
 
-                // Grouper par quiz et calculer les scores et durées
-                Map<String, List<Record>> recordsByQuiz = records.stream()
-                        .collect(Collectors.groupingBy(record -> record.getQuiz().getName()));
-
-                // Transformer les résultats en DTO
                 return recordsByQuiz.entrySet().stream().map(entry -> {
-                        String quizName = entry.getKey();
+                        UUID quizId = entry.getKey();
+
+                        String quizName = entry.getValue().stream()
+                                        .findFirst()
+                                        .map(record -> record.getQuiz().getName()) 
+                                        .orElse("Unknown");
+
                         List<Record> quizRecords = entry.getValue();
 
                         int totalScore = quizRecords.stream().mapToInt(Record::getScore).sum();
                         int totalDuration = quizRecords.stream().mapToInt(Record::getDuration).sum();
 
-                        return new UserQuizStatsDTO(quizName, totalScore, totalDuration, trainee.getEmail());
+                        return new UserQuizStatsDTO(quizId, quizName, totalScore, totalDuration, trainee.getEmail());
                 }).collect(Collectors.toList());
         }
 
         @Override
         public List<UserThemeStatsDTO> getUserStatsByTheme(UUID userId) {
-                // Récupérer tous les records pour cet utilisateur
                 List<Record> records = recordRepository.findByTraineeId(userId);
 
-                // Grouper par thème et calculer les scores et durées
-                Map<String, List<Record>> recordsByTheme = records.stream()
-                        .collect(Collectors.groupingBy(record -> record.getQuiz().getTheme().getTitle()));
+                Map<UUID, List<Record>> recordsByTheme = records.stream()
+                        .collect(Collectors.groupingBy(record -> record.getQuiz().getTheme().getId()));
 
-                // Transformer les résultats en DTO
                 return recordsByTheme.entrySet().stream().map(entry -> {
-                        String themeName = entry.getKey();
+                        UUID themeId = entry.getKey();
+                        String themeName = entry.getValue().stream()
+                                        .findFirst()
+                                        .map(record -> record.getQuiz().getTheme().getTitle()) 
+                                        .orElse("Unknown");
+
                         List<Record> themeRecords = entry.getValue();
 
                         int totalScore = themeRecords.stream().mapToInt(Record::getScore).sum();
                         int totalDuration = themeRecords.stream().mapToInt(Record::getDuration).sum();
 
-                        return new UserThemeStatsDTO(themeName, totalScore, totalDuration);
+                        return new UserThemeStatsDTO(themeId, themeName, totalScore, totalDuration);
                 }).collect(Collectors.toList());
         }
 
