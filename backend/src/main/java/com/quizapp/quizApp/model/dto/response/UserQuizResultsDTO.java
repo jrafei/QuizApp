@@ -12,6 +12,7 @@ import lombok.Setter;
 public class UserQuizResultsDTO {
     private String quizName;
     private double averageScore;
+    private int countQuestions;
     private int bestScore;
     private int worstScore;
 }

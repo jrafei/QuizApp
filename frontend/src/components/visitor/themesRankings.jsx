@@ -21,8 +21,24 @@ const ThemeRanking = ({ quizId }) => {
 
     }, [quizId]);
 
+    const calculateRanks = (data, key) => {
+        let rank = 1;
+        return data.map((item, index) => {
+            if (index > 0 && item[key] !== data[index - 1][key]) {
+                rank = index + 1;
+            }
+            return { ...item, rank };
+        });
+    };
+
+    const sortedRankings = viewMode === "avg" 
+        ? calculateRanks([...rankings].sort((a, b) => b.averagescore - a.averagescore), "averagescore")
+        : calculateRanks([...rankings].sort((a, b) => b.score - a.score), "score");
+
+
     const handleBestScore = () => setViewMode("best");
     const handleAvgScore = () => setViewMode("avg");
+    
 
     return (
         <div className="flex flex-col items-center">
@@ -43,7 +59,7 @@ const ThemeRanking = ({ quizId }) => {
                 </button>
             </div>
  
-            {rankings.length > 0 ? (
+            {sortedRankings.length > 0 ? (
                 viewMode === "best" ? (
                     <table className="table-auto w-full text-left">
                         <thead>
@@ -55,12 +71,12 @@ const ThemeRanking = ({ quizId }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {rankings.map((ranking, index) => (
+                            {sortedRankings.map((ranking, index) => (
                                 <tr key={ranking.id} className="odd:bg-gray-100 even:bg-gray-200">
                                     <td className="text-center align-middle px-4 py-2">{index + 1}</td>
                                     <td className="text-center align-middle px-4 py-2">{ranking.firstname} {ranking.lastname}</td>
                                     <td className="text-center align-middle px-4 py-2">{ranking.score}</td>
-                                    <td className="text-center align-middle px-4 py-2">{ranking.runtime}</td>
+                                    <td className="text-center align-middle px-4 py-2">{ranking.runtime} s</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -76,12 +92,12 @@ const ThemeRanking = ({ quizId }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {rankings.map((ranking, index) => (
+                            {sortedRankings.map((ranking, index) => (
                                 <tr key={ranking.id} className="odd:bg-gray-100 even:bg-gray-200">
                                     <td className="text-center align-middle px-4 py-2">{index + 1}</td>
                                     <td className="text-center align-middle px-4 py-2">{ranking.firstname} {ranking.lastname}</td>
                                     <td className="text-center align-middle px-4 py-2">{ranking.averagescore}</td>
-                                    <td className="text-center align-middle px-4 py-2">{ranking.averageruntime}</td>
+                                    <td className="text-center align-middle px-4 py-2">{ranking.averageruntime} s</td>
                                 </tr>
                             ))}
                         </tbody>

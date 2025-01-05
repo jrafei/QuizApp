@@ -30,19 +30,19 @@ const TraineeResultQuiz = ({ traineeId, quizId }) => {
             <div className="w-full max-w-md flex flex-col items-start bg-grey-400 p-6 rounded-lg shadow-lg">
                 <div className="mb-4 w-full">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Average score: {results.averageScore}
+                        Average score: {results.averageScore}/ {results.countQuestions}
                     </label>
                 </div>
 
                 <div className="mb-4 w-full">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Best score: {results.bestScore}
+                        Best score: {results.bestScore}/ {results.countQuestions}
                     </label>
                 </div>
 
                 <div className="mb-4 w-full">
                     <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Worst score: {results.worstScore}
+                        Worst score: {results.worstScore}/ {results.countQuestions}
                     </label>
                 </div>
             </div>

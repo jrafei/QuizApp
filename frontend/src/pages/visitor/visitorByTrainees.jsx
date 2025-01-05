@@ -61,19 +61,19 @@ function VisitorByTrainees() {
 
                     {/* Results */}
                     <div className="flex flex-col items-center border border-gray-300 rounded-lg p-4">
-                    {selectedQuizId ? (
+                    {selectedButton === "quiz" && selectedQuizId ? (
                             <TraineeResultQuiz
                                 traineeId={selectedTraineeId} 
                                 quizId={selectedQuizId}  
                             />
-                        ) : selectedThemeId ? (
+                    ) : selectedButton === "theme" && selectedThemeId ? (
                             <TraineeResultTheme
                                 traineeId={selectedTraineeId} 
                                 themeId={selectedThemeId}  
                             />
-                        ) : (
-                            <p className="text-gray-500 text-center">Select a quiz/theme to view results.</p>
-                        )}
+                    ) : (
+                        <p className="text-gray-500 text-center">Select a quiz/theme to view results.</p>
+                    )}
                     </div> 
                 </div>
             </main>

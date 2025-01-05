@@ -163,7 +163,7 @@ public class RecordServiceImpl implements RecordService {
                 int bestScore = records.stream().mapToInt(Record::getScore).max().orElse(0);
                 int worstScore = records.stream().mapToInt(Record::getScore).min().orElse(0);
 
-                return new UserQuizResultsDTO(quiz.getName(), averageScore, bestScore, worstScore);
+                return new UserQuizResultsDTO(quiz.getName(), averageScore, quiz.getQuestions().size(), bestScore, worstScore);
         }
 
         @Override
