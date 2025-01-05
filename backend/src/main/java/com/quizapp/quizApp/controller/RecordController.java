@@ -5,11 +5,15 @@ import com.quizapp.quizApp.model.dto.AssignQuizRequestDTO;
 import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
 import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
+import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.update.RecordUpdateDTO;
 import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
+import com.quizapp.quizApp.model.dto.QuestionDTO;
+
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +22,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import com.quizapp.quizApp.service.interfac.RecordService;
+import com.quizapp.quizApp.model.beans.Quiz;
 import com.quizapp.quizApp.model.beans.Record;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/records")
@@ -54,6 +60,24 @@ public class RecordController {
         List<UserQuizStatsDTO> stats = recordService.getUserStatsByQuiz(userId);
         return ResponseEntity.ok(stats);
     }
+
+
+    @GetMapping("/pending-quizzes")
+    public ResponseEntity<List<QuizResponseDTO>> getPendingQuizzesByRecord() {
+        // Récupérer l'utilisateur connecté depuis le contexte de sécurité
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Appeler le service pour obtenir les quizzes assignés à cet utilisateur
+        List<RecordResponseDTO> pendingRecords = recordService.getPendingQuizzesForTraineeByEmail(email);
+
+        List<UUID> recordIds = pendingRecords.stream()
+                                            .map(RecordResponseDTO::getId)
+                                            .collect(Collectors.toList());     
+                                            
+        List<QuizResponseDTO> quizzes = recordService.findQuizzesByRecordIds(recordIds);
+        return ResponseEntity.ok(quizzes);
+    }  
+
 
     // Endpoint pour récupérer les parcours complétés pour l'utilisateur connecté
     @GetMapping("/completed")
@@ -107,6 +131,14 @@ public class RecordController {
         List<RecordResponseDTO> pendingRecords = recordService.getPendingQuizzesForTraineeByEmail(email);
 
         return ResponseEntity.ok(pendingRecords);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<RecordResponseDTO> updateRecord(
+            @PathVariable UUID id,
+            @RequestBody RecordUpdateDTO recordUpdateDTO) {
+        RecordResponseDTO updatedRecord = recordService.updateRecord(id, recordUpdateDTO);
+        return ResponseEntity.ok(updatedRecord);
     }
 }
 

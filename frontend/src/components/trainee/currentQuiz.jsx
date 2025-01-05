@@ -1,15 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-const CurrentQuiz = ({ quizId }) => {
+const CurrentQuiz = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { record, quizId } = location.state || {};
+
+    const [quizRecord, setQuizRecord] = useState(record || {
+        traineeId: localStorage.getItem("userId"),
+        quizId: quizId,
+        answerIds: [],
+        duration: 0,
+        status: "PENDING",
+    });
     const [questionId, setQuestionId] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState([]);
     const [quiz, setQuiz] = useState(null);
     const [error, setError] = useState(null);
     const [startTime, setStartTime] = useState(null);
     const hasPostExecuted = useRef(false); // Track if the POST request has been executed
+
+    useEffect(() => {
+        if (record) {
+            setQuizRecord(record);
+        }
+    })
 
     // Start the quiz and set the start time
     const handleStartQuiz = () => {
@@ -39,48 +55,69 @@ const CurrentQuiz = ({ quizId }) => {
 
     }, [quizId]);
 
-    const quizRecord = {
-        traineeId: localStorage.getItem("userId"),
-        quizId : quizId,
-        answerIds: selectedAnswers,
-        duration: 10,
-        status: "COMPLETED",
-    };
+    // update the record
+    const handleSubmitQuiz = () => {
 
-    const handleSubmitQuiz = (quizRecord) => {
         const endTime = Date.now();
-        const timeSpent = endTime - startTime; // Time spent in milliseconds
-    
-        const timeSpentInSeconds = Math.floor(timeSpent / 1000);
-        quizRecord.duration = timeSpentInSeconds
+        const timeSpent = Math.floor((endTime - startTime) / 1000); // Time spent in seconds
+
+        const updatedQuizRecord = {
+            traineeId: localStorage.getItem("userId"),
+            quizId: quizId,
+            answerIds: selectedAnswers,
+            duration: timeSpent,
+            status: "COMPLETED",
+        };
+
+        setQuizRecord(updatedQuizRecord);
+        return updatedQuizRecord;
     }
-
-    
-
     
     // Handle quiz submission (POST request)
     useEffect(() => {
-        if (questionId === quiz?.length && !hasPostExecuted.current) {
+        if (questionId === quiz?.length && !hasPostExecuted.current) {            
+            const updatedQuizRecord = handleSubmitQuiz();
 
-            handleSubmitQuiz(quizRecord);
+            if (!record){ // if there is no record associated to the quiz, it is posted
+                const postRecord = async () => {
+                    const token = localStorage.getItem("authToken");
+                    try {
+                        await axios.post("http://localhost:8080/records", updatedQuizRecord, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                            },
+                        });
+                        navigate("/traineespace/endquiz", { state: { updatedQuizRecord, quiz } });
+    
+                    } catch (error) {
+                        console.error("Failed to post quiz record:", error);
+                    }
+                };
+    
+                postRecord();
+            }
+            else { //else it is updated
+                const patchRecord = async () => {
+                    const token = localStorage.getItem("authToken");
+                    try {
+                        await axios.patch(`http://localhost:8080/records/${record.id}`, updatedQuizRecord, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                            },
+                        });
+                        navigate("/traineespace/endquiz", { state: { updatedQuizRecord, quiz } });
+    
+                    } catch (error) {
+                        console.error("Failed to update quiz record:", error);
+                    }
+                };
+    
+                patchRecord();
+            }
             
-            const postRecord = async () => {
-                const token = localStorage.getItem("authToken");
-                try {
-                    await axios.post("http://localhost:8080/records", quizRecord, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-                    });
-                    navigate("/traineespace/endquiz", { state: { quizRecord, quiz } });
-
-                } catch (error) {
-                    console.error("Failed to post quiz record:", error);
-                }
-            };
-
-            postRecord();
+            
             hasPostExecuted.current = true; // Prevent further POST requests
         }
     }, [questionId, quiz, navigate, quizRecord]);

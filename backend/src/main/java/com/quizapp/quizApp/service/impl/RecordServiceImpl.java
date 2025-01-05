@@ -1,16 +1,20 @@
 package com.quizapp.quizApp.service.impl;
 
 import com.quizapp.quizApp.exception.QuizNotFoundException;
+import com.quizapp.quizApp.exception.QuizUpdateNotAllowedException;
 import com.quizapp.quizApp.exception.UserNotFoundException;
 import com.quizapp.quizApp.model.beans.*;
 import com.quizapp.quizApp.model.beans.Record;
 import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
+import com.quizapp.quizApp.model.dto.QuestionDTO;
 import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
 import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
+import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.update.RecordUpdateDTO;
 import com.quizapp.quizApp.repository.AnswerRepository;
 import com.quizapp.quizApp.repository.QuizRepository;
 import com.quizapp.quizApp.repository.RecordRepository;
@@ -18,6 +22,7 @@ import com.quizapp.quizApp.repository.UserRepository;
 import com.quizapp.quizApp.service.interfac.RecordService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -310,6 +315,53 @@ public class RecordServiceImpl implements RecordService {
         return records.stream()
                 .map(record -> modelMapper.map(record, RecordResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+
+    public List<QuizResponseDTO> findQuizzesByRecordIds(List<UUID> recordIds) {
+        List<Quiz> quizzes = quizRepository.findQuizzesByRecordIds(recordIds);
+
+        return quizzes.stream()
+                .map(quiz -> modelMapper.map(quiz, QuizResponseDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public RecordResponseDTO updateRecord(UUID id, RecordUpdateDTO recordUpdateDTO){
+        
+        // Retrieve the existing record
+        Record existingRecord = recordRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Record introuvable"));
+
+        // Update the fields
+        existingRecord.setScore(recordUpdateDTO.getScore());
+        existingRecord.setDuration(recordUpdateDTO.getDuration());
+        if (recordUpdateDTO.getStatus() != null) {
+            existingRecord.setStatus(recordUpdateDTO.getStatus());
+        }
+
+        // Gérer les réponses choisies via RecordAnswer
+        List<RecordAnswer> recordAnswers = new ArrayList<>();
+        for (UUID answerId : recordUpdateDTO.getAnswerIds()) {
+            Answer answer = answerRepository.findById(answerId)
+                    .orElseThrow(() -> new RuntimeException("Answer not found with ID: " + answerId));
+            RecordAnswer recordAnswer = new RecordAnswer();
+            recordAnswer.setRecord(existingRecord);
+            recordAnswer.setAnswer(answer);
+            recordAnswers.add(recordAnswer);
+        }
+
+        existingRecord.getRecordAnswers().clear(); // Clear existing collection
+        existingRecord.getRecordAnswers().addAll(recordAnswers); // Add new elements
+
+        // Calculer le score
+        int score = calculateScore(existingRecord);
+        existingRecord.setScore(score);
+
+        // Save the updated record
+        Record updatedRecord = recordRepository.save(existingRecord);
+
+        // Convert to DTO and return
+        return modelMapper.map(updatedRecord, RecordResponseDTO.class);
     }
 }
 

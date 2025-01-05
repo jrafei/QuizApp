@@ -14,7 +14,7 @@ function TraineeQuizEnd() {
     const location = useLocation();
 
     useEffect(() => {
-        setRecord(location.state?.quizRecord || null);
+        setRecord(location.state?.updatedQuizRecord || null);
         setQuiz(location.state?.quiz || null);
     }, [location.state]);
 

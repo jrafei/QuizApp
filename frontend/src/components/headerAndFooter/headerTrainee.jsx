@@ -14,6 +14,11 @@ const HeaderTrainee = () => {
                     className="bg-black font-bold px-4 py-2 rounded hover:bg-gray-600">
                         Home
                 </button>
+                <button 
+                    onClick={() => navigate('/traineespace/pending')}
+                    className="bg-black font-bold px-4 py-2 rounded hover:bg-gray-600">
+                        Pending
+                </button>
                 <button
                     onClick={() => navigate('/traineespace/records')} 
                     className="bg-black px-4 py-2 rounded hover:bg-gray-600">

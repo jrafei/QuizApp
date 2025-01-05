@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Ensure axios is imported
 
 
-const ListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
+const PendingListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
     const navigate = useNavigate();
     const [quizzes, setQuizzes] = useState([]); 
+    const [records, setRecords] = useState([]);
     const [themes, setThemes] = useState([]); 
     const [filteredQuizzes, setFilteredQuizzes] = useState([]);
     const [error, setError] = useState(null); 
@@ -22,13 +23,16 @@ const ListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
                 });
                 setThemes(themesResponse.data);
 
-                const quizzesResponse = await axios.get("http://localhost:8080/quizzes", {
-                    headers: { 
-                        Authorization: `Bearer ${token}`
-                    }
+                const quizzesResponse = await axios.get("http://localhost:8080/records/pending-quizzes", {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 setQuizzes(quizzesResponse.data);
-                setQuizNb(quizzes.length);
+                setQuizNb(quizzesResponse.data.length);
+
+                const recordsResponse = await axios.get("http://localhost:8080/records/pending", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setRecords(recordsResponse.data)
 
             } catch (err) {
                 setError("Failed to load quizzes. Please try again later.");
@@ -42,6 +46,15 @@ const ListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
 
         const theme = themes.find((theme) => theme.id === quizThemeId);
         return theme ? theme.title : "Unknown Theme"; 
+    };
+
+    const launchQuiz = (quiz) => {
+        console.log(records)
+        const record = records.find((rec) => rec.quizId = quiz.id);
+        console.log(record);
+        navigate(`/traineespace/quiz`, {
+            state: { record: record, quizId: quiz.id }
+        });
     };
 
     // Filter quizzes based on searchQuery
@@ -93,9 +106,7 @@ const ListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
                                 </td>
                                 <td className="text-center align-middle border border-gray-300 px-4 py-2">
                                     <button
-                                        onClick={() => navigate(`/traineespace/quiz`, {
-                                            state: { record: null, quizId: quiz.id }
-                                        })}
+                                        onClick={() => launchQuiz(quiz)}
                                         className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-600"
                                     >
                                         Start
@@ -111,4 +122,4 @@ const ListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
     );
 };
 
-export default ListQuiz;
+export default PendingListQuiz;

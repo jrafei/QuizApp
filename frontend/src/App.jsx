@@ -18,6 +18,7 @@ import TraineeHome from "./pages/trainee/traineeHome.jsx";
 import TraineeRecords from "./pages/trainee/traineeRecords.jsx";
 import TraineeQuiz from "./pages/trainee/traineeQuiz.jsx";
 import TraineeQuizEnd from "./pages/trainee/traineeQuizEnd.jsx";
+import TraineePendingQuizzes from "./pages/trainee/traineePendingQuizzes.jsx"
  
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
 
         {/* Trainee */}
         <Route path="/traineespace" element={<TraineeHome />} />
+        <Route path="/traineespace/pending" element={<TraineePendingQuizzes />} />
         <Route path="/traineespace/records" element={<TraineeRecords />} />
         <Route path="/traineespace/quiz" element={<TraineeQuiz />} />
         <Route path="/traineespace/endquiz" element={<TraineeQuizEnd />} />

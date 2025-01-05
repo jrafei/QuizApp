@@ -6,11 +6,6 @@ import Footer from "../../components/headerAndFooter/footer";
 import CurrentQuiz from "../../components/trainee/currentQuiz";
 
 function TraineeQuiz() {
-
-     // Extract the query string
-     const queryParams = new URLSearchParams(location.search);
-     const quizId = queryParams.get("index");
-
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
             <header className="flex-0"> <HeaderTrainee /> </header>
@@ -18,7 +13,7 @@ function TraineeQuiz() {
                 Quiz : {/*record.name*/}
             </h1>
             <main className="flex-1 flex flex-col justify-center items-center">
-                <CurrentQuiz quizId={quizId} />
+                <CurrentQuiz />
             </main>
             <Footer />
         </div>
