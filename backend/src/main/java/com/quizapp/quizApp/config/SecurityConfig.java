@@ -61,7 +61,10 @@ public class SecurityConfig {
                                 "/records/{userId}/stats/themes",
                                 "/records/{userId}/stats/quizs/{quizId}",
                                 "/records/{userId}/stats/quizs",
-                                "/quizzes/{idVersion}")
+                                "/quizzes/{idVersion}",
+                                "/records/stats/themes/all",
+                                "/records/stats/themes/byquiz/{themeId}",
+                                "/records/stats/themes/rankings/{quizId}")
                         .permitAll()
 
                         // *********** Routes protégées *************

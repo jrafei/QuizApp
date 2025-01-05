@@ -6,9 +6,11 @@ import com.quizapp.quizApp.model.dto.QuizLeaderboardDTO;
 import com.quizapp.quizApp.model.dto.UserQuizResultsDTO;
 import com.quizapp.quizApp.model.dto.creation.RecordCreateDTO;
 import com.quizapp.quizApp.model.dto.response.RecordResponseDTO;
-
+import com.quizapp.quizApp.model.dto.response.ThemeStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserQuizStatsDTO;
+import com.quizapp.quizApp.model.dto.response.QuizRankingStatsDTO;
 import com.quizapp.quizApp.model.dto.response.UserThemeStatsDTO;
+import com.quizapp.quizApp.model.dto.response.QuizStatsDTO;
 import com.quizapp.quizApp.model.dto.CompletedRecordDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -46,7 +48,7 @@ public class RecordController {
         return ResponseEntity.ok(records);
     }
 
-    
+
     // les resultats (note et durée) d'un stagiaire par questionnaire
     @GetMapping("/{userId}/stats/quizs")
     public ResponseEntity<List<UserQuizStatsDTO>> getUserStatsByQuiz(
@@ -108,6 +110,32 @@ public class RecordController {
 
         return ResponseEntity.ok(pendingRecords);
     }
+
+    // Endpoint pour récupérer liste des thèmes avec score et durée exec
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/themes/all")
+    public ResponseEntity<List<ThemeStatsDTO>> getStatsOfAllThemes() { 
+        List<ThemeStatsDTO> themes = recordService.getStatsOfAllThemes();
+        return ResponseEntity.ok(themes);
+    }
+   
+    // Endpoint pour récupérer liste des quiz associé à un thème avec nom, nb questions
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/themes/byquiz/{themeId}")
+    public ResponseEntity<List<QuizStatsDTO>> getStatsOfQuizzesRelatedToTheme(@PathVariable UUID themeId) {
+        System.out.println("Requête reçue avec theme ID" + themeId);
+        List<QuizStatsDTO> quizzes = recordService.getStatsOfQuizzesRelatedToTheme(themeId);
+        return ResponseEntity.ok(quizzes);
+    }
+
+    // Endpoint pour récupérer classement de stagiaires par quiz
+    @CrossOrigin(origins="http://localhost:5173")
+    @GetMapping("/stats/themes/rankings/{quizId}")
+    public ResponseEntity<List<QuizRankingStatsDTO>> getQuizRankings(@PathVariable UUID quizId) {
+        List<QuizRankingStatsDTO> ranking = recordService.getQuizRankings(quizId);
+        return ResponseEntity.ok(ranking);
+    }
+
 }
 
 

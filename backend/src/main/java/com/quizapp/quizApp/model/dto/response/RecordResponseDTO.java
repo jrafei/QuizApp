@@ -16,6 +16,6 @@ public class RecordResponseDTO {
     private int score;
     private int duration;
 
-    private UUID traineeId;//creatorId;
-    private UUID quizID;//themeId;
+    private UUID traineeId; //creatorId;
+    private UUID quizID; //themeId;
 }
