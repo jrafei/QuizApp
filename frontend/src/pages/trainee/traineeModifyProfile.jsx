@@ -1,25 +1,37 @@
-import React, {useState} from "react";
+import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderTrainee from "../../components/headerAndFooter/headerTrainee";
 import Footer from "../../components/headerAndFooter/footer";
 import axios from 'axios';
+import { toast, Toaster } from 'sonner';
 
 function ModifyProfile() {
     const navigate = useNavigate();
 
-    const [userProfile, setUserProfile] = useState({
-        firstname: "John",
-        lastname: "Doe",
-        email: "john.doe@example.com",
-        password: "**********",
-        company: "Example Corp",
-        phone: "+1234567890",
-        creationDate: "2024-01-01",
-        isActive: true,
-        role: "User",
-    });
+    const [userProfile, setUserProfile] = useState({});
 
     const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("authToken");
+
+    const fetchUser = async () => {
+        try {
+            const res = await axios.get(`http://localhost:8080/users/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setUserProfile(res.data);
+        } catch (error) {
+            console.log("Error fetching rankings:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (userId && token) {
+            fetchUser();
+        }
+
+    }, [userId, token]);
 
     // Handle form field changes and update the state
     const handleChange = (e) => {
@@ -38,19 +50,20 @@ function ModifyProfile() {
         const token = localStorage.getItem("authToken");
     
         try {
-          const response = await axios.patch(`http://localhost:8080/users/${userId}`, userProfile, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-    
-          // Optionally, you can handle the response, such as showing a success message
-          console.log("Profile updated successfully:", response.data);
+            const response = await axios.patch(`http://localhost:8080/users/${userId}`, userProfile, {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                },
+            });
 
-          navigate("/profile")
+            toast.success("Profile updated successfully!");
+            setTimeout(() => {
+                navigate("/profile");
+            }, 2000);
+            
         } catch (error) {
-          console.error("Failed to update profile:", error);
+            toast.error("Failed to update profile !");
         }
     };
 
@@ -61,6 +74,7 @@ function ModifyProfile() {
                 <h1 className="text-4xl font-bold text-gray-800 mb-16 text-center mt-16">
                     Update your Contact Details
                 </h1>
+                <Toaster /> 
                 <form className="w-full max-w-sm" onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="firstname" className="block text-gray-700 text-sm font-bold mb-2">First Name</label>

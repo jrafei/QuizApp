@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const ThemeTheme = () => {
+// Graphique 
+import { Bar } from "react-chartjs-2";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+
+const ThemeTheme = ({ onSelectTheme, selectedThemeId}) => {
 
     const [themes, setThemes] = useState([]); 
     
     const fetchThemes = async () => {
         try {
-            const res = await axios.get("http://localhost:8080/themes");
+            const res = await axios.get("http://localhost:8080/records/stats/themes/all");
             setThemes(res.data);
         } catch (error) {
             console.log(error);
@@ -17,49 +32,78 @@ const ThemeTheme = () => {
     useEffect(() => {
         fetchThemes();
     }, [])
-    
+
+    // Chart prep
+    const chartData = {
+        labels: themes.map((theme) => theme.title), 
+        datasets: [
+            {
+                label: "Choice Frequency (%)",
+                data: themes.map((theme) => theme.frequency), 
+                backgroundColor: "rgba(54, 162, 235, 0.6)", 
+                borderColor: "rgba(54, 162, 235, 1)", 
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top",
+            },
+            title: {
+                display: false,
+                text: "Most Frequently Chosen Themes",
+            },
+        },
+    };
     
     return (
-        <div className="flex flex-col items-center p-4 ">
-
-            <h2 className="text-xl font-bold mb-4">Themes</h2>
-            
-            <table className="table-auto w-full border-collapse border border-gray-300 text-left">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">
-                                Name
-                            </th>
-                            <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">
-                                Scores
-                            </th>
-                            <th className="text-center align-middle border border-gray-300 px-4 py-2 w-1/5">
-                                Run times
-                            </th>
-                        </tr>
-                    </thead>
-
-
-                    <tbody>
-                        {themes.map((theme, index) => (
-                            <tr key={index} className="odd:bg-white even:bg-gray-50">
-                                <td className="text-center align-middle border border-gray-300 px-4 py-2">
-                                    <button className="bg-blue-700 text-white py-4 px-6 rounded-lg mb-4 hover:bg-blue-400 w-[300px]">
+        <div className="flex flex-col items-center p-4">          
+            <table className="table-auto w-full text-left">
+                <thead>
+                    <tr className="bg-gray-100">
+                        <th className="text-center align-middle px-4 py-2 w-1/5">
+                            Name
+                        </th>
+                        <th className="text-center align-middle px-4 py-2 w-1/5">
+                            Choice Frequency
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {themes.map((theme) => (
+                        <tr key={theme.id} className="bg-gray-100">
+                            <td className="text-center align-middle px-4 py-2">
+                                <button
+                                    onClick={() => onSelectTheme(theme.id)}
+                                    className={`py-4 px-6 rounded-lg mb-2 w-[300px] ${
+                                        selectedThemeId === theme.id
+                                            ? "bg-black text-white"
+                                            : "bg-blue-700 text-white hover:bg-blue-400"
+                                        }`}>
                                         {theme.title} 
-                                    </button>
-                                </td> 
-                                <td className="text-center align-middle border border-gray-300 px-4 py-2">
-                                    {theme.score || "N/A"}
-                                </td>
-                                <td className="text-center align-middle border border-gray-300 px-4 py-2">
-                                    {theme.runtime || "N/A"}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                </button>
+                            </td>
+                            <td className="text-center align-middle px-4 py-2">
+                                {theme.frequency}%
+                            </td> 
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <div className="w-full mt-8 flex justify-center">
+            <div className="w-full max-w-[800px] h-[400px]">
+                <Bar data={chartData} options={chartOptions} />
+            </div>
+            </div>
+
         </div>
     );
+    
 };
 
 export default ThemeTheme;

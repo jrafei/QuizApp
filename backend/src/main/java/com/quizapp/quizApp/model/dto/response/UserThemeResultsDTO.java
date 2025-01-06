@@ -1,4 +1,4 @@
-package com.quizapp.quizApp.model.dto;
+package com.quizapp.quizApp.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserQuizResultsDTO {
-    private String quizName;
+public class UserThemeResultsDTO {
+    private String name;
     private double averageScore;
     private int bestScore;
     private int worstScore;
