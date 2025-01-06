@@ -62,7 +62,7 @@ public class AuthController {
             String role = userDetails.getAuthorities().stream()
                     .map(authority -> authority.getAuthority())
                     .findFirst()
-                    .orElse("ROLE_USER");  // Assurez-vous que le rôle existe
+                    .orElse("ROLE_USER"); 
 
             // Generate the JWT
             String token = jwtUtil.generateToken(authRequest.getUsername(), role, user.getId().toString());
