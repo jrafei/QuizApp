@@ -30,6 +30,23 @@ const CurrentQuiz = () => {
     // Start the quiz and set the start time
     const handleStartQuiz = () => {
         setStartTime(Date.now());
+
+        const token = localStorage.getItem("authToken");
+        const traineeId = localStorage.getItem('userId');
+        axios.post(
+            "http://localhost:8080/quizzes/startquiz",
+            null,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                params: { quizId, traineeId },
+            }
+        )
+        .catch((error) => {
+            console.error("Error starting quiz:", error);
+        });
     };
 
     // Fetch the quiz details
@@ -70,6 +87,23 @@ const CurrentQuiz = () => {
         };
 
         setQuizRecord(updatedQuizRecord);
+
+        const token = localStorage.getItem("authToken");
+        const traineeId = localStorage.getItem('userId')
+        axios.post(
+            "http://localhost:8080/quizzes/endquiz",
+            null,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                params: { quizId, traineeId },
+            }
+        )
+        .catch((error) => {
+            console.error("Error starting quiz:", error);
+        });
         return updatedQuizRecord;
     }
     

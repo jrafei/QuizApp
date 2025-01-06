@@ -3,6 +3,7 @@ package com.quizapp.quizApp.controller;
 import com.quizapp.quizApp.model.dto.creation.QuizCreateDTO;
 import com.quizapp.quizApp.model.dto.response.QuizResponseDTO;
 import com.quizapp.quizApp.model.dto.update.QuizUpdateDTO;
+import com.quizapp.quizApp.service.impl.QuizSessionManager;
 import com.quizapp.quizApp.service.interfac.QuizService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class QuizController {
 
     private final QuizService quizService;
+    private final QuizSessionManager quizSessionManagerService;
 
     @PostMapping
     public ResponseEntity<QuizResponseDTO> createQuiz(@RequestBody QuizCreateDTO quizCreateDTO) {
@@ -65,6 +67,16 @@ public class QuizController {
     public ResponseEntity<QuizResponseDTO> updateQuiz(@PathVariable UUID id, @RequestBody QuizUpdateDTO quizCreateDTO) {
         QuizResponseDTO updatedQuiz = quizService.updateQuiz(id, quizCreateDTO);
         return ResponseEntity.ok(updatedQuiz); // 200 OK
+    }
+
+    @PostMapping("/startquiz")
+    public void startQuizSession(@RequestParam UUID quizId, @RequestParam UUID traineeId) {
+        quizSessionManagerService.startQuizSession(quizId, traineeId);
+    }
+
+    @PostMapping("/endquiz")
+    public void endQuizSession(@RequestParam UUID quizId, @RequestParam UUID traineeId) {
+        quizSessionManagerService.endQuizSession(quizId, traineeId);
     }
 
     @PatchMapping("/{id}/activate")

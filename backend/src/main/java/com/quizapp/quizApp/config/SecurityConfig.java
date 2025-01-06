@@ -94,6 +94,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/quizzes/status").hasAnyRole("ADMIN", "TRAINEE") // Filtrer par statut
                         .requestMatchers(HttpMethod.GET, "/quizzes/users/{creatorId}").hasAnyRole("ADMIN", "TRAINEE") // Lister par créateur
                         .requestMatchers(HttpMethod.GET, "/quizzes/theme/{themeId}").hasAnyRole("ADMIN", "TRAINEE") // Lister par thème
+                        .requestMatchers(HttpMethod.POST, "/quizzes/startquiz").hasAnyRole("ADMIN", "TRAINEE") // Commencer un quiz
+                        .requestMatchers(HttpMethod.POST, "/quizzes/endquiz").hasAnyRole("ADMIN", "TRAINEE") // finir un quiz
 
                         .requestMatchers(HttpMethod.POST, "/quizzes").hasRole("ADMIN") // Création uniquement pour ADMIN
                         .requestMatchers(HttpMethod.PATCH, "/quizzes/{id}").hasRole("ADMIN") // Modification uniquement pour ADMIN
