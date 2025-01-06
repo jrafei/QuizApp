@@ -22,9 +22,12 @@ const ListQuiz = ({ setQuizNb, searchQuery, currentPage, itemsPerPage }) => {
                 });
                 setThemes(themesResponse.data);
 
-                const quizzesResponse = await axios.get("http://localhost:8080/quizzes", {
+                const quizzesResponse = await axios.get("http://localhost:8080/quizzes/status", {
                     headers: { 
                         Authorization: `Bearer ${token}`
+                    },
+                    params: {
+                        isActive: true
                     }
                 });
                 setQuizzes(quizzesResponse.data);
