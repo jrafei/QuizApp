@@ -25,7 +25,7 @@ const RecordsResults = ({record, quiz}) => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                         Runtime:
                     </label>
-                    <p className="text-gray-800 text-lg">{Math.floor(record.duration / 60)} minutes</p>
+                    <p className="text-gray-800 text-lg">{Math.floor(record.duration)} s</p>
                 </div>
             </div>
         </div>
