@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -41,7 +42,8 @@ public class Answer {
     @JsonBackReference
     private Question question; // Association à une Question parent
 
-
+    @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecordAnswer> recordAnswers;
 
     /**
      * Détermine si une réponse peut être activée.

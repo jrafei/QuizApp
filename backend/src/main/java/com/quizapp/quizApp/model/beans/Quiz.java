@@ -64,6 +64,9 @@ public class Quiz {
     @OrderBy("position ASC")
     private List<Question> questions;//= new ArrayList<>(); // Liste des questions associées
 
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Record> records; // Liste des enregistrements liés
+
 
     @CreationTimestamp
     @Column(name = "creation_date", updatable = false, nullable = false)
