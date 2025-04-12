@@ -18,6 +18,7 @@ Une application de quiz interactive développée en Java pour tester les compét
 - Maven (optionnel, si dépendances ajoutées)
 
 ## Structure du projet
+```text
 QuizApp/
 ├── src/
 │   └── quiz/
