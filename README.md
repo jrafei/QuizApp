@@ -39,8 +39,8 @@ git clone https://github.com/ton-utilisateur/QuizApp.git
 cd QuizApp
  ```
 ## Compiler et exécuter avec java
-
+```bash
 javac src/quiz/*.java
 java -cp src quiz.Main
-
+ ```
 ## Aperçu
