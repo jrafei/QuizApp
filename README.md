@@ -46,6 +46,14 @@ java -cp src quiz.Main
  ```
 ## Aperçu
 Quelque photos de l'application : 
+
+- Page de bienvenue
 <img src="Assets/welcomepage.jpeg" alt="Welcome Page" width="600" />
+
+
+- Les quizs d'un stagiaire
 <img src="Assets/quizs.jpeg" alt="Welcome Page" width="600" />
+
+
+- Les résultats et les statistiques
 <img src="Assets/stats.jpeg" alt="Welcome Page" width="600" />
