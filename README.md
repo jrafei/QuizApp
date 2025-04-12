@@ -51,7 +51,7 @@ Quelque photos de l'application :
 <img src="Assets/welcomepage.jpeg" alt="Welcome Page" width="600" />
 
 
-- Les quizs d'un stagiaire
+- Les quiz d'un stagiaire
 <img src="Assets/quizs.jpeg" alt="Welcome Page" width="600" />
 
 
