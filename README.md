@@ -45,4 +45,7 @@ javac src/quiz/*.java
 java -cp src quiz.Main
  ```
 ## Aperçu
-<img src="welcomepage.jpeg" alt="Welcome Page" width="600" />
+Quelque photos de l'application : 
+<img src="Assets/welcomepage.jpeg" alt="Welcome Page" width="600" />
+<img src="Assets/quizs.jpeg" alt="Welcome Page" width="600" />
+<img src="Assets/stats.jpeg" alt="Welcome Page" width="600" />
