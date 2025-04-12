@@ -45,4 +45,4 @@ javac src/quiz/*.java
 java -cp src quiz.Main
  ```
 ## Aperçu
-![Aperçu](welcomepage.png)
+![[Welcome Page](welcomepage.png)
