@@ -1,6 +1,6 @@
 # QuizApp
 
-Une application de quiz interactive développée en Java pour tester les compétences des stagiaires ! 🧠
+Une application de quiz interactive développée en Java pour tester les compétences des stagiaires !
 
 ## Fonctionnalités
 
@@ -37,7 +37,7 @@ QuizApp/
 ```bash
 git clone https://github.com/ton-utilisateur/QuizApp.git
 cd QuizApp
-
+ ```
 ## Compiler et exécuter avec java
 
 javac src/quiz/*.java
