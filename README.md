@@ -5,18 +5,18 @@ Une application de quiz interactive développée en Java pour tester les compét
 
 ## Fonctionnalités
 
-- Interface graphique simple et intuitive (Java Swing)
 - Affichage d’une série de questions à choix multiples
 - Évaluation automatique du score
 - Navigation entre les questions
 - Affichage du résultat final
+- Statistique des résultats
 
 ## Technologies utilisées
 
-- Java 17
-- Swing (interface graphique)
-- IDE recommandé : IntelliJ IDEA / Eclipse
-- Maven (optionnel, si dépendances ajoutées)
+- **Backend** : API REST (Spring Boot)
+- **Frontend** : React.js avec Tailwind CSS
+- **Sécurité** : Spring Security
+
 
 ## Structure du projet
 ```text
@@ -45,3 +45,4 @@ javac src/quiz/*.java
 java -cp src quiz.Main
  ```
 ## Aperçu
+![Aperçu](welcomepage.png)
