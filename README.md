@@ -28,8 +28,7 @@ QuizApp/
 │       └── QuizFrame.java
 ├── README.md
 └── ...
-
-
+ ```
 
 ## Comment exécuter le projet
 
